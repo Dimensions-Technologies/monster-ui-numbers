@@ -1,5 +1,5 @@
 {
-	"name": "numbers",
+	"name": "numbers-plus",
 	"i18n": {
 		"de-DE": {
 			"label": "Nummern",
@@ -16,7 +16,7 @@
 			]
 		},
 		"en-US": {
-			"label": "Numbers",
+			"label": "Numbers Plus",
 			"description": "The Numbers app allows you to easily buy, port and manage all numbers in your account.",
 			"extended_description": "The Numbers app allows you to purchase and manage a base set of phone numbers in a master account. From there, numbers can be distributed to customers for use. When the numbers are no longer needed, they can be reclaimed easily and re-assigned to other customers at any time.Blocks of numbers and services can also be reserved and distributed. A clear distinction between numbers in-use and spare numbers is made to simplify management. The Numbers app supports managing CNAM database updates, inbound caller ID name lookups and emergency 911 services.",
 			"features": [
@@ -33,7 +33,7 @@
 	"tags": [
 		"admin"
 	],
-	"icon": "Numbers_app.png",
+	"icon": "Numbers-Plus_app.png",
 	"api_url": "http://10.26.0.41:8000/v2",
 	"author": "2600Hz",
 	"version": "1.0",
