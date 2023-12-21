@@ -7,6 +7,10 @@ define(function(require) {
 
 		css: [ 'app' ],
 
+		subModules: [
+			'numbers'
+		],
+
 		i18n: {
 			'en-US': { customCss: false },
 			'fr-FR': { customCss: false },
@@ -44,7 +48,9 @@ define(function(require) {
 				name: 'app'
 			}));
 
-			monster.pub('common.numbers.render', {
+			console.log('log point');
+			
+			monster.pub('numbersPlus.render', {
 				container: numberManager,
 				callbackAfterRender: function(numberControl) {
 					parent
