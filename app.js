@@ -8,7 +8,9 @@ define(function(require) {
 		css: [ 'app' ],
 
 		subModules: [
-			'numbers'
+			'numbers',
+			'numberFeaturesMenu',
+			'uk999'
 		],
 
 		i18n: {

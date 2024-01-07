@@ -1,0 +1,19 @@
+.trunkstore_popup.e911 .control-group #address_type {
+    width: 262px;
+    !padding: 10px 5px;
+}
+
+.trunkstore_popup.e911 .control-group .controls input {
+    width: 250px;
+}
+
+.trunkstore_popup.e911 .control-group .controls #notification_contact_emails {
+    width: 250px;
+}
+
+.trunkstore_popup.e911 .e911-title {
+    margin-left: 20px;
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 15px;
+}
