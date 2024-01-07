@@ -738,6 +738,47 @@
 		}
 	},
 
+	"uk999": {
+		"email": {
+			"label": "Email Address(es)",
+			"placeholder": "Space separated"
+		},
+		"addressName": "Name",
+		"addressBussuffix": "Bussuffix",
+		"addressForename": "Forename",
+		"addressPremises": "Address Line 1",
+		"addressThoroughfare": "Address Line 2",
+		"addressLocality": "Locality",
+		"addressPostcode": "Postcode",
+		"addressTypeBusiness": "Business",
+		"addressTypeResidential": "Residential",
+
+		"addressType": "Address Type",
+		"addressLine1": "Address Line 1",
+		"addressLine2": "Address Line 2",
+		"city": "City",
+		"dialogTitle": "Edit 999 Address Details",
+		"gmapPinLabel": "Your+E911+Location",
+		"infoBox": "This information will be provided to the emergency services.",
+		"label": "Emergency Services",
+		"lastE911Error": "You must have e911 set up on at least one number in your account. Please set it up on another number before removing it from this one.",
+		"postalCode": "Postcode",
+		"rotatedText": "For emergency services",
+		"state": "County",
+		"successE911": "You successfully updated the e911 information of <br> {{phoneNumber}}",
+		"title": "Address Details",
+		"verifyLocation": "Verify Location",
+		"__comment": "UI-1355: Add USPS format to addresses",
+		"__version": "v3.20_s4",
+		"invalidAddress": "Unfortunately, the address you specified wasn't found. Please double-check it and try again.",
+		"chooseAddressPopup": {
+			"title": "Choose correct address",
+			"youEntered": "You entered:",
+			"choicesAvailable": "Choices available:",
+			"content": "Several addresses matched the information you provided. Perhaps you didn't enter a street number or the building has multiple units."
+		}
+	},
+
 	"failover": {
 		"activate": "Activate",
 		"alternateNumber": "Alternate Number",

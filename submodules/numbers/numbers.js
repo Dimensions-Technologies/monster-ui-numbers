@@ -2,7 +2,9 @@ define(function(require) {
 	var $ = require('jquery'),
 		_ = require('lodash'),
 		async = require('async'),
-		monster = require('monster');
+		monster = require('monster'),
+		uk999Enabled = false,
+		uk999EnabledNumbers;
 
 	var numbersPlus = {
 
@@ -13,53 +15,115 @@ define(function(require) {
 		subscribe: {
 			'numbersPlus.dialogSpare': 'numbersDialogSpare',
 			'numbersPlus.render': 'numbersRender',
-			'numbersPlus.editFeatures': 'numbersEditFeatures',
 			'numbersPlus.getListFeatures': 'numbersGetFeatures',
+			'numbersPlus.editFeatures': 'numbersEditFeatures',
 			'numbersPlus.getCarriersModules': 'numbersGetCarriersModules'
 		},
 		
-
 		/* Arguments:
 		** container: jQuery Div
 		** callbackAfterRender: callback executed once we rendered the number control
 		** viewType: default to 'pbx', can be set to 'pbx', basically changes the view from Number Manager to SmartPBX the if set to 'pbx'
 		*/
 
-		numbersDisplayFeaturesMenu: function(arrayNumbers, parent) {
-			var self = this;
+		numbersDisplayFeaturesMenu: function(arrayNumbers, parent, callback) {
+			var self = this,
+				uk999EnabledNumber = false;
 
 			_.each(arrayNumbers, function(number) {
 				if (number.state === 'port_in' || number.used_by === 'mobile') {
 					return;
 				}
 
+				console.log('number loop');
+				console.log(uk999EnabledNumbers.data.numbers);
+				console.log(number.phoneNumber);
+
+
+				if (uk999EnabledNumbers.data.numbers.hasOwnProperty(number.phoneNumber)) {
+					// The phoneNumber exists in uk999EnabledNumbers.data.numbers
+					// Your code here if it's true
+					console.log('phoneNumber exists in uk999EnabledNumbers.data.numbers');
+					uk999EnabledNumber = true;
+					// ...
+				} else {
+					// The phoneNumber does not exist in uk999EnabledNumbers.data.numbers
+					// Your code here if it's false
+					console.log('phoneNumber does not exist in uk999EnabledNumbers.data.numbers');
+					uk999EnabledNumber = false;
+					// ...
+				}
+
+
 				var numberDiv = parent.find('[data-phonenumber="' + number.phoneNumber + '"]'),
 					args = {
 						target: numberDiv.find('.number-options'),
 						numberData: number,
+						uk999Enabled: uk999Enabled,
+						uk999EnabledNumber: uk999EnabledNumber,
 						afterUpdate: function(features) {
 							monster.ui.highlight(numberDiv);
 							monster.ui.paintNumberFeaturesIcon(features, numberDiv.find('.features'));
 						}
 					};
-
-				monster.pub('common.numberFeaturesMenu.render', args);
+					
+				monster.pub('numbersPlus.numberFeaturesMenu.render', args);
 			});
+
+			callback && callback();
+
 		},
 
 		numbersRender: function(pArgs) {
 
-			console.log('log point - render');
+			console.log('log point - render');		
 
 			var self = this,
 				args = pArgs || {},
 				container = args.container || $('#monster_content'),
 				callbackAfterRender = args.callbackAfterRender,
-				viewType = args.viewType || 'manager';
+				viewType = args.viewType || 'manager'
 
+			// check if 'uk_999_enabled' exists and is true on account doc
+			self.callApi({
+				resource: 'account.get',
+				data: {
+					accountId: self.accountId
+					
+				},
+				success: function(data) {
+					uk999Enabled = (data.data.hasOwnProperty('uk_999_enabled') && data.data.uk_999_enabled == true) ? true : false;				
+				}
+			});		
+
+			// get numbers which have uk_999 data on number document
+			self.callApi({
+				resource: 'numbers.get',
+				data: {
+					accountId: self.accountId,
+					phoneNumber: '',
+					filters: {
+						"has_key": "uk_999"
+					}
+					
+				},
+				success: function(data) {
+					uk999EnabledNumbers = data;
+					console.log('numbers get');
+					console.log(data);
+					
+					console.log('uk999EnabledNumbers');
+					console.log(uk999EnabledNumbers);
+
+				}
+			});		
+			
 			self.numbersGetData(viewType, function(data) {
 				data.viewType = viewType;
 				data = self.numbersFormatData(data);
+
+				console.log('!!numbersGetData!!');
+				console.log(data);
 
 				var numbersView = $(self.getTemplate({
 						name: 'layout',
@@ -73,32 +137,43 @@ define(function(require) {
 					})),
 					arrayNumbers = data.listAccounts.length ? data.listAccounts[0].usedNumbers : [];
 
-				self.numbersDisplayFeaturesMenu(arrayNumbers, usedView);
-				numbersView.find('.list-numbers[data-type="used"]').append(usedView);
 
-				self.numbersRenderSpare({
-					parent: numbersView,
-					dataNumbers: data
-				});
+					console.log('!!arrayNumbers!!');
+					console.log(arrayNumbers);
+					
+				self.numbersDisplayFeaturesMenu(arrayNumbers, usedView)
 
-				self.numbersRenderExternal({
-					parent: numbersView,
-					dataNumbers: data
-				});
 
-				self.numbersBindEvents(numbersView, data);
+					numbersView.find('.list-numbers[data-type="used"]').append(usedView);
 
-				container
-					.empty()
-					.append(numbersView);
+					self.numbersGetFeatures();
 
-				setTimeout(function() {
-					var viewType = container.find('.half-box.selected').data('type');
+					self.numbersRenderSpare({
+						parent: numbersView,
+						dataNumbers: data
+					});
 
-					container.find('.list-numbers[data-type="' + viewType + '"] .search-custom input').focus();
-				});
+					self.numbersRenderExternal({
+						parent: numbersView,
+						dataNumbers: data
+					});
 
-				callbackAfterRender && callbackAfterRender(container);
+					self.numbersBindEvents(numbersView, data);
+
+					container
+						.empty()
+						.append(numbersView);
+
+					setTimeout(function() {
+						var viewType = container.find('.half-box.selected').data('type');
+
+						container.find('.list-numbers[data-type="' + viewType + '"] .search-custom input').focus();
+					});
+
+					callbackAfterRender && callbackAfterRender(container);
+
+				
+					
 			});
 		},
 
@@ -1416,6 +1491,7 @@ define(function(require) {
 		},
 
 		numbersRenderSpare: function(args) {
+			console.log('render spare');
 			var self = this,
 				dataNumbers = args.dataNumbers,
 				template = $(self.getTemplate({
@@ -1425,12 +1501,19 @@ define(function(require) {
 				})),
 				arrayNumbersSpare = dataNumbers.listAccounts.length ? dataNumbers.listAccounts[0].spareNumbers : [];
 
+				console.log('!!arrayNumbersSpare!!');
+				console.log(arrayNumbersSpare);
+
 			args.parent
 				.find('.list-numbers[data-type="spare"]')
 				.empty()
 				.append(template);
 
 			self.numbersDisplayFeaturesMenu(arrayNumbersSpare, template);
+
+			console.log('!! log point !!');
+			console.log(dataNumbers.listAccounts[0]);
+			console.log(arrayNumbersSpare);
 
 			args.hasOwnProperty('callback') && args.callback();
 		},
@@ -1671,6 +1754,7 @@ define(function(require) {
 		},
 
 		numbersDialogSpare: function(args) {
+			console.log('spare numbers');
 			var self = this,
 				accountId = args.accountId,
 				accountName = args.accountName || '',
@@ -1950,6 +2034,7 @@ define(function(require) {
 		},
 
 		numbersEditFeatures: function(args) {
+			console.log('edit features');
 			var self = this,
 				phoneNumber = args.number,
 				accountId = args.hasOwnProperty('accountId') ? args.accountId : self.accountId,
@@ -1996,7 +2081,8 @@ define(function(require) {
 			});
 		},
 
-		numbersGetFeatures: function(callback) {
+		numbersGetFeatures2: function(callback) {
+			console.log('get features 2');
 			var self = this,
 				features = {
 					mobile: { icon: 'monster-grey fa fa-mobile-phone', help: self.i18n.active().numbers.mobileIconHelp },
@@ -2006,7 +2092,34 @@ define(function(require) {
 					prepend: { icon: 'monster-orange fa fa-file-text-o feature-prepend', help: self.i18n.active().numbers.prependIconHelp }
 				};
 
+			console.log(features);
+			
+
+			if (callback) {
+				callback && callback(features);
+			} else {
+				return features;
+			}
+		},
+	
+		numbersGetFeatures: function(callback) {
+			console.log('get features');
+			var self = this,
+				features = {
+					mobile: { icon: 'monster-grey fa fa-mobile-phone', help: self.i18n.active().numbers.mobileIconHelp },
+					failover: { icon: 'monster-green icon-telicon-failover feature-failover', help: self.i18n.active().numbers.failoverIconHelp },
+					local: { icon: 'monster-purple fa fa-rocket feature-local', help: self.i18n.active().numbers.localIconHelp },
+					port: { icon: 'fa fa-phone monster-yellow feature-port', help: self.i18n.active().numbers.portIconHelp },
+					prepend: { icon: 'monster-orange fa fa-file-text-o feature-prepend', help: self.i18n.active().numbers.prependIconHelp }
+				};
+
+			console.log(features);
+
 			if (monster.util.isNumberFeatureEnabled('e911')) {
+				features.dash_e911 = { icon: 'monster-red fa fa-ambulance feature-dash_e911', help: self.i18n.active().numbers.e911IconHelp };
+			}
+
+			if (monster.util.isNumberFeatureEnabled('uk999')) {
 				features.dash_e911 = { icon: 'monster-red fa fa-ambulance feature-dash_e911', help: self.i18n.active().numbers.e911IconHelp };
 			}
 
