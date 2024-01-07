@@ -8,7 +8,7 @@ define(function(require) {
 		requests: {
 			'google.geocode.address': {
 				apiRoot: '//maps.googleapis.com/',
-				url: 'maps/api/geocode/json?address={zipCode}&key=AIzaSyC5PcCSqoS-9RGDg8zI6r811Pw1adGLJ_I',
+				url: 'maps/api/geocode/json?address={zipCode}&key=',
 				verb: 'GET',
 				generateError: false,
 				removeHeaders: [
