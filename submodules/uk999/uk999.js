@@ -26,7 +26,6 @@ define(function(require) {
 		},
 
 		e911Edit: function(args) {
-			console.log('uk999 pop up');
 			var self = this,
 				argsCommon = {
 					success: function(dataNumber) {
@@ -53,22 +52,13 @@ define(function(require) {
 				})),
 				popup;
 
-				console.log('form loaded');
-				console.log(self.e911Format(dataNumber.uk_999));
-
-				console.log('data.data');
-				console.log(dataNumber);
-
 				if (dataNumber.hasOwnProperty('uk_999')) {
-					console.log('found uk_999 data');
 					if (dataNumber.uk_999.address_type === 'business') {
-						console.log('business');
 						$('#forenameGroup', popupHtml).hide();
 						$('#bussuffixGroup', popupHtml).show();
 					}
 	
 					else if (dataNumber.uk_999.address_type === 'residential') {
-						console.log('residential');
 						$('#forenameGroup', popupHtml).show();
 						$('#bussuffixGroup', popupHtml).hide();
 					}
@@ -76,22 +66,15 @@ define(function(require) {
 				}
 
 				else {
-					console.log('no uk_999 data');
 					$('#forenameGroup', popupHtml).hide();
 					$('#bussuffixGroup', popupHtml).show();
 				}
 
-				console.log('after if');
-
 				$('#address_type', popupHtml).change(function() {
 				
 					var $this = $(this);
-					console.log($this);
-
-					console.log('address type changed');
 					
 					if ($this.val() ===  'business') {
-						console.log('business');
 						$(addressForename).val(null);
 						$(addressName).val(null);
 						$('#forenameGroup', popupHtml).hide();
@@ -99,7 +82,6 @@ define(function(require) {
 					}
 	
 					else if ($this.val() ===  'residential') {
-						console.log('residential');
 						$(addressName).val(null);
 						$(addressBussuffix).val(null);
 						$('#forenameGroup', popupHtml).show();
@@ -157,8 +139,6 @@ define(function(require) {
 
 			popupHtml.find('#submit_btn').on('click', function(ev) {
 
-				console.log('button pressed');
-
 				ev.preventDefault();
 
 				if (!monster.ui.valid(popupHtml)) {
@@ -167,14 +147,9 @@ define(function(require) {
 
 				var uk999FormData = self.e911Normalize(monster.ui.getFormData('uk_999'));
 
-				console.log(uk999FormData);
-
 				_.extend(dataNumber, { uk_999: uk999FormData });
 
-				console.log('log point');
-
 				var callbackSuccess = function callbackSuccess(data) {
-					console.log('callbackSuccess');
 					var phoneNumber = monster.util.formatPhoneNumber(data.data.id),
 						template = self.getTemplate({
 							name: '!' + self.i18n.active().uk999.successUK999,
@@ -194,24 +169,15 @@ define(function(require) {
 					callbacks.success && callbacks.success(data);
 				};
 
-				console.log('log point 2');
-
 				self.e911UpdateNumber(dataNumber.id, accountId, dataNumber, {
 					success: function(data) {
-						console.log('log point 3');
-						console.log(data);
 
 						if (data.data.hasOwnProperty('uk_999') && !data.data.features.includes('uk_999')) {
 							features = data.data.features || [];
 							features.push('uk_999');
-							console.log('push uk_999');
 						}
-						
-						console.log(data)
 
 						callbackSuccess(data);
-						console.log('log point 4');
-
 
 					}
 				});
@@ -220,8 +186,6 @@ define(function(require) {
 
 			popupHtml.find('#remove_e911_btn').on('click', function(e) {
 				e.preventDefault();
-
-				console.log('remove 999');
 
 				self.callApi({
 					resource: 'numbers.list',
@@ -341,11 +305,9 @@ define(function(require) {
 				resource: 'google.geocode.address',
 				data: args.data,
 				success: function(data, status) {
-					console.log('address success');
 					args.hasOwnProperty('success') && args.success(data.results);
 				},
 				error: function(errorPayload, data, globalHandler) {
-					console.log('address error');
 					args.hasOwnProperty('error') ? args.error() : globalHandler(data, { generateError: true });
 				}
 			});

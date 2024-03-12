@@ -11,10 +11,7 @@ define(function(require) {
 			'numbersPlus.numberFeaturesMenu.render': 'numberFeaturesMenuRender'
 		},
 
-		
-		numberFeaturesMenuRender: function(args) {
-			console.log('numbers features');
-			
+		numberFeaturesMenuRender: function(args) {			
 			var self = this,
 				numberData = args.numberData,
 				uk999Enabled = args.uk999Enabled,
@@ -40,9 +37,6 @@ define(function(require) {
 				}));
 
 			self.numberFeaturesMenuBindEvents(template, phoneNumber, args.afterUpdate);
-
-			console.log('number detail');
-			console.log(numberData);
 
 			args.target.append(template);
 		},
@@ -74,18 +68,12 @@ define(function(require) {
 					callbacks: {
 						success: function(data) {
 							afterUpdate && afterUpdate(data.data.features, template);
-
-							console.log(data.data.features);
-							console.log(template);
-
-							console.log('! log point !');
 						}
 					}
 				};
 
 			_.forEach(featureEvents, function(event, feature) {
 				template.find('.' + feature + '-number').on('click', function() {
-					//console.log('on click');
 					// We add this at the moment of the event because in some cases, we bind the events before it's adding to a parent,
 					// which means the account-section might not be loaded yet if we bound it before the event happened.
 					if ($(this).parents('.account-section').length) {
