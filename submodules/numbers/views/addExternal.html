@@ -15,15 +15,17 @@
 				</div>
 			</div>
 
-			<div class="customize-number-field{{#unless isAllowedToPickState}} disabled{{/unless}}">
-				<label class="popup-label" for="number_state">{{i18n.numbers.addExternal.numberState.label}}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberState.defaultHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
-				<select class="select-state input-medium" id="number_state" name="number-state">
-					<option value="_uiDefaultState">{{i18n.numbers.addExternal.numberState.default }}</option>
-					{{#each @root.states}}
-						<option value="{{this}}">{{this}}</option>
-					{{/each}}
-				</select>
-			</div>
+			{{#if isAllowedToPickCarrier}}
+				<div class="customize-number-field{{#unless isAllowedToPickState}} disabled{{/unless}}">
+					<label class="popup-label" for="number_state">{{i18n.numbers.addExternal.numberState.label}}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberState.defaultHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
+					<select class="select-state input-medium" id="number_state" name="number-state">
+						<option value="_uiDefaultState">{{i18n.numbers.addExternal.numberState.default }}</option>
+						{{#each @root.states}}
+							<option value="{{this}}">{{this}}</option>
+						{{/each}}
+					</select>
+				</div>
+			{{/if}}
 
 			{{#if isAllowedToPickCarrier}}
 				<div class="customize-number-field">

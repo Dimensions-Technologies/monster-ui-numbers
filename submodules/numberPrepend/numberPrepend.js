@@ -28,8 +28,6 @@ define(function(require) {
 
 		numberPrependRender: function(dataNumber, pAccountId, callbacks) {
 
-            console.log('number prepend edit');
-
 			var self = this,
 				accountId = pAccountId || self.accountId,
 				popup_html = $(self.getTemplate({
@@ -40,8 +38,6 @@ define(function(require) {
 				popup;
 
 			popup_html.find('.save').on('click', function(ev) {
-
-                console.log('prepend save');
 
 				ev.preventDefault();
 				var prependFormData = monster.ui.getFormData('number_prepend');
@@ -63,11 +59,7 @@ define(function(require) {
                         if (data.data.hasOwnProperty('uk_999') && !data.data.features.includes('uk_999')) {
 							features = data.data.features || [];
 							features.push('uk_999');
-							console.log('push uk_999');
 						}
-
-                        console.log('prepend data');
-                        console.log(data);
                        
 						monster.ui.toast({
 							type: 'success',
