@@ -617,7 +617,7 @@
 		"__version": "3.22",
 		"addExternal": {
 			"label": "Add",
-			"help": "Add numbers to the selected account (You have access to this option because you're logged in with an account that has the wnm_allow_additions flag set to true).",
+			"help": "Add numbers to the account.",
 			"dialog": {
 				"title": "Add your phone numbers to the platform",
 				"fieldText": "Input numbers to be imported",
@@ -752,20 +752,19 @@
 		"addressPostcode": "Postcode",
 		"addressTypeBusiness": "Business",
 		"addressTypeResidential": "Residential",
-
 		"addressType": "Address Type",
 		"addressLine1": "Address Line 1",
 		"addressLine2": "Address Line 2",
 		"city": "City",
-		"dialogTitle": "Edit 999 Address Details",
+		"dialogTitle": "Emergency Services Address Details",
 		"gmapPinLabel": "Your+E911+Location",
-		"infoBox": "This information will be provided to the emergency services.",
+		"infoBox": "Address information will be provided to the Emergency Services.",
 		"label": "Emergency Services",
 		"lastE911Error": "You must have e911 set up on at least one number in your account. Please set it up on another number before removing it from this one.",
 		"postalCode": "Postcode",
 		"rotatedText": "For emergency services",
 		"state": "County",
-		"successE911": "You successfully updated the e911 information of <br> {{phoneNumber}}",
+		"successUK999": "Emergency Services address details of <br> {{phoneNumber}} updated.",
 		"title": "Address Details",
 		"verifyLocation": "Verify Location",
 		"__comment": "UI-1355: Add USPS format to addresses",
@@ -982,7 +981,7 @@
 		"dialogTitle": "Number Prepend Setup",
 		"title": "Text to prepend",
 		"label": "Prepend",
-		"help": "This text will appear before your number when receiving a call. This can be used to better identify which number was called when you use more than one.",
+		"help": "This text will appear before your number when receiving a call. This can be used to better identify which number was called when you use more than one. You should add a space at the end of the text entered to ensure there is a space between the text and number.",
 		"successUpdate": "You successfully updated the prepended text for {{phoneNumber}}"
 	},
 

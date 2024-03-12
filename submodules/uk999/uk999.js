@@ -5,6 +5,7 @@ define(function(require) {
 
 	var uk999 = {
 
+		/*
 		requests: {
 			'google.geocode.address': {
 				apiRoot: '//maps.googleapis.com/',
@@ -18,6 +19,7 @@ define(function(require) {
 				]
 			}
 		},
+		*/
 
 		subscribe: {
 			'numbersPlus.uk999.renderPopup': 'e911Edit'
@@ -90,12 +92,16 @@ define(function(require) {
 					
 					if ($this.val() ===  'business') {
 						console.log('business');
+						$(addressForename).val(null);
+						$(addressName).val(null);
 						$('#forenameGroup', popupHtml).hide();
 						$('#bussuffixGroup', popupHtml).show();
 					}
 	
 					else if ($this.val() ===  'residential') {
 						console.log('residential');
+						$(addressName).val(null);
+						$(addressBussuffix).val(null);
 						$('#forenameGroup', popupHtml).show();
 						$('#bussuffixGroup', popupHtml).hide();
 					}
@@ -111,7 +117,7 @@ define(function(require) {
 				}
 			});
 
-
+			/*
 			popupHtml.find('#addressPostcode').change(function() {
 				console.log('find address');
 				var zipCode = $(this).val();
@@ -143,96 +149,11 @@ define(function(require) {
 					});
 				}
 			});
+			*/
 
 			popupHtml.find('.inline_field > input').keydown(function() {
 				popup.find('.gmap_link_div').hide();
 			});
-
-			/*
-			popupHtml.find('#submit_btn').on('click', function(ev) {
-				ev.preventDefault();
-
-				if (!monster.ui.valid(popupHtml)) {
-					return;
-				}
-
-				var e911FormData = self.e911Normalize(monster.ui.getFormData('e911'));
-
-				_.extend(dataNumber, { e911: e911FormData });
-
-				var callbackSuccess = function callbackSuccess(data) {
-					cosnole.log('callbackSuccess');
-					var phoneNumber = monster.util.formatPhoneNumber(data.data.id),
-						template = self.getTemplate({
-							name: '!' + self.i18n.active().e911.successE911,
-							data: {
-								phoneNumber: phoneNumber
-							},
-							submodule: 'uk999'
-						});
-
-					monster.ui.toast({
-						type: 'success',
-						message: template
-					});
-
-					popup.dialog('close');
-
-					callbacks.success && callbacks.success(data);
-				};
-
-				self.e911UpdateNumber(dataNumber.id, accountId, dataNumber, {
-					success: function(data) {
-						callbackSuccess(data);
-					},
-					multipleChoices: function(addresses) {
-						cosnole.log('e911UpdateNumber');
-						var templatePopupAddresses = $(self.getTemplate({
-								name: 'addressesDialog',
-								data: addresses,
-								submodule: 'uk999'
-							})),
-							popupAddress;
-
-						templatePopupAddresses.find('.address-option').on('click', function() {
-							templatePopupAddresses.find('.address-option.active').removeClass('active');
-							$(this).addClass('active');
-							templatePopupAddresses.find('.save-address').removeClass('disabled');
-						});
-
-						templatePopupAddresses.find('.cancel-link').on('click', function() {
-							popupAddress.dialog('close');
-						});
-
-						templatePopupAddresses.find('.save-address').on('click', function() {
-							console.log('.save-address');
-							if (templatePopupAddresses.find('.address-option').hasClass('active')) {
-								var index = templatePopupAddresses.find('.address-option.active').data('id'),
-									dataAddress = addresses.details[index];
-
-								_.extend(dataNumber, { e911: dataAddress });
-
-								self.e911UpdateNumber(dataNumber.id, accountId, dataNumber, {
-									success: function(data) {
-										popupAddress.dialog('close');
-
-										callbackSuccess(data);
-									}
-								});
-							}
-						});
-
-						popupAddress = monster.ui.dialog(templatePopupAddresses, {
-							title: self.i18n.active().uk999.chooseAddressPopup.title
-						});
-					},
-					invalidAddress: function(data) {
-						monster.ui.alert('error', self.i18n.active().e911.invalidAddress);
-					}
-				});s
-			});
-			*/
-
 
 			popupHtml.find('#submit_btn').on('click', function(ev) {
 
@@ -256,7 +177,7 @@ define(function(require) {
 					console.log('callbackSuccess');
 					var phoneNumber = monster.util.formatPhoneNumber(data.data.id),
 						template = self.getTemplate({
-							name: '!' + self.i18n.active().e911.successE911,
+							name: '!' + self.i18n.active().uk999.successUK999,
 							data: {
 								phoneNumber: phoneNumber
 							},
@@ -279,58 +200,28 @@ define(function(require) {
 					success: function(data) {
 						console.log('log point 3');
 						console.log(data);
+
+						if (data.data.hasOwnProperty('uk_999') && !data.data.features.includes('uk_999')) {
+							features = data.data.features || [];
+							features.push('uk_999');
+							console.log('push uk_999');
+						}
+						
+						console.log(data)
+
 						callbackSuccess(data);
 						console.log('log point 4');
-					},
-					multipleChoices: function(addresses) {
-						cosnole.log('e911UpdateNumber');
-						var templatePopupAddresses = $(self.getTemplate({
-								name: 'addressesDialog',
-								data: addresses,
-								submodule: 'uk999'
-							})),
-							popupAddress;
 
-						templatePopupAddresses.find('.address-option').on('click', function() {
-							templatePopupAddresses.find('.address-option.active').removeClass('active');
-							$(this).addClass('active');
-							templatePopupAddresses.find('.save-address').removeClass('disabled');
-						});
 
-						templatePopupAddresses.find('.cancel-link').on('click', function() {
-							popupAddress.dialog('close');
-						});
-
-						templatePopupAddresses.find('.save-address').on('click', function() {
-							console.log('.save-address');
-							if (templatePopupAddresses.find('.address-option').hasClass('active')) {
-								var index = templatePopupAddresses.find('.address-option.active').data('id'),
-									dataAddress = addresses.details[index];
-
-								_.extend(dataNumber, { e911: dataAddress });
-
-								self.e911UpdateNumber(dataNumber.id, accountId, dataNumber, {
-									success: function(data) {
-										popupAddress.dialog('close');
-
-										callbackSuccess(data);
-									}
-								});
-							}
-						});
-
-						popupAddress = monster.ui.dialog(templatePopupAddresses, {
-							title: self.i18n.active().uk999.chooseAddressPopup.title
-						});
-					},
-					invalidAddress: function(data) {
-						monster.ui.alert('error', self.i18n.active().e911.invalidAddress);
 					}
 				});
 			});
 
+
 			popupHtml.find('#remove_e911_btn').on('click', function(e) {
 				e.preventDefault();
+
+				console.log('remove 999');
 
 				self.callApi({
 					resource: 'numbers.list',
@@ -338,37 +229,32 @@ define(function(require) {
 						accountId: accountId
 					},
 					success: function(data, status) {
-						var e911Count = _.countBy(data.data.numbers, function(number) {
-							return (number.hasOwnProperty('features') && number.features.indexOf('uk_999') >= 0);
-						}).true;
+						
+						delete dataNumber.uk_999;
 
-						if (e911Count > 1) {
-							delete dataNumber.uk_999;
-
-							self.e911UpdateNumber(dataNumber.id, accountId, dataNumber, {
-								success: function(data) {
-									var phoneNumber = monster.util.formatPhoneNumber(data.data.id),
-										template = self.getTemplate({
-											name: '!' + self.i18n.active().e911.successE911,
-											data: {
-												phoneNumber: phoneNumber
-											},
-											submodule: 'uk999'
-										});
-
-									monster.ui.toast({
-										type: 'success',
-										message: template
+						self.e911UpdateNumber(dataNumber.id, accountId, dataNumber, {
+							success: function(data) {
+								var phoneNumber = monster.util.formatPhoneNumber(data.data.id),
+									template = self.getTemplate({
+										name: '!' + self.i18n.active().uk999.successUK999,
+										data: {
+											phoneNumber: phoneNumber
+										},
+										submodule: 'uk999'
 									});
 
-									popup.dialog('close');
+								monster.ui.toast({
+									type: 'success',
+									message: template
+								});
 
-									callbacks.success && callbacks.success(data);
-								}
-							});
-						} else {
-							monster.ui.alert(self.i18n.active().e911.lastE911Error);
-						}
+								popup.dialog('close');
+
+								callbacks.success && callbacks.success(data);
+							}
+
+						});
+
 					}
 				});
 			});
