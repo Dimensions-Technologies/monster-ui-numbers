@@ -15,6 +15,8 @@ define(function(require) {
 		subscribe: {
 			'numbersPlus.dialogSpare': 'numbersDialogSpare',
 			'numbersPlus.render': 'numbersRender',
+			'numbersPlus.refresh': 'numbersRefresh',
+			'numbersPlus.numbersFeaturesMenu': 'numbersDisplayFeaturesMenu',
 			'numbersPlus.getListFeatures': 'numbersGetFeatures',
 			'numbersPlus.editFeatures': 'numbersEditFeatures',
 			'numbersPlus.getCarriersModules': 'numbersGetCarriersModules'
@@ -27,6 +29,9 @@ define(function(require) {
 		*/
 
 		numbersDisplayFeaturesMenu: function(arrayNumbers, parent, callback) {
+
+			console.log('numbersDisplayFeaturesMenu');
+
 			var self = this,
 				uk999EnabledNumber = false;
 
@@ -35,21 +40,21 @@ define(function(require) {
 					return;
 				}
 
-				console.log('number loop');
-				console.log(uk999EnabledNumbers.data.numbers);
-				console.log(number.phoneNumber);
+				//console.log('number loop');
+				//console.log(uk999EnabledNumbers.data.numbers);
+				//console.log(number.phoneNumber);
 
 
 				if (uk999EnabledNumbers.data.numbers.hasOwnProperty(number.phoneNumber)) {
 					// The phoneNumber exists in uk999EnabledNumbers.data.numbers
 					// Your code here if it's true
-					console.log('phoneNumber exists in uk999EnabledNumbers.data.numbers');
+					//console.log('phoneNumber exists in uk999EnabledNumbers.data.numbers');
 					uk999EnabledNumber = true;
 					// ...
 				} else {
 					// The phoneNumber does not exist in uk999EnabledNumbers.data.numbers
 					// Your code here if it's false
-					console.log('phoneNumber does not exist in uk999EnabledNumbers.data.numbers');
+					//console.log('phoneNumber does not exist in uk999EnabledNumbers.data.numbers');
 					uk999EnabledNumber = false;
 					// ...
 				}
@@ -63,7 +68,8 @@ define(function(require) {
 						uk999EnabledNumber: uk999EnabledNumber,
 						afterUpdate: function(features) {
 							monster.ui.highlight(numberDiv);
-							monster.ui.paintNumberFeaturesIcon(features, numberDiv.find('.features'));
+							//monster.ui.paintNumberFeaturesIcon(features, numberDiv.find('.features'));
+							self.paintNumberFeaturesIcon(features, numberDiv.find('.features'));
 						}
 					};
 					
@@ -76,7 +82,7 @@ define(function(require) {
 
 		numbersRender: function(pArgs) {
 
-			console.log('log point - render');		
+			console.log('log point - render');		``
 
 			var self = this,
 				args = pArgs || {},
@@ -109,11 +115,11 @@ define(function(require) {
 				},
 				success: function(data) {
 					uk999EnabledNumbers = data;
-					console.log('numbers get');
-					console.log(data);
+					//console.log('numbers get');
+					//console.log(data);
 					
-					console.log('uk999EnabledNumbers');
-					console.log(uk999EnabledNumbers);
+					//console.log('uk999EnabledNumbers');
+					//console.log(uk999EnabledNumbers);
 
 				}
 			});		
@@ -122,8 +128,8 @@ define(function(require) {
 				data.viewType = viewType;
 				data = self.numbersFormatData(data);
 
-				console.log('!!numbersGetData!!');
-				console.log(data);
+				//console.log('!! numbersGetData !!');
+				//console.log(data);
 
 				var numbersView = $(self.getTemplate({
 						name: 'layout',
@@ -137,44 +143,163 @@ define(function(require) {
 					})),
 					arrayNumbers = data.listAccounts.length ? data.listAccounts[0].usedNumbers : [];
 
+					//console.log('!! used numbers !!');
+					//console.log(arrayNumbers);
+				
+			
+				//self.numbersDisplayFeaturesMenu(arrayNumbers, usedView, () => {
+				
+				// number features menu on used numbers
+				self.numbersDisplayFeaturesMenu(arrayNumbers, usedView);
 
-					console.log('!!arrayNumbers!!');
-					console.log(arrayNumbers);
+				// used numbers 
+				numbersView.find('.list-numbers[data-type="used"]').append(usedView);
+
+				self.numbersGetFeatures();
+
+				self.numbersRenderSpare({
+					parent: numbersView,
+					dataNumbers: data
+				});
+				
+				// call again to render uk_999 in ui
+				self.numbersRenderSpare({
+					parent: numbersView,
+					dataNumbers: data
+				});
+
+				// call new render function to draw features
+				self.numbersRenderUsed({
+					parent: numbersView,
+					dataNumbers: data
+				});
+
+				self.numbersRenderExternal({
+					parent: numbersView,
+					dataNumbers: data
+				});
+
+				self.numbersBindEvents(numbersView, data);
+
+				container
+					.empty()
+					.append(numbersView);
+
+				setTimeout(function() {
+					var viewType = container.find('.half-box.selected').data('type');
+
+					container.find('.list-numbers[data-type="' + viewType + '"] .search-custom input').focus();
+				});
+
+				callbackAfterRender && callbackAfterRender(container);
+	
+
+			});
+
+		},
+
+		numbersRefresh: function(pArgs) {
+
+			console.log('log point - refresh');		
+
+			var self = this,
+				args = pArgs || {},
+				container = args.container || $('#monster_content'),
+				callbackAfterRender = args.callbackAfterRender,
+				viewType = args.viewType || 'manager'
+			
+			self.numbersGetData(viewType, function(data) {
+				data.viewType = viewType;
+				data = self.numbersFormatData(data);
+
+				//console.log('!! numbersGetData !!');
+				//console.log(data);
+								
+				var numbersView = $(self.getTemplate({
+						name: 'layout',
+						data: data,
+						submodule: 'numbers'
+					})),
+					usedView = $(self.getTemplate({
+						name: 'used',
+						data: data,
+						submodule: 'numbers'
+					})),
+
 					
-				self.numbersDisplayFeaturesMenu(arrayNumbers, usedView)
+					arrayNumbers = data.listAccounts.length ? data.listAccounts[0].usedNumbers : [];
 
+					//console.log('!! used numbers !!');
+					//console.log(arrayNumbers);
+				
+				
+				
+			
+				//self.numbersDisplayFeaturesMenu(arrayNumbers, usedView, () => {
+				
+				
+				// number features menu on used numbers
+				self.numbersDisplayFeaturesMenu(arrayNumbers, usedView);
 
-					numbersView.find('.list-numbers[data-type="used"]').append(usedView);
+				// used numbers 
+				numbersView.find('.list-numbers[data-type="used"]').append(usedView);
+				
+				
 
-					self.numbersGetFeatures();
+				self.numbersGetFeatures();
 
-					self.numbersRenderSpare({
-						parent: numbersView,
-						dataNumbers: data
-					});
+				self.numbersRenderSpare({
+					parent: numbersView,
+					dataNumbers: data
+				});
+				
+				// call again to render uk_999 in ui
+				self.numbersRenderSpare({
+					parent: numbersView,
+					dataNumbers: data
+				});
 
-					self.numbersRenderExternal({
-						parent: numbersView,
-						dataNumbers: data
-					});
+				// call new render function to draw features
+				self.numbersRenderUsed({
+					parent: numbersView,
+					dataNumbers: data
+				});
 
-					self.numbersBindEvents(numbersView, data);
+				self.numbersRenderExternal({
+					parent: numbersView,
+					dataNumbers: data
+				});
 
-					container
-						.empty()
-						.append(numbersView);
+				
 
-					setTimeout(function() {
-						var viewType = container.find('.half-box.selected').data('type');
+				console.log('log point - test 1');
 
-						container.find('.list-numbers[data-type="' + viewType + '"] .search-custom input').focus();
-					});
+				self.numbersBindEvents(numbersView, data);
+				
+				
+				container
+					.empty()
+					.append(numbersView);
 
-					callbackAfterRender && callbackAfterRender(container);
+				
 
 				
 					
+				setTimeout(function() {
+					var viewType = container.find('.half-box.selected').data('type');
+
+					container.find('.list-numbers[data-type="' + viewType + '"] .search-custom input').focus();
+				});
+				
+
+				callbackAfterRender && callbackAfterRender(container);
+
+				console.log('log point end');
+
+				
+
 			});
+
 		},
 
 		//_util
@@ -189,6 +314,7 @@ define(function(require) {
 		},
 
 		numbersFormatData: function(data) {
+			//console.log('!! number format data !!');
 			var self = this,
 				mapAccounts = {},
 				templateLists = _.merge({
@@ -198,9 +324,7 @@ define(function(require) {
 					'externalNumbers'
 				])),
 				templateData = {
-					hideBuyNumbers: monster.config.whitelabel.hasOwnProperty('hideBuyNumbers')
-						? monster.config.whitelabel.hideBuyNumbers
-						: false,
+					hideBuyNumbers: monster.config.whitelabel.hasOwnProperty('hideBuyNumbers') ? monster.config.whitelabel.hideBuyNumbers : false,
 					hidePort: monster.config.whitelabel.hasOwnProperty('hide_port') ? monster.config.whitelabel.hide_port : false,
 					viewType: data.viewType,
 					canAddExternalCids: monster.util.getCapability('caller_id.external_numbers').isEnabled,
@@ -222,6 +346,10 @@ define(function(require) {
 				value.phoneNumber = phoneNumber;
 
 				value = self.numbersFormatNumber(value);
+
+				//console.log('!! format numbers !!');
+				//console.log(self);
+				//console.log(value);
 
 				if (!value.used_by) {
 					thisAccount.spareNumbers.push(value);
@@ -265,6 +393,9 @@ define(function(require) {
 		},
 
 		numbersBindEvents: function(parent, dataNumbers) {
+
+			console.log('numbersBindEvents');
+
 			var self = this,
 				listType = dataNumbers.viewType && dataNumbers.viewType === 'manager' ? 'full' : 'partial',
 				listSearchedAccounts = [ self.accountId ],
@@ -312,6 +443,9 @@ define(function(require) {
 									value.countSpareNumbers = spareNumbers.length;
 									value.countUsedNumbers = usedNumbers.length;
 									value.countExternalNumbers = numbers.externalNumbers.length;
+
+									//console.log(' !! spare number !!');
+									//console.log(value.spareNumbers);
 
 									parent
 										.find('.list-numbers[data-type="spare"] .account-section[data-id="' + accountId + '"] .numbers-wrapper')
@@ -1501,8 +1635,8 @@ define(function(require) {
 				})),
 				arrayNumbersSpare = dataNumbers.listAccounts.length ? dataNumbers.listAccounts[0].spareNumbers : [];
 
-				console.log('!!arrayNumbersSpare!!');
-				console.log(arrayNumbersSpare);
+				//console.log('!!arrayNumbersSpare!!');
+				//console.log(arrayNumbersSpare);
 
 			args.parent
 				.find('.list-numbers[data-type="spare"]')
@@ -1511,9 +1645,43 @@ define(function(require) {
 
 			self.numbersDisplayFeaturesMenu(arrayNumbersSpare, template);
 
-			console.log('!! log point !!');
-			console.log(dataNumbers.listAccounts[0]);
-			console.log(arrayNumbersSpare);
+			//console.log('!! log point !!');
+			//console.log(dataNumbers.listAccounts[0]);
+			//console.log(arrayNumbersSpare);
+
+			args.hasOwnProperty('callback') && args.callback();
+		},
+
+		numbersRenderUsed: function(args) {
+			//console.log('render spare');
+			var self = this,
+				dataNumbers = args.dataNumbers,
+				template = $(self.getTemplate({
+					name: 'used',
+					data: dataNumbers,
+					submodule: 'numbers'
+				})),
+
+				//arrayNumbersUsed = dataNumbers.listAccounts.length ? dataNumbers.listAccounts[0] : [];
+
+				arrayNumbersUsed = dataNumbers.listAccounts.length ? dataNumbers.listAccounts[0].usedNumbers : [];
+
+				console.log('arrayNumbersUsed');
+				console.log(arrayNumbersUsed);
+
+				//console.log('!!arrayNumbersSpare!!');
+				//console.log(arrayNumbersSpare);
+
+			args.parent
+				.find('.list-numbers[data-type="used"]')
+				.empty()
+				.append(template);
+
+			self.numbersDisplayFeaturesMenu(arrayNumbersUsed, template);
+
+			//console.log('!! log point !!');
+			//console.log(dataNumbers.listAccounts[0]);
+			//console.log(arrayNumbersSpare);
 
 			args.hasOwnProperty('callback') && args.callback();
 		},
@@ -1754,7 +1922,7 @@ define(function(require) {
 		},
 
 		numbersDialogSpare: function(args) {
-			console.log('spare numbers');
+			//console.log('spare numbers');
 			var self = this,
 				accountId = args.accountId,
 				accountName = args.accountName || '',
@@ -2034,7 +2202,7 @@ define(function(require) {
 		},
 
 		numbersEditFeatures: function(args) {
-			console.log('edit features');
+			//console.log('edit features');
 			var self = this,
 				phoneNumber = args.number,
 				accountId = args.hasOwnProperty('accountId') ? args.accountId : self.accountId,
@@ -2080,30 +2248,10 @@ define(function(require) {
 				}
 			});
 		},
-
-		numbersGetFeatures2: function(callback) {
-			console.log('get features 2');
-			var self = this,
-				features = {
-					mobile: { icon: 'monster-grey fa fa-mobile-phone', help: self.i18n.active().numbers.mobileIconHelp },
-					failover: { icon: 'monster-green icon-telicon-failover feature-failover', help: self.i18n.active().numbers.failoverIconHelp },
-					local: { icon: 'monster-purple fa fa-rocket feature-local', help: self.i18n.active().numbers.localIconHelp },
-					port: { icon: 'fa fa-phone monster-yellow feature-port', help: self.i18n.active().numbers.portIconHelp },
-					prepend: { icon: 'monster-orange fa fa-file-text-o feature-prepend', help: self.i18n.active().numbers.prependIconHelp }
-				};
-
-			console.log(features);
-			
-
-			if (callback) {
-				callback && callback(features);
-			} else {
-				return features;
-			}
-		},
 	
 		numbersGetFeatures: function(callback) {
 			console.log('get features');
+			
 			var self = this,
 				features = {
 					mobile: { icon: 'monster-grey fa fa-mobile-phone', help: self.i18n.active().numbers.mobileIconHelp },
@@ -2113,15 +2261,17 @@ define(function(require) {
 					prepend: { icon: 'monster-orange fa fa-file-text-o feature-prepend', help: self.i18n.active().numbers.prependIconHelp }
 				};
 
-			console.log(features);
+			//console.log(features);
 
 			if (monster.util.isNumberFeatureEnabled('e911')) {
 				features.dash_e911 = { icon: 'monster-red fa fa-ambulance feature-dash_e911', help: self.i18n.active().numbers.e911IconHelp };
 			}
-
-			if (monster.util.isNumberFeatureEnabled('uk999')) {
+			
+			/*
+			if (monster.util.isNumberFeatureEnabled('uk_999')) {
 				features.dash_e911 = { icon: 'monster-red fa fa-ambulance feature-dash_e911', help: self.i18n.active().numbers.e911IconHelp };
 			}
+			*/
 
 			if (monster.util.isNumberFeatureEnabled('cnam')) {
 				features.outbound_cnam = { icon: 'monster-blue fa fa-user feature-outbound_cnam', help: self.i18n.active().numbers.cnamOutboundIconHelp };
@@ -2133,7 +2283,34 @@ define(function(require) {
 			} else {
 				return features;
 			}
+		},
+
+		// pulled paintNumberFeaturesIcon into app from core
+		paintNumberFeaturesIcon: function(features, target) {
+
+			var self = this
+
+			console.log('paint number features - 1');
+			// Can't jQuery it as it's used by Handlebars with a helper, and it needs to return HTML
+			var sortedFeatures = features && features.length ? features.sort() : [],
+				template = monster.template(self, 'monster-number-features', { features: sortedFeatures });
+
+			console.log('paint number features - 2');
+
+			monster.ui.tooltips($(template));
+
+			
+			console.log('paint number features - 3');
+
+			if (target) {
+				target.empty();
+
+				target.append(template);
+			} else {
+				return template;
+			}
 		}
+
 	};
 
 	return numbersPlus;

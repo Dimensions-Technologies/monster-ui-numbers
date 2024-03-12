@@ -10,6 +10,7 @@ define(function(require) {
 		subModules: [
 			'numbers',
 			'numberFeaturesMenu',
+			'numberPrepend',
 			'uk999'
 		],
 
@@ -26,6 +27,9 @@ define(function(require) {
 		},
 
 		load: function(callback) {
+
+			console.log('load');
+
 			var self = this;
 
 			self.initApp(function() {
@@ -34,6 +38,9 @@ define(function(require) {
 		},
 
 		initApp: function(callback) {
+
+			console.log('initApp');
+
 			var self = this;
 
 			monster.pub('auth.initApp', {
@@ -43,14 +50,15 @@ define(function(require) {
 		},
 
 		render: function(parent) {
+
+			console.log('render');
+
 			var self = this,
 				parent = parent || $('#monster_content');
 
 			var numberManager = $(self.getTemplate({
 				name: 'app'
 			}));
-
-			console.log('log point');
 			
 			monster.pub('numbersPlus.render', {
 				container: numberManager,

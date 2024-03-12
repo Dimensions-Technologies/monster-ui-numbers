@@ -22,13 +22,13 @@ define(function(require) {
 				phoneNumber = numberData.hasOwnProperty('phoneNumber') ? numberData.phoneNumber : numberData.id;
 				
 				// if uk_999_enable is present and true push into features_avaialble
-				if (uk999Enabled === true) {
+				if (uk999Enabled === true && !numberData.features_available.includes('uk_999')) {
 					features = numberData.features_available || [];
 					features.push('uk_999');
 				}
 
 				// if uk_999_enable is present and true push into features_avaialble
-				if (uk999EnabledNumber === true) {
+				if (uk999EnabledNumber === true && !numberData.features.includes('uk_999')) {
 					features = numberData.features || [];
 					features.push('uk_999');
 				}
@@ -59,14 +59,13 @@ define(function(require) {
 		},
 
 		numberFeaturesMenuBindEvents: function(template, phoneNumber, afterUpdate) {
-			console.log('bind events');
 			var self = this,
 				featureEvents = {
 					'failover': 'common.failover.renderPopup',
 					'cnam': 'common.callerId.renderPopup',
 					'e911': 'common.e911.renderPopup',
 					'uk999': 'numbersPlus.uk999.renderPopup',
-					'prepend': 'common.numberPrepend.renderPopup',
+					'prepend': 'numbersPlus.numberPrepend.renderPopup',
 					'rename-carrier': 'common.numberRenameCarrier.renderPopup',
 					'messaging': 'common.numberMessaging.renderPopup'
 				},
@@ -75,15 +74,18 @@ define(function(require) {
 					callbacks: {
 						success: function(data) {
 							afterUpdate && afterUpdate(data.data.features, template);
+
+							console.log(data.data.features);
+							console.log(template);
+
+							console.log('! log point !');
 						}
 					}
 				};
-	
-			console.log('after bind');
 
 			_.forEach(featureEvents, function(event, feature) {
 				template.find('.' + feature + '-number').on('click', function() {
-					console.log('on click');
+					//console.log('on click');
 					// We add this at the moment of the event because in some cases, we bind the events before it's adding to a parent,
 					// which means the account-section might not be loaded yet if we bound it before the event happened.
 					if ($(this).parents('.account-section').length) {
