@@ -3,7 +3,7 @@ define(function(require) {
 		monster = require('monster');
 
 	var app = {
-		name: 'numbers-plus',
+		name: 'dt-numbers',
 
 		css: [ 'app' ],
 

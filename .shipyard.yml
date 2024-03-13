@@ -1,18 +1,18 @@
 ---
-name: monster-ui-application-numbers-plus
+name: monster-ui-application-dt-numbers
 base_branch: origin/master
 exposure: private
 metapackage:
   - name: meta-monster-ui
     branch: master
-    package: monster-ui-application-numbers-plus
+    package: monster-ui-application-dt-numbers
     type: required
 base_core: monster-ui
 template: monster-ui-application.spec.tmpl
 package:
   centos7:
-    name: monster-ui-application-numbers-plus
-    app_name: numbers-plus
+    name: monster-ui-application-dt-numbers
+    app_name: dt-numbers
     license: "MPL 2.0"
     group: Productivity/Telephony
     url: http://www.2600hz.org/
