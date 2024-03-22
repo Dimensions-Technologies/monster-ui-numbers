@@ -4,7 +4,8 @@ define(function(require) {
 		async = require('async'),
 		monster = require('monster'),
 		uk999Enabled = false,
-		uk999EnabledNumbers;
+		uk999EnabledNumbers,
+		allowedCarriers;
 
 	var numbersPlus = {
 
@@ -101,8 +102,65 @@ define(function(require) {
 				success: function(data) {
 					uk999EnabledNumbers = data;
 				}
-			});		
-			
+			});
+
+			// get allowed carriers from reseller account doc or local account if not masquerading
+			if (monster.util.isMasquerading()) {
+				
+				self.callApi({
+
+					resource: 'account.get',
+					data: {
+						accountId: self.accountId
+						
+					},
+					success: function(data) {
+	
+						self.callApi({
+	
+							resource: 'account.get',
+							data: {
+								accountId: data.metadata.reseller_id
+								
+							},
+							success: function(data) {
+								
+								if (data.data.hasOwnProperty('dimension')) {
+									allowedCarriers = (data.data.dimension.hasOwnProperty('allowed_carriers')) ? data.data.dimension.allowed_carriers : [];
+								} else {
+									allowedCarriers = [];
+								}
+																		
+							}
+	
+						});
+	
+					}
+				})
+	
+			} else {
+				
+				self.callApi({
+	
+					resource: 'account.get',
+					data: {
+						accountId: self.accountId
+						
+					},
+					success: function(data) {
+						
+						if (data.data.hasOwnProperty('dimension')) {
+							allowedCarriers = (data.data.dimension.hasOwnProperty('allowed_carriers')) ? data.data.dimension.allowed_carriers : [];
+						} else {
+							allowedCarriers = [];
+						}
+																
+					}
+
+				});		
+
+			};
+
 			self.numbersGetData(viewType, function(data) {
 				data.viewType = viewType;
 				data = self.numbersFormatData(data);
@@ -1371,11 +1429,11 @@ define(function(require) {
 			});
 		},
 
-		numbersAddFreeformNumbers: function(numbers_data, accountId, carrierName, state, callback) {
+		numbersAddFreeformNumbers: function(numbers_data, accountId, carrierName, state, numberMetadataPublic, callback) {
 			var self = this;
 
 			if (monster.util.canAddExternalNumbers()) {
-				self.numbersCreateBlockNumber(numbers_data, accountId, carrierName, state, function(data) {
+				self.numbersCreateBlockNumber(numbers_data, accountId, carrierName, state, numberMetadataPublic, function(data) {
 					if (data.hasOwnProperty('error')) {
 						self.numbersShowRecapAddNumbers(data);
 					} else {
@@ -1441,12 +1499,13 @@ define(function(require) {
 			});
 		},
 
-		numbersAddExternalGetData: function(callback) {
+		numbersAddExternalGetData: function(callback) {			
 			var self = this,
 				formattedData = {
 					selectedCarrier: 'local',
 					isAllowedToPickCarrier: monster.util.isSuperDuper(),
-					isAllowedToPickState: true
+					isAllowedToPickState: true,
+					allowedCarriers: allowedCarriers
 				};
 
 			self.numbersGetCarrierInfo(function(data) {
@@ -1463,9 +1522,11 @@ define(function(require) {
 		},
 
 		numbersAddExternalNumbers: function(accountId, callback) {
+
 			var self = this;
 
 			self.numbersAddExternalGetData(function(data) {
+
 				var dialogTemplate = $(self.getTemplate({
 						name: 'addExternal',
 						data: data,
@@ -1484,18 +1545,73 @@ define(function(require) {
 				});
 
 				dialogTemplate.on('click', '#add_numbers', function(ev) {
+
 					ev.preventDefault();
 
-					var phoneNumbers = dialogTemplate.find('.list-numbers').val(),
+					//var phoneNumbers = dialogTemplate.find('.list-numbers').val(),
+					var phoneNumbers,
 						numbersData = [],
 						phoneNumber,
 						state = dialogTemplate.find('.select-state').val(),
-						carrierName = dialogTemplate.find('.select-module').val();
+						carrierName = dialogTemplate.find('.select-module').val(),
+						numberMetadataPublic;
+
+						if (dialogTemplate.find('#number_type').val() === 'range') {
+							
+							// get the values of range_start and range_end
+							var rangeStart = dialogTemplate.find('#number_range_start').val();
+							var rangeQuantity = parseInt(dialogTemplate.find('#number_range_quantity').val()); // Convert quantity to an integer
+
+							// convert the phone numbers to numeric values
+							var start = parseInt(rangeStart);
+							var lastNumber;
+
+							// initialize an empty string to hold the numbers
+							var numbersString = '';
+
+							// generate numbers based on the quantity
+							for (var i = 0; i < rangeQuantity; i++) {
+								var currentNumber = start + i;
+								numbersString += '+' + currentNumber + ' ';
+
+								// update lastNumber with the current number on each iteration
+								lastNumber = '+' + currentNumber;
+							}
+
+							phoneNumbers = numbersString;
+
+							numberMetadataPublic = {
+								"number_metadata_public": { 
+									"carrier": dialogTemplate.find('#allowed_carriers').val(),
+									"source": dialogTemplate.find('#number_source').val(),
+									"classification": dialogTemplate.find('#number_classification').val(),
+									"type": dialogTemplate.find('#number_type').val(),
+									"range_start": dialogTemplate.find('#number_range_start').val(),
+									"range_end": lastNumber
+								}
+							};
+
+						} else {
+
+
+							var singleNumber = dialogTemplate.find('#number_single').val();
+
+							phoneNumbers = singleNumber;
+
+							numberMetadataPublic = {
+								"number_metadata_public": { 
+									"carrier": dialogTemplate.find('#allowed_carriers').val(),
+									"source": dialogTemplate.find('#number_source').val(),
+									"classification": dialogTemplate.find('#number_classification').val(),
+									"type": dialogTemplate.find('#number_type').val()
+								}
+							};
+						}
 
 					if (carrierName === CUSTOM_CHOICE) {
 						carrierName = dialogTemplate.find('#custom_carrier_value').val();
 					};
-
+				
 					// Users might think a space == new line, so if they added numbers and separated each of them by a new line, we make sure to replace these by a space so our script works
 					phoneNumbers = phoneNumbers.replace(/[\n]/g, ' ');
 					phoneNumbers = phoneNumbers.replace(/[-().]/g, '').split(' ');
@@ -1509,20 +1625,78 @@ define(function(require) {
 					});
 
 					if (numbersData.length > 0) {
-						self.numbersAddFreeformNumbers(numbersData, accountId, carrierName, state, function() {
-							popup.dialog('close');
 
-							callback && callback();
-						});
+						var allowedCarriers = dialogTemplate.find('#allowed_carriers').val(),
+							numberSource = dialogTemplate.find('#number_source').val(),
+							numberClassification = dialogTemplate.find('#number_classification').val(),
+							numberType = dialogTemplate.find('#number_type').val();
+
+						// check if all required fields have been populated
+						var anyFieldIsNull = !allowedCarriers || !numberSource || !numberClassification || !numberType;
+
+						if (anyFieldIsNull) {
+							
+							monster.ui.alert('warning', self.i18n.active().numbers.addExternal.dialog.invalidNumbers2);
+
+						} 
+						
+						else {
+							
+							self.numbersAddFreeformNumbers(numbersData, accountId, carrierName, state, numberMetadataPublic, function() {
+								popup.dialog('close');
+	
+								callback && callback();
+							});
+
+						}
+
 					} else {
-						monster.ui.alert(self.i18n.active().numbers.addExternal.dialog.invalidNumbers);
+						monster.ui.alert('warning', self.i18n.active().numbers.addExternal.dialog.invalidNumbers1);
 					}
 				});
 
 				var popup = monster.ui.dialog(dialogTemplate, {
 					title: self.i18n.active().numbers.addExternal.dialog.title
 				});
+
+				dialogTemplate.find('#customize_number_range').hide();
+				dialogTemplate.find('#customize_number_single').hide();
+
+				dialogTemplate.find('#number_type').on('change', function() {
+					if ($(this).val() === "range") {
+						$('#customize_number_range').show();
+						$('#customize_number_single').hide();
+						$('#number_single').val(null);
+					} 
+					else if ($(this).val() === "snddi") {
+						$('#customize_number_range').hide();
+						$('#number_range_start').val(null);
+						$('#number_range_quantity').val(null);
+						$('#customize_number_single').show();
+					} 
+					else {
+						$('#customize_number_range').hide();
+						$('#number_range_start').val(null);
+						$('#number_range_quantity').val(null);
+						$('#customize_number_single').hide();
+						$('#number_single').val(null);
+					}
+				});
+
+
+				dialogTemplate.find('#number_range_quantity').on('change', function() {
+					if ($(this).val() < 0 || $(this).val() > 100) {
+						monster.ui.alert('warning', self.i18n.active().numbers.addExternal.numberType.rangeQtyError);
+					}
+
+					else {
+
+					}
+
+				});
+			
 			});
+
 		},
 
 		numbersShowDeletedNumbers: function(data) {
@@ -1751,10 +1925,11 @@ define(function(require) {
 			});
 		},
 
-		numbersCreateBlockNumber: function(numbers, accountId, carrierName, state, success, error) {
+		numbersCreateBlockNumber: function(numbers, accountId, carrierName, state, numberMetadataPublic, success, error) {
 			var self = this,
 				dataNumbers = {
 					numbers: numbers,
+					dimension: numberMetadataPublic,
 					carrier_name: carrierName
 				};
 
