@@ -620,15 +620,47 @@
 			"help": "Add numbers to the account.",
 			"dialog": {
 				"title": "Add your phone numbers to the platform",
-				"fieldText": "Input numbers to be imported",
+				"fieldText1": "Use the form below to add numbers to the platform.",
+				"fieldText2": "Numbers should be entered in e164 format with no space.",
 				"beginImport": "Begin Import",
-				"help1": "Format Example: +14157775555 (+[country code][phone number])",
+				"help1": "Format Example: +443332420042 (+[country code][phone number])",
 				"help2": "** If importing multiple numbers, each number must be separated by a space.",
-				"invalidNumbers": "We couldn't find any valid phone number to add to the system in the list of numbers you submitted.",
+				"invalidNumbers1": "Please ensure the number(s) being added are formatted correctly as e164. If a DDI Range is being added please ensure the Quantity has been set.",
+				"invalidNumbers2": "Please ensure all fields on the form have been populated.",
 				"forceActivate": {
 					"text": "Add and assign to account",
 					"help": "Unchecking this will only add the numbers to the numbers pool, so they can be purchased via the Number Search tool. Checking the box will add the numbers and purchase them immediately."
 				}
+			},
+			"carrier": {
+				"label": "Carrier",
+				"carrierHelp": "Select the carrier the number(s) being added is provided by."
+			},
+			"numberType": {
+				"type": "Type",
+				"snddi": "Single Number DDI",
+				"range": "DDI Range",
+				"rangeStart": "First Number",
+				"rangeQty": "Quantity",
+				"rangeQtyError": "Please enter a number between 1 and 100.",
+				"numberSingle": "Number",
+				"typeHelp": "Select from either Single Number DDI or DDI Range. When selecting DDI Range the numbers must be sequential.",
+				"singleHelp": "Enter the phone number you wish to add.",
+				"rangeStartHelp": "Enter the first number of the sequential DDI Range you wish to add.",
+				"rangeQtyHelp": "Enter the total quantity of the sequentuial DDI Range you wish to add."
+
+			},
+			"numberSource": {
+				"source": "Source",
+				"classification": "Classification",
+				"default": "Default",
+				"ported_in": "Ported In",
+				"new_provide": "New Provide",
+				"geographic": "Geographic (01/02/03)",
+				"non_geographic": "Non-Geographic",
+				"premium": "Premium",
+				"sourceHelp": "Specify if the number(s) being added is being ported in, or if it's a new provide.",
+				"classificationHelp": "Specify the classification of the number(s) being added."
 			},
 			"__comment": "UI-2651: adding carrier selection to add numbers",
 			"__version": "4.1",
@@ -652,7 +684,7 @@
 				"label": "State",
 				"default": "Default",
 				"defaultHelp": "By letting this option to default, it will create numbers with the default state used by the back-end."
-			}
+			}			
 		},
 
 		"__comment": "UI-1935: Properly display a description next to a used number",
