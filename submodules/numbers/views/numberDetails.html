@@ -1,0 +1,95 @@
+<div class="trunkstore_popup e911 form-horizontal">
+	<form id="number_details">
+		<div class="row-fluid">
+            
+            <div style="padding-top: 20px;"></div>
+
+            <div class="control-group">
+				<label class="control-label" for="number_details_number">{{ i18n.numberDetails.number }}</label>
+				<div class="controls">
+					<input type="text" id="number_details_number" name="number" value="{{id}}" style="background-color: #eeeeee; opacity: 1; cursor: default;" disabled/>
+				</div>
+			</div>
+
+            <div class="control-group">
+				<label class="control-label" for="number_details_carrier">{{ i18n.numberDetails.number_metadata_public.carrier }}</label>
+				<div class="controls">
+					<input type="text" id="number_details_carrier" name="carrier" value="{{dimension.number_metadata_public.carrier}}" style="background-color: #eeeeee; opacity: 1; cursor: default;" disabled/>
+				</div>
+			</div>
+
+            <div class="control-group">
+				<label class="control-label" for="number_details_source">{{ i18n.numberDetails.number_metadata_public.source }}</label>
+				<div class="controls">
+                    <select id="number_details_source" name="source" style="background-color: #eeeeee; opacity: 1; cursor: default;" disabled>
+                        <option></option>
+                        <option {{#compare dimension.number_metadata_public.source '===' 'ported_in'}} selected{{/compare}}>{{ i18n.numberDetails.number_metadata_public.portedIn }}</option>
+                        <option {{#compare dimension.number_metadata_public.source '===' 'new_provide'}} selected{{/compare}}>{{ i18n.numberDetails.number_metadata_public.newProvide }}</option>
+                    </select>                
+                </div>
+			</div>
+
+            <div class="control-group">
+				<label class="control-label" for="number_details_classification">{{ i18n.numberDetails.number_metadata_public.classification }}</label>
+				<div class="controls">
+                    <select id="number_details_type" name="type" style="background-color: #eeeeee; opacity: 1; cursor: default;" disabled>
+                        <option></option>
+                        <option {{#compare dimension.number_metadata_public.classification '===' 'geographic'}} selected{{/compare}}>{{ i18n.numberDetails.number_metadata_public.geographic }}</option>
+                        <option {{#compare dimension.number_metadata_public.classification '===' 'non-geographic'}} selected{{/compare}}>{{ i18n.numberDetails.number_metadata_public.nonGeographic }}</option>
+                    </select>                
+                </div>
+			</div>
+
+            <div class="control-group">
+				<label class="control-label" for="number_details_type">{{ i18n.numberDetails.number_metadata_public.type }}</label>
+				<div class="controls">
+					<select id="number_details_type" name="type" style="background-color: #eeeeee; opacity: 1; cursor: default;" disabled>
+                        <option></option>
+                        <option {{#compare dimension.number_metadata_public.type '===' 'snddi'}} selected{{/compare}}>{{ i18n.numberDetails.number_metadata_public.snddi }}</option>
+                        <option {{#compare dimension.number_metadata_public.type '===' 'range'}} selected{{/compare}}>{{ i18n.numberDetails.number_metadata_public.range }}</option>
+                    </select>
+				</div>
+			</div>
+
+            <div class="control-group" id="numberDetailsRangeStartGroup">
+				<label class="control-label" for="numberDetailsRangeStartGroup">{{ i18n.numberDetails.number_metadata_public.rangeStart }}</label>
+				<div class="controls">
+					<input type="text" id="number_details_range_start" name="rangeStart" value="{{dimension.number_metadata_public.range_start}}" style="background-color: #eeeeee; opacity: 1; cursor: default;" disabled/>
+                </div>
+			</div>
+            
+            <div class="control-group" id="numberDetailsRangeEndGroup">
+				<label class="control-label" for="numberDetailsRangeEndGroup">{{ i18n.numberDetails.number_metadata_public.rangeEnd }}</label>
+				<div class="controls">
+					<input type="text" id="number_details_range_end" name="rangeEnd" value="{{dimension.number_metadata_public.range_end}}" style="background-color: #eeeeee; opacity: 1; cursor: default;" disabled/>
+                </div>
+			</div>
+
+            <div class="control-group" id="numberDetailsRangeQtyGroup">
+				<label class="control-label" for="numberDetailsRangeQtyGroup">{{ i18n.numberDetails.number_metadata_public.rangeQty }}</label>
+				<div class="controls">
+					<input type="text" id="number_details_range_qty" name="rangeQty" value="{{dimension.number_metadata_public.range_qty}}" style="background-color: #eeeeee; opacity: 1; cursor: default;" disabled/>
+                </div>
+			</div>
+
+            <div class="row-fluid">
+                {{#monsterText}}
+                    {{i18n.numberDetails.infoBox}}
+                {{/monsterText}}
+            </div>
+    
+    
+            <div class="popup-content popup-actions">
+                <div class="pull-right">
+                    
+                    <div style="padding-top: 20px;"></div>
+                    <button type="button" class="monster-button cancel-link" href="javascript:void(0);">{{ i18n.cancel }}</button>
+        
+                </div>
+            </div>
+
+		</div>
+
+        
+	</form>
+</div>

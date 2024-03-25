@@ -56,7 +56,7 @@ define(function(require) {
 								submodule: 'numberPrepend'
 							});
 
-                        if (data.data.hasOwnProperty('uk_999') && !data.data.features.includes('uk_999')) {
+                        if (data.data.hasOwnProperty('dimension') && data.data.dimension.hasOwnProperty('uk_999') && !data.data.features.includes('uk_999')) {
 							features = data.data.features || [];
 							features.push('uk_999');
 						}
