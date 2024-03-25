@@ -642,7 +642,7 @@
 				"range": "DDI Range",
 				"rangeStart": "First Number",
 				"rangeQty": "Quantity",
-				"rangeQtyError": "Please enter a number between 1 and 100.",
+				"rangeQtyError": "Please enter a number between 1 and 1000.",
 				"numberSingle": "Number",
 				"typeHelp": "Select from either Single Number DDI or DDI Range. When selecting DDI Range the numbers must be sequential.",
 				"singleHelp": "Enter the phone number you wish to add.",

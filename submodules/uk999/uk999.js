@@ -22,7 +22,7 @@ define(function(require) {
 		*/
 
 		subscribe: {
-			'numbersPlus.uk999.renderPopup': 'uk999Edit'
+			'dtNumbers.uk999.renderPopup': 'uk999Edit'
 		},
 
 		uk999Edit: function(args) {

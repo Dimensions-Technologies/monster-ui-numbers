@@ -8,7 +8,7 @@ define(function(require) {
 		requests: {},
 
 		subscribe: {
-			'numbersPlus.numberFeaturesMenu.render': 'numberFeaturesMenuRender'
+			'dtNumbers.numberFeaturesMenu.render': 'numberFeaturesMenuRender'
 		},
 
 		numberFeaturesMenuRender: function(args) {			
@@ -58,11 +58,11 @@ define(function(require) {
 					'failover': 'common.failover.renderPopup',
 					'cnam': 'common.callerId.renderPopup',
 					'e911': 'common.e911.renderPopup',
-					'uk999': 'numbersPlus.uk999.renderPopup',
-					'prepend': 'numbersPlus.numberPrepend.renderPopup',
+					'uk999': 'dtNumbers.uk999.renderPopup',
+					'prepend': 'dtNumbers.numberPrepend.renderPopup',
 					'rename-carrier': 'common.numberRenameCarrier.renderPopup',
 					'messaging': 'common.numberMessaging.renderPopup',
-					'number-details': 'numbersPlus.numberDetails.renderPopup'
+					'number-details': 'dtNumbers.numberDetails.renderPopup'
 				},
 				args = {
 					phoneNumber: phoneNumber,
