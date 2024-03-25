@@ -656,8 +656,8 @@
 				"default": "Default",
 				"ported_in": "Ported In",
 				"new_provide": "New Provide",
-				"geographic": "Geographic (01/02/03)",
-				"non_geographic": "Non-Geographic",
+				"geographic": "Geographic (01/02)",
+				"non_geographic": "Non-Geographic (03/08)",
 				"premium": "Premium",
 				"sourceHelp": "Specify if the number(s) being added is being ported in, or if it's a new provide.",
 				"classificationHelp": "Specify the classification of the number(s) being added."
@@ -741,7 +741,26 @@
 	},
 
 	"numberDetails": {
-		"label": "Number Details"
+		"label": "Number Details",
+		"dialogTitle": "Number Details",
+		"number": "Number",
+		"infoBox": "This information is set when adding a number to the system and can't be edited.",
+		"number_metadata_public": {
+			"type": "Number Type",
+			"source": "Source",
+			"classification": "Classification",
+			"carrier": "Carrier",
+			"snddi": "Single Number DDI",
+			"range": "Part of DDI Range",
+			"geographic": "Geographic (01/02)",
+			"nonGeographic": "Non-Geographic (03/08)",
+			"portedIn": "Ported In",
+			"newProvide": "New Provide",
+			"rangeStart": "Range Start",
+			"rangeEnd": "Range End",
+			"rangeQty": "DDI Qty."
+		}
+
 	},
 
 	"e911": {

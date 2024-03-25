@@ -4,6 +4,7 @@
 			<li class="dropdown">
 				<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog"></i></a>
 				<ul class="dropdown-menu">
+					{{> featureItem feature="number-details" icon="fa icon-telicon-setting-cog-double" label=@root.i18n.numberDetails.label}}
 				{{#ifInArray 'cnam' features}}
 					{{> featureItem feature="cnam" icon="fa fa-user" label=@root.i18n.callerId.label}}
 				{{/ifInArray}}

@@ -20,7 +20,8 @@ define(function(require) {
 			'numbersPlus.numbersFeaturesMenu': 'numbersDisplayFeaturesMenu',
 			'numbersPlus.getListFeatures': 'numbersGetFeatures',
 			'numbersPlus.editFeatures': 'numbersEditFeatures',
-			'numbersPlus.getCarriersModules': 'numbersGetCarriersModules'
+			'numbersPlus.getCarriersModules': 'numbersGetCarriersModules',
+			'numbersPlus.numberDetails.renderPopup': 'numberGetDetails'
 		},
 		
 		/* Arguments:
@@ -1594,12 +1595,12 @@ define(function(require) {
 									"classification": dialogTemplate.find('#number_classification').val(),
 									"type": dialogTemplate.find('#number_type').val(),
 									"range_start": dialogTemplate.find('#number_range_start').val(),
-									"range_end": lastNumber
+									"range_end": lastNumber,
+									"range_qty": dialogTemplate.find('#number_range_quantity').val()
 								}
 							};
 
 						} else {
-
 
 							var singleNumber = dialogTemplate.find('#number_single').val();
 
@@ -2386,6 +2387,61 @@ define(function(require) {
 			} else {
 				return template;
 			}
+		},
+
+		numberGetDetails: function(args) {
+
+			var self = this,
+				argsCommon = {
+					success: function(dataNumber) {
+						self.numberDetailsRender(dataNumber, args.accountId, args.callbacks);
+					},
+					number: args.phoneNumber
+				};
+
+			if (args.hasOwnProperty('accountId')) {
+				argsCommon.accountId = args.accountId;
+			}
+
+			monster.pub('numbersPlus.editFeatures', argsCommon);
+		},
+
+		numberDetailsRender: function(dataNumber, pAccountId, callbacks) {
+
+			var self = this,
+				accountId = pAccountId || self.accountId,
+				popup_html = $(self.getTemplate({
+					name: 'numberDetails',
+					data: dataNumber || {},
+					submodule: 'numbers'
+				})),
+				popup;
+
+			if (dataNumber.hasOwnProperty('dimension') && dataNumber.dimension.hasOwnProperty('number_metadata_public')) {
+
+				if (dataNumber.dimension.number_metadata_public.type === 'snddi') {
+					$('#numberDetailsRangeStartGroup', popup_html).hide();
+					$('#numberDetailsRangeEndGroup', popup_html).hide();
+					$('#numberDetailsRangeQtyGroup', popup_html).hide();
+				}
+		
+				else if (dataNumber.dimension.number_metadata_public.type === 'range') {
+					$('#numberDetailsRangeStartGroup', popup_html).show();
+					$('#numberDetailsRangeEndGroup', popup_html).show();
+					$('#numberDetailsRangeQtyGroup', popup_html).show();
+				}
+			
+			}
+		
+			popup_html.find('.cancel-link').on('click', function(e) {
+				e.preventDefault();
+				popup.dialog('close');
+			});
+
+			popup = monster.ui.dialog(popup_html, {
+				title: self.i18n.active().numberDetails.dialogTitle
+			});
+
 		}
 
 	};

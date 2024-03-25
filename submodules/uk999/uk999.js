@@ -295,9 +295,6 @@ define(function(require) {
 
 		uk999PatchNumber: function(phoneNumber, accountId, data, callbacks) {
 
-			console.log('patch number');
-			console.log(data);
-
 			var self = this;
 
 			// The back-end doesn't let us set features anymore, they return the field based on the key set on that document.

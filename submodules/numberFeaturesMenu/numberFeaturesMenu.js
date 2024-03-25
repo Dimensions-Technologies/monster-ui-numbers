@@ -61,7 +61,8 @@ define(function(require) {
 					'uk999': 'numbersPlus.uk999.renderPopup',
 					'prepend': 'numbersPlus.numberPrepend.renderPopup',
 					'rename-carrier': 'common.numberRenameCarrier.renderPopup',
-					'messaging': 'common.numberMessaging.renderPopup'
+					'messaging': 'common.numberMessaging.renderPopup',
+					'number-details': 'numbersPlus.numberDetails.renderPopup'
 				},
 				args = {
 					phoneNumber: phoneNumber,
