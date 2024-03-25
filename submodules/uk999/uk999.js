@@ -22,14 +22,14 @@ define(function(require) {
 		*/
 
 		subscribe: {
-			'numbersPlus.uk999.renderPopup': 'e911Edit'
+			'numbersPlus.uk999.renderPopup': 'uk999Edit'
 		},
 
-		e911Edit: function(args) {
+		uk999Edit: function(args) {
 			var self = this,
 				argsCommon = {
 					success: function(dataNumber) {
-						self.e911Render(dataNumber, args.accountId, args.callbacks);
+						self.uk999Render(dataNumber, args.accountId, args.callbacks);
 					},
 					number: args.phoneNumber
 				};
@@ -42,23 +42,24 @@ define(function(require) {
 		},
 
 
-		e911Render: function(dataNumber, pAccountId, callbacks) {
+		uk999Render: function(dataNumber, pAccountId, callbacks) {
+
 			var self = this,
 				accountId = pAccountId || self.accountId,
 				popupHtml = $(self.getTemplate({
 					name: 'dialog',
-					data: self.e911Format(dataNumber.uk_999),
+					data: self.uk999Format(dataNumber.dimension.uk_999),
 					submodule: 'uk999'
 				})),
 				popup;
 
-				if (dataNumber.hasOwnProperty('uk_999')) {
-					if (dataNumber.uk_999.address_type === 'business') {
+				if (dataNumber.dimension.hasOwnProperty('uk_999')) {
+					if (dataNumber.dimension.uk_999.address_type === 'business') {
 						$('#forenameGroup', popupHtml).hide();
 						$('#bussuffixGroup', popupHtml).show();
 					}
 	
-					else if (dataNumber.uk_999.address_type === 'residential') {
+					else if (dataNumber.dimension.uk_999.address_type === 'residential') {
 						$('#forenameGroup', popupHtml).show();
 						$('#bussuffixGroup', popupHtml).hide();
 					}
@@ -105,7 +106,7 @@ define(function(require) {
 				var zipCode = $(this).val();
 
 				if (zipCode) {
-					self.e911GetAddressFromZipCode({
+					self.uk999GetAddressFromZipCode({
 
 						data: {
 							zipCode: zipCode
@@ -145,9 +146,9 @@ define(function(require) {
 					return;
 				}
 
-				var uk999FormData = self.e911Normalize(monster.ui.getFormData('uk_999'));
+				var uk999FormData = self.uk999Normalize(monster.ui.getFormData('uk_999'));
 
-				_.extend(dataNumber, { uk_999: uk999FormData });
+				_.extend(dataNumber, { dimension: { uk_999: uk999FormData }});
 
 				var callbackSuccess = function callbackSuccess(data) {
 					var phoneNumber = monster.util.formatPhoneNumber(data.data.id),
@@ -169,10 +170,11 @@ define(function(require) {
 					callbacks.success && callbacks.success(data);
 				};
 
-				self.e911UpdateNumber(dataNumber.id, accountId, dataNumber, {
+				// patch opposed to post so existing data within data.dimension is not removed
+				self.uk999PatchNumber(dataNumber.id, accountId, dataNumber, {	
 					success: function(data) {
 
-						if (data.data.hasOwnProperty('uk_999') && !data.data.features.includes('uk_999')) {
+						if (data.data.dimension.hasOwnProperty('uk_999') && !data.data.features.includes('uk_999')) {
 							features = data.data.features || [];
 							features.push('uk_999');
 						}
@@ -184,7 +186,7 @@ define(function(require) {
 			});
 
 
-			popupHtml.find('#remove_e911_btn').on('click', function(e) {
+			popupHtml.find('#remove_uk999_btn').on('click', function(e) {
 				e.preventDefault();
 
 				self.callApi({
@@ -194,9 +196,9 @@ define(function(require) {
 					},
 					success: function(data, status) {
 						
-						delete dataNumber.uk_999;
+						delete dataNumber.dimension.uk_999;
 
-						self.e911UpdateNumber(dataNumber.id, accountId, dataNumber, {
+						self.uk999UpdateNumber(dataNumber.id, accountId, dataNumber, {
 							success: function(data) {
 								var phoneNumber = monster.util.formatPhoneNumber(data.data.id),
 									template = self.getTemplate({
@@ -243,7 +245,7 @@ define(function(require) {
 			});
 		},
 
-		e911Format: function(data) {
+		uk999Format: function(data) {
 			return _.merge({}, data, {
 				notification_contact_emails: _
 					.chain(data)
@@ -253,7 +255,7 @@ define(function(require) {
 			});
 		},
 
-		e911Normalize: function(data) {
+		uk999Normalize: function(data) {
 			return _.merge({}, data, {
 				notification_contact_emails: _
 					.chain(data)
@@ -267,7 +269,8 @@ define(function(require) {
 			});
 		},
 
-		e911UpdateNumber: function(phoneNumber, accountId, data, callbacks) {
+		uk999UpdateNumber: function(phoneNumber, accountId, data, callbacks) {
+			
 			var self = this;
 
 			// The back-end doesn't let us set features anymore, they return the field based on the key set on that document.
@@ -285,20 +288,39 @@ define(function(require) {
 					callbacks.success && callbacks.success(_data);
 				},
 				error: function(_data, status, globalHandler) {
-					if (_data.error === '400') {
-						if (data.message === 'multiple_choice') {
-							callbacks.multipleChoices && callbacks.multipleChoices(_data.data.multiple_choice.e911);
-						} else {
-							callbacks.invalidAddress && callbacks.invalidAddress();
-						}
-					} else {
-						globalHandler(_data, { generateError: true });
-					}
+					globalHandler(_data, { generateError: true });
 				}
 			});
 		},
 
-		e911GetAddressFromZipCode: function(args) {
+		uk999PatchNumber: function(phoneNumber, accountId, data, callbacks) {
+
+			console.log('patch number');
+			console.log(data);
+
+			var self = this;
+
+			// The back-end doesn't let us set features anymore, they return the field based on the key set on that document.
+			delete data.features;
+
+			self.callApi({
+				resource: 'numbers.patch',
+				data: {
+					accountId: accountId,
+					phoneNumber: phoneNumber,
+					data: data,
+					generateError: false
+				},
+				success: function(_data, status) {
+					callbacks.success && callbacks.success(_data);
+				},
+				error: function(_data, status, globalHandler) {
+					globalHandler(_data, { generateError: true });
+				}
+			});
+		},
+
+		uk999GetAddressFromZipCode: function(args) {
 			var self = this;
 
 			monster.request({
