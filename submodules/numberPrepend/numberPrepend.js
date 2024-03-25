@@ -8,7 +8,7 @@ define(function(require) {
 		},
 
 		subscribe: {
-			'numbersPlus.numberPrepend.renderPopup': 'numberPrependEdit'
+			'dtNumbers.numberPrepend.renderPopup': 'numberPrependEdit'
 		},
 		numberPrependEdit: function(args) {
 			var self = this,
@@ -23,7 +23,7 @@ define(function(require) {
 				argsCommon.accountId = args.accountId;
 			}
 
-			monster.pub('numbersPlus.editFeatures', argsCommon);
+			monster.pub('dtNumbers.editFeatures', argsCommon);
 		},
 
 		numberPrependRender: function(dataNumber, pAccountId, callbacks) {

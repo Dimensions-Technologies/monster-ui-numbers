@@ -54,7 +54,7 @@ define(function(require) {
 				name: 'app'
 			}));
 			
-			monster.pub('numbersPlus.render', {
+			monster.pub('dtNumbers.render', {
 				container: numberManager,
 				callbackAfterRender: function(numberControl) {
 					parent

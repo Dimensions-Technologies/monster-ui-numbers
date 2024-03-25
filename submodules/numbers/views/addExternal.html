@@ -66,38 +66,42 @@
 				<label class="popup-label" for="number_range_start" style="width: 100px;">{{i18n.numbers.addExternal.numberType.rangeStart}}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberType.rangeStartHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
 				<input type="text" style="width: 196px;" id="number_range_start" name="number-range-start" />
 				<label class="popup-label" for="number_range_quantity" style="width: 100px; padding-left: 10px;">{{i18n.numbers.addExternal.numberType.rangeQty}}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberType.rangeQtyHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
-				<input type="number" style="width: 196px;" id="number_range_quantity" name="number-range-quantity" min="1" max="100" />
+				<input type="number" style="width: 196px;" id="number_range_quantity" name="number-range-quantity" min="1" max="1000" />
 			</div>
 			
 			{{#if isAllowedToPickCarrier}}
-				<div class="customize-number-field{{#unless isAllowedToPickState}} disabled{{/unless}}">
-					<label class="popup-label" for="number_state">{{i18n.numbers.addExternal.numberState.label}}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberState.defaultHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
-					<select class="select-state input-medium" id="number_state" name="number-state">
+
+				<div class="customize-number-field">
+					<div style="padding-top: 40px;"></div>
+					<label class="popup-label" for="number_state" style="width: 100px;">{{i18n.numbers.addExternal.numberState.label}}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberState.defaultHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
+					<select class="input-large" id="number_state" name="number-state">
 						<option value="_uiDefaultState">{{i18n.numbers.addExternal.numberState.default }}</option>
 						{{#each @root.states}}
 							<option value="{{this}}">{{this}}</option>
 						{{/each}}
 					</select>
 				</div>
-			{{/if}}
 
-			{{#if isAllowedToPickCarrier}}
 				<div class="customize-number-field">
-					<label class="popup-label" for="carrier_module">{{i18n.numbers.addExternal.renameCarrier.label}}</label>
-					<select class="select-module input-medium" id="carrier_module" name="carrier-module">
+					<label class="popup-label" for="carrier_module" style="width: 100px;">{{i18n.numbers.addExternal.renameCarrier.label}}</label>
+					<select class="select-module input-large" id="carrier_module" name="carrier-module">
 						{{#select @root.selectedCarrier}}
 							{{#each @root.carriers}}
 								<option value="{{this.key}}">{{this.friendlyValue}}</option>
 							{{/each}}
 						{{/select}}
 					</select>
+				</div>
 
+				<div class="customize-number-field">
 					<div class="custom-carrier-block{{#compare selectedCarrier "===" "_uiCustomChoice"}} active{{/compare}}">
 						<label class="popup-label" for="custom_carrier_value">{{i18n.numbers.addExternal.renameCarrier.customCarrierName}}</label>
 						<input type="text" id="custom_carrier_value"/>
 					</div>
 				</div>
+
 			{{/if}}
+
 		</div>
 	</form>
 

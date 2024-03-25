@@ -7,21 +7,21 @@ define(function(require) {
 		uk999EnabledNumbers,
 		allowedCarriers;
 
-	var numbersPlus = {
+	var dtNumbers = {
 
 		requests: {
 		},
 
 		
 		subscribe: {
-			'numbersPlus.dialogSpare': 'numbersDialogSpare',
-			'numbersPlus.render': 'numbersRender',
-			'numbersPlus.refresh': 'numbersRefresh',
-			'numbersPlus.numbersFeaturesMenu': 'numbersDisplayFeaturesMenu',
-			'numbersPlus.getListFeatures': 'numbersGetFeatures',
-			'numbersPlus.editFeatures': 'numbersEditFeatures',
-			'numbersPlus.getCarriersModules': 'numbersGetCarriersModules',
-			'numbersPlus.numberDetails.renderPopup': 'numberGetDetails'
+			'dtNumbers.dialogSpare': 'numbersDialogSpare',
+			'dtNumbers.render': 'numbersRender',
+			'dtNumbers.refresh': 'numbersRefresh',
+			'dtNumbers.numbersFeaturesMenu': 'numbersDisplayFeaturesMenu',
+			'dtNumbers.getListFeatures': 'numbersGetFeatures',
+			'dtNumbers.editFeatures': 'numbersEditFeatures',
+			'dtNumbers.getCarriersModules': 'numbersGetCarriersModules',
+			'dtNumbers.numberDetails.renderPopup': 'numberGetDetails'
 		},
 		
 		/* Arguments:
@@ -62,7 +62,7 @@ define(function(require) {
 						}
 					};
 					
-				monster.pub('numbersPlus.numberFeaturesMenu.render', args);
+				monster.pub('dtNumbers.numberFeaturesMenu.render', args);
 			});
 
 			callback && callback();
@@ -1693,7 +1693,7 @@ define(function(require) {
 
 
 				dialogTemplate.find('#number_range_quantity').on('change', function() {
-					if ($(this).val() < 0 || $(this).val() > 100) {
+					if ($(this).val() < 0 || $(this).val() > 1000) {
 						monster.ui.alert('warning', self.i18n.active().numbers.addExternal.numberType.rangeQtyError);
 					}
 
@@ -2403,20 +2403,20 @@ define(function(require) {
 				argsCommon.accountId = args.accountId;
 			}
 
-			monster.pub('numbersPlus.editFeatures', argsCommon);
+			monster.pub('dtNumbers.editFeatures', argsCommon);
+		
 		},
 
-		numberDetailsRender: function(dataNumber, pAccountId, callbacks) {
+		numberDetailsRender: function(dataNumber) {
 
 			var self = this,
-				accountId = pAccountId || self.accountId,
 				popup_html = $(self.getTemplate({
 					name: 'numberDetails',
 					data: dataNumber || {},
 					submodule: 'numbers'
 				})),
 				popup;
-
+			
 			if (dataNumber.hasOwnProperty('dimension') && dataNumber.dimension.hasOwnProperty('number_metadata_public')) {
 
 				if (dataNumber.dimension.number_metadata_public.type === 'snddi') {
@@ -2432,6 +2432,7 @@ define(function(require) {
 				}
 			
 			}
+			
 		
 			popup_html.find('.cancel-link').on('click', function(e) {
 				e.preventDefault();
@@ -2446,5 +2447,5 @@ define(function(require) {
 
 	};
 
-	return numbersPlus;
+	return dtNumbers;
 });
