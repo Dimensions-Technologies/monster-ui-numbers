@@ -740,6 +740,10 @@
 		"outboundTitle": "Outbound Caller ID Name"
 	},
 
+	"numberDetails": {
+		"label": "Number Details"
+	},
+
 	"e911": {
 		"email": {
 			"label": "Email Address(es)",

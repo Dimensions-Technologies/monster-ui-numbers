@@ -84,7 +84,14 @@ define(function(require) {
 					
 				},
 				success: function(data) {
-					uk999Enabled = (data.data.hasOwnProperty('uk_999_enabled') && data.data.uk_999_enabled == true) ? true : false;				
+					
+					if (data.data.hasOwnProperty('dimension')) {
+						uk999Enabled = (data.data.dimension.hasOwnProperty('uk_999_enabled') && data.data.dimension.uk_999_enabled == true) ? true : false;	
+					} else {
+						uk999Enabled = false;
+					}
+					
+
 				}
 			});		
 
@@ -95,7 +102,7 @@ define(function(require) {
 					accountId: self.accountId,
 					phoneNumber: '',
 					filters: {
-						"has_key": "uk_999"
+						"has_key": "dimension.uk_999"
 					}
 					
 				},
