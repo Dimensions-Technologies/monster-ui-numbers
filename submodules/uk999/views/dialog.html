@@ -3,19 +3,11 @@
 		<div class="e911-title">{{ i18n.uk999.title }}</div>
 	</div>
 	<div class="row-fluid">
-		<!--
-		<div class="pull-left">
-			<div id="e911_rotated_text" class="rotated-text">{{ i18n.uk999.rotatedText }}</div>
-			<div class="e911_image"/>
-		</div>
-
-		<div class="pull-left">
-		-->
-
-			<div class="control-group">
-				<label class="control-label" for="address_type">{{ i18n.uk999.addressType }}</label>
+		
+			<div class="control-group" style="border-bottom: 1px solid #e5e5e5; padding-bottom: 15px;">
+				<label class="control-label" for="addressType">{{ i18n.uk999.addressType }}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.uk999.addressTypeHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
 				<div class="controls">
-					<select id="address_type" name="address_type">
+					<select id="addressType" name="address_type">
 						<option value="business"{{#compare address_type '===' 'business'}} selected{{/compare}}>{{ i18n.uk999.addressTypeBusiness }}</option>
 						<option value="residential"{{#compare address_type '===' 'residential'}} selected{{/compare}}>{{ i18n.uk999.addressTypeResidential }}</option>
 					</select>
@@ -25,46 +17,64 @@
 			<div class="control-group" id="forenameGroup">
 				<label class="control-label" for="addressForename">{{ i18n.uk999.addressForename }}</label>
 				<div class="controls">
-					<input id="addressForename" type="text" placeholder='{{ i18n.uk999.addressForename }}' name="address.forename" value="{{address.forename}}" />
+					<input id="addressForename" type="text" placeholder='{{ i18n.uk999.addressForename }}' name="address.forename" value="{{address.forename}}" maxlength="20"/>
 				</div>
 			</div>
 
-			<div class="control-group">
-				<label class="control-label" for="addressName">{{ i18n.uk999.addressName }}</label>
+			<div class="control-group" id="surnameGroup">
+				<label class="control-label" for="addressSurname">{{ i18n.uk999.addressSurname }}</label>
 				<div class="controls">
-					<input id="addressName" type="text" placeholder='{{ i18n.uk999.addressName }}' name="address.name" value="{{address.name}}" />
+					<input id="addressSurname" type="text" placeholder='{{ i18n.uk999.addressSurname }}' name="address.name" value="{{address.name}}" maxlength="50"/>
+				</div>
+			</div>
+			
+			<div class="control-group" id="businessNameGroup">
+				<label class="control-label" for="addressName">{{ i18n.uk999.addressBusinessName }}</label>
+				<div class="controls">
+					<input id="addressBusinessName" type="text" placeholder='{{ i18n.uk999.addressBusinessName }}' name="address.name" value="{{address.name}}" maxlength="50"/>
 				</div>
 			</div>
 
 			<div class="control-group" id="bussuffixGroup">
-				<label class="control-label" for="addressBussuffix">{{ i18n.uk999.addressBussuffix }}</label>
+				<label class="control-label" for="addressBussuffix">{{ i18n.uk999.addressBussuffix }}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.uk999.addressBussuffixHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
 				<div class="controls">
-					<input id="addressBussuffix" type="text" placeholder='{{ i18n.uk999.addressBussuffix }}' name="address.bussuffix" value="{{address.bussuffix}}" />
+					<select id="addressBussuffix" name="address.bussuffix">
+						<option value="">Select an option</option>
+						<option value="Cic"{{#compare address.bussuffix '===' 'Cic'}} selected{{/compare}}>{{ i18n.uk999.addressBussuffixValue.cic }}</option>
+						<option value="Cio"{{#compare address.bussuffix '===' 'Cio'}} selected{{/compare}}>{{ i18n.uk999.addressBussuffixValue.cio }}</option>
+						<option value="Ips"{{#compare address.bussuffix '===' 'Ips'}} selected{{/compare}}>{{ i18n.uk999.addressBussuffixValue.ips }}</option>
+						<option value="Lp"{{#compare address.bussuffix '===' 'Lp'}} selected{{/compare}}>{{ i18n.uk999.addressBussuffixValue.lp }}</option>
+						<option value="Llp"{{#compare address.bussuffix '===' 'Llp'}} selected{{/compare}}>{{ i18n.uk999.addressBussuffixValue.llp }}</option>
+						<option value="Ltd"{{#compare address.bussuffix '===' 'Ltd'}} selected{{/compare}}>{{ i18n.uk999.addressBussuffixValue.ltd }}</option>
+						<option value="Plc"{{#compare address.bussuffix '===' 'Plc'}} selected{{/compare}}>{{ i18n.uk999.addressBussuffixValue.plc }}</option>
+						<option value="Slp"{{#compare address.bussuffix '===' 'Slp'}} selected{{/compare}}>{{ i18n.uk999.addressBussuffixValue.slp }}</option>
+						<option value="Unltd"{{#compare address.bussuffix '===' 'Unltd'}} selected{{/compare}}>{{ i18n.uk999.addressBussuffixValue.unltd }}</option>
+					</select>
 				</div>
 			</div>
-			
 			
 			<div class="control-group">
 				<label class="control-label" for="addressPremises">{{ i18n.uk999.addressPremises }}</label>
 				<div class="controls">
-					<input id="addressPremises" type="text" placeholder='{{ i18n.uk999.addressPremises }}' name="address.premises" value="{{address.premises}}" />
+					<input id="addressPremises" type="text" placeholder='{{ i18n.uk999.addressPremises }}' name="address.premises" value="{{address.premises}}" maxlength="60"/>
 				</div>
 			</div>
 			
 			<div class="control-group">
 				<label class="control-label" for="addressThoroughfare">{{ i18n.uk999.addressThoroughfare }}</label>
 				<div class="controls">
-					<input id="addressThoroughfare" type="text" placeholder='{{ i18n.uk999.addressThoroughfare }}' name="address.thoroughfare" value="{{address.thoroughfare}}" />
+					<input id="addressThoroughfare" type="text" placeholder='{{ i18n.uk999.addressThoroughfare }}' name="address.thoroughfare" value="{{address.thoroughfare}}" maxlength="55"/>
 				</div>
 			</div>
 			
 			<div class="control-group">
 				<label class="control-label" for="addressLocality">{{ i18n.uk999.addressLocality }}</label>
 				<div class="controls">
-					<input id="addressLocality" type="text" placeholder='{{ i18n.uk999.addressLocality }}' name="address.locality" value="{{address.locality}}" />
+					<input id="addressLocality" type="text" placeholder='{{ i18n.uk999.addressLocality }}' name="address.locality" value="{{address.locality}}" maxlength="30"/>
 				</div>
 			</div>
-			<div class="control-group">
+
+			<div class="control-group" style="border-bottom: 1px solid #e5e5e5; padding-bottom: 20px;">
 				<label class="control-label" for="addressPostcode">{{ i18n.uk999.addressPostcode }}</label>
 				<div class="controls">
 					<input id="addressPostcode" type="text" placeholder='{{ i18n.uk999.addressPostcode }}' name="address.postcode" value="{{address.postcode}}" />
@@ -78,17 +88,22 @@
 					</div>
 				</div>
 			{{/if}}-->
-			
-			<div class="control-group">
-				<label for="notification_contact_emails" class="control-label">
-					{{ i18n.uk999.email.label}}
-				</label>
+
+			<div class="control-group" style="border-bottom: 1px solid #e5e5e5; padding-bottom: 20px;">
+				<label for="notification_contact_emails" class="control-label">{{ i18n.uk999.email.label}}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.uk999.email.help}}" data-placement="right" data-toggle="tooltip"></i></label>
 				<div class="controls">
-					<textarea name="notification_contact_emails" id="notification_contact_emails" placeholder="{{i18n.uk999.email.placeholder}}">
-						{{notification_contact_emails}}
-					</textarea>
+					<textarea name="notification_contact_emails" id="notification_contact_emails" placeholder="{{i18n.uk999.email.placeholder}}">{{notification_contact_emails}}</textarea>
 				</div>
 			</div>
+
+			<div class="control-group">
+				<label class="control-label" for="addressStatus">{{ i18n.uk999.addressStatus }}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.uk999.addressStatusHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
+				<div class="controls">
+					<input id="addressStatus" type="text" placeholder=' ' name="address_status" value="{{address_status}}" style="background-color: #eeeeee; opacity: 1; cursor: default;" disabled />
+				</div>
+			</div>
+
+
 		</div>
 	</div>
 	<div class="row-fluid">
@@ -98,17 +113,29 @@
 	</div>
 	<div class="form-actions">
 
-		<button class="monster-button-danger" id="remove_uk999_btn">
-			{{i18n.remove}}
-		</button>
-
-		<div class="actions-group">
-			<a class="cancel-link monster-link blue">
-				{{i18n.cancel}}
-			</a>
-			<button class="monster-button-success" id="submit_btn">
-				{{i18n.add}}
-			</button>
+		<div>
+			<div class="actions-group" id="removeButton">
+				<button class="monster-button-danger" id="remove_uk999_btn">
+					{{i18n.remove}}
+				</button>
+			</div>
+		</div>
+		<div>
+			<div class="actions-group" id="cancelButton">
+				<a class="cancel-link monster-link blue">
+					{{i18n.cancel}}
+				</a>
+			</div>
+			<div class="actions-group" id="addButton">
+				<button class="monster-button-success" id="submit_btn">
+					{{i18n.add}}
+				</button>
+			</div>
+			<div class="actions-group" id="updateButton">
+				<button class="monster-button-success" id="update_btn">
+					{{i18n.update}}
+				</button>
+			</div>
 		</div>
 	</div>
 </form>

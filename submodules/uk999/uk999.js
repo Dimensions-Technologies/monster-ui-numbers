@@ -1,4 +1,7 @@
 define(function(require) {
+
+	require('./uk999NtsFormatting');
+
 	var $ = require('jquery'),
 		_ = require('lodash'),
 		monster = require('monster');
@@ -53,14 +56,29 @@ define(function(require) {
 				})),
 				popup;
 
+				monster.ui.tooltips(popupHtml);
+
+				if (dataNumber.dimension.hasOwnProperty('uk_999')) {
+					$('#addButton', popupHtml).hide();
+				} 
+				
+				else {
+					$('#removeButton', popupHtml).hide();
+					$('#updateButton', popupHtml).hide();
+				}
+
 				if (dataNumber.dimension.hasOwnProperty('uk_999')) {
 					if (dataNumber.dimension.uk_999.address_type === 'business') {
 						$('#forenameGroup', popupHtml).hide();
+						$('#surnameGroup', popupHtml).hide();
+						$('#businessNameGroup', popupHtml).show();
 						$('#bussuffixGroup', popupHtml).show();
 					}
 	
 					else if (dataNumber.dimension.uk_999.address_type === 'residential') {
 						$('#forenameGroup', popupHtml).show();
+						$('#surnameGroup', popupHtml).show();
+						$('#businessNameGroup', popupHtml).hide();
 						$('#bussuffixGroup', popupHtml).hide();
 					}
 
@@ -68,36 +86,61 @@ define(function(require) {
 
 				else {
 					$('#forenameGroup', popupHtml).hide();
+					$('#surnameGroup', popupHtml).hide();
+					$('#businessNameGroup', popupHtml).show();
 					$('#bussuffixGroup', popupHtml).show();
 				}
 
-				$('#address_type', popupHtml).change(function() {
+				$('#addressType', popupHtml).change(function() {
 				
 					var $this = $(this);
 					
 					if ($this.val() ===  'business') {
 						$(addressForename).val(null);
-						$(addressName).val(null);
+						$(addressSurname).val(null);
+						$(addressBusinessName).val(null);
 						$('#forenameGroup', popupHtml).hide();
+						$('#surnameGroup', popupHtml).hide();
+						$('#businessNameGroup', popupHtml).show();
 						$('#bussuffixGroup', popupHtml).show();
 					}
 	
 					else if ($this.val() ===  'residential') {
-						$(addressName).val(null);
+						$(addressBusinessName).val(null);
+						$(addressSurname).val(null);
 						$(addressBussuffix).val(null);
 						$('#forenameGroup', popupHtml).show();
+						$('#surnameGroup', popupHtml).show();
+						$('#businessNameGroup', popupHtml).hide();
 						$('#bussuffixGroup', popupHtml).hide();
 					}
 					
 				});
-				
 
-			monster.ui.validate(popupHtml, {
+				$('#addressPostcode', popupHtml).change(function() {
+				
+					//var $this = $(this);
+
+					var postcode = $(this).val();
+					var postcodeRegex = /^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9]?[A-Za-z])))) [0-9][A-Za-z]{2})$/;
+
+					if (!postcodeRegex.test(postcode)) {
+
+						monster.ui.alert('warning', self.i18n.active().uk999.invalidPostcode);
+						
+						$(addressPostcode).val(null);
+					
+					}
+
+				});
+				
+				monster.ui.validate(popupHtml, {
 				rules: {
 					notification_contact_emails: {
 						listOf: 'email'
 					}
 				}
+
 			});
 
 			/*
@@ -138,17 +181,222 @@ define(function(require) {
 				popup.find('.gmap_link_div').hide();
 			});
 
-			popupHtml.find('#submit_btn').on('click', function(ev) {
-
+			popupHtml.find('#submit_btn').on('click', function(ev) {		
+				
 				ev.preventDefault();
+
+				if ($(addressType).val() == 'business') {
+
+					var businessName = $(addressBusinessName).val(),
+						addressLine1 = $(addressPremises).val(),
+						addressLine2 = $(addressThoroughfare).val(),
+						locality = $(addressLocality).val(),
+						postcode = $(addressPostcode).val();
+
+					// check if all required fields have been populated
+					var anyFieldIsNull = !businessName || !addressLine1 || !addressLine2 || !locality || !postcode;
+
+					if (anyFieldIsNull) {
+							
+						monster.ui.alert('warning', self.i18n.active().uk999.addAddressErrorBusiness);
+
+					}
+
+					else {
+
+						uk999AddAddress();
+
+					}
+
+				}
+
+				else if ($(addressType).val() == 'residential') {
+
+					var forename = $(addressForename).val(),
+						surname = $(addressSurname).val(),
+						addressLine1 = $(addressPremises).val(),
+						addressLine2 = $(addressThoroughfare).val(),
+						locality = $(addressLocality).val(),
+						postcode = $(addressPostcode).val();
+
+					// check if all required fields have been populated
+					var anyFieldIsNull = !forename || !surname || !addressLine1 || !addressLine2 || !locality || !postcode;
+
+					if (anyFieldIsNull) {
+							
+						monster.ui.alert('warning', self.i18n.active().uk999.addAddressErrorResidential);
+
+					}
+
+					else {
+
+						uk999AddAddress();
+
+					}
+
+				}
+
+			});
+
+			popupHtml.find('#update_btn').on('click', function(ev) {
+				
+				ev.preventDefault();
+				
+				monster.ui.confirm(self.i18n.active().uk999.updateAddress1, function() { 
+					
+					if ($(addressType).val() == 'business') {
+	
+						var businessName = $(addressBusinessName).val(),
+							addressLine1 = $(addressPremises).val(),
+							addressLine2 = $(addressThoroughfare).val(),
+							locality = $(addressLocality).val(),
+							postcode = $(addressPostcode).val();
+	
+						// check if all required fields have been populated
+						var anyFieldIsNull = !businessName || !addressLine1 || !addressLine2 || !locality || !postcode;
+	
+						if (anyFieldIsNull) {
+								
+							monster.ui.alert('warning', self.i18n.active().uk999.addAddressErrorBusiness);
+	
+						}
+	
+						else {
+	
+							uk999AddAddress();
+	
+						}
+	
+					}
+	
+					else if ($(addressType).val() == 'residential') {
+	
+						var forename = $(addressForename).val(),
+							surname = $(addressSurname).val(),
+							addressLine1 = $(addressPremises).val(),
+							addressLine2 = $(addressThoroughfare).val(),
+							locality = $(addressLocality).val(),
+							postcode = $(addressPostcode).val();
+	
+						// check if all required fields have been populated
+						var anyFieldIsNull = !forename || !surname || !addressLine1 || !addressLine2 || !locality || !postcode;
+	
+						if (anyFieldIsNull) {
+								
+							monster.ui.alert('warning', self.i18n.active().uk999.addAddressErrorResidential);
+	
+						}
+	
+						else {
+	
+							uk999AddAddress();
+	
+						}
+	
+					}
+										
+				});
+
+			});
+			
+			function uk999AddAddress() {	
 
 				if (!monster.ui.valid(popupHtml)) {
 					return;
 				}
 
-				var uk999FormData = self.uk999Normalize(monster.ui.getFormData('uk_999'));
+				var uk999FormData,
+					user = monster.apps.auth.currentUser;
 
-				_.extend(dataNumber, { dimension: { uk_999: uk999FormData }});
+				if ($(addressType).val() == 'business') {
+
+					// perform find and replace using rules from findReplaceRules javascript file
+					var formattedBusinessName = $(addressBusinessName).val();
+						
+					for (var find in findReplaceRules) {
+						if (findReplaceRules.hasOwnProperty(find)) {
+							var replace = findReplaceRules[find];
+							formattedBusinessName = formattedBusinessName.replace(new RegExp('\\b' + find + '\\b', 'gi'), function(match) {
+								// apply formatting to the replacement value
+								return formatReplacement(replace);
+							});
+						}
+					}
+					
+					function formatReplacement(replace) {
+						// capitalize the replacement value
+						return replace.charAt(0).toUpperCase() + replace.slice(1);
+					}
+
+					var uk999FormData = {
+						address: { 
+							forename: "",
+							name: $(addressBusinessName).val(),
+							bussuffix: $(addressBussuffix).val(),
+							premises: $(addressPremises).val(),
+							thoroughfare: $(addressThoroughfare).val(),
+							locality: $(addressLocality).val(),
+							postcode: $(addressPostcode).val()
+						},
+						address_formatted: { 
+							forename: "",
+							name: formattedBusinessName,
+							bussuffix: $(addressBussuffix).val(),
+							premises: $(addressPremises).val(),
+							thoroughfare: $(addressThoroughfare).val(),
+							locality: $(addressLocality).val(),
+							postcode: $(addressPostcode).val()
+						},
+						address_type: "business",
+						address_status: "",
+						notification_contact_emails: $(notification_contact_emails).val(),
+						created_by: {
+							name: user.first_name + ' ' + user.last_name,
+							email: user.email,
+							date: new Date().toLocaleString()
+						}			
+					}
+
+				}
+
+				else if ($(addressType).val() == 'residential') {
+
+					var uk999FormData = {
+						address: {  
+							forename: $(addressForename).val(),
+							name: $(addressSurname).val(),
+							bussuffix: "",
+							premises: $(addressPremises).val(),
+							thoroughfare: $(addressThoroughfare).val(),
+							locality: $(addressLocality).val(),
+							postcode: $(addressPostcode).val()
+						},
+						address_formatted: {
+							forename: $(addressForename).val(),
+							name: $(addressSurname).val(),
+							bussuffix: "",
+							premises: $(addressPremises).val(),
+							thoroughfare: $(addressThoroughfare).val(),
+							locality: $(addressLocality).val(),
+							postcode: $(addressPostcode).val()
+						},
+						address_type: "residential",
+						address_status: "",
+						notification_contact_emails: $(notification_contact_emails).val(),
+						created_by: {
+							name: user.first_name + ' ' + user.last_name,
+							email: user.email,
+							date: new Date().toLocaleString()
+						}	 
+					}
+
+				}
+
+				//var uk999FormData = self.uk999Normalize(monster.ui.getFormData('uk_999'));
+
+				var uk999NormalizedFormData = self.uk999Normalize(uk999FormData);
+
+				_.extend(dataNumber, { dimension: { uk_999: uk999NormalizedFormData }});
 
 				var callbackSuccess = function callbackSuccess(data) {
 					var phoneNumber = monster.util.formatPhoneNumber(data.data.id),
@@ -183,47 +431,85 @@ define(function(require) {
 
 					}
 				});
-			});
 
+			};
 
 			popupHtml.find('#remove_uk999_btn').on('click', function(e) {
+
 				e.preventDefault();
 
 				self.callApi({
-					resource: 'numbers.list',
+					resource: 'account.get',
 					data: {
 						accountId: accountId
 					},
-					success: function(data, status) {
-						
-						delete dataNumber.dimension.uk_999;
+					success: function(data) {
 
-						self.uk999UpdateNumber(dataNumber.id, accountId, dataNumber, {
-							success: function(data) {
-								var phoneNumber = monster.util.formatPhoneNumber(data.data.id),
-									template = self.getTemplate({
-										name: '!' + self.i18n.active().uk999.successUK999,
-										data: {
-											phoneNumber: phoneNumber
-										},
-										submodule: 'uk999'
-									});
-
-								monster.ui.toast({
-									type: 'success',
-									message: template
-								});
-
-								popup.dialog('close');
-
-								callbacks.success && callbacks.success(data);
+						if (data.data.hasOwnProperty('caller_id')) {
+							if (data.data.caller_id.hasOwnProperty('emergency')) {
+								// if number is set as account emergency caller id prevent removal of address
+								if (dataNumber.id == data.data.caller_id.emergency.number) {
+									monster.ui.alert('warning', self.i18n.active().uk999.removeAddressError);
+								}
+								else {
+									uk999ConfirmRemoval();
+								}
 							}
-
-						});
+							else {
+								uk999ConfirmRemoval();
+							}
+						}
+						else {
+							uk999ConfirmRemoval();
+						}
 
 					}
 				});
+
 			});
+
+			function uk999ConfirmRemoval() {
+
+				monster.ui.confirm(self.i18n.active().uk999.removeAddress1 + '<br>' + self.i18n.active().uk999.removeAddress2, function() { 
+
+					self.callApi({
+						resource: 'numbers.list',
+						data: {
+							accountId: accountId
+						},
+						success: function(data, status) {
+							
+							delete dataNumber.dimension.uk_999;
+
+							self.uk999UpdateNumber(dataNumber.id, accountId, dataNumber, {
+								success: function(data) {
+									var phoneNumber = monster.util.formatPhoneNumber(data.data.id),
+										template = self.getTemplate({
+											name: '!' + self.i18n.active().uk999.successUK999,
+											data: {
+												phoneNumber: phoneNumber
+											},
+											submodule: 'uk999'
+										});
+
+									monster.ui.toast({
+										type: 'success',
+										message: template
+									});
+
+									popup.dialog('close');
+
+									callbacks.success && callbacks.success(data);
+								}
+
+							});
+
+						}
+					});
+				
+				});		
+				
+			};
 
 			popupHtml.find('.cancel-link').on('click', function(event) {
 				event.preventDefault();
