@@ -204,7 +204,11 @@ define(function(require) {
 
 					else {
 
-						uk999AddAddress();
+						monster.ui.confirm(self.i18n.active().uk999.addAddress, function() { 
+
+							uk999AddAddress();
+
+						});
 
 					}
 
@@ -230,7 +234,11 @@ define(function(require) {
 
 					else {
 
-						uk999AddAddress();
+						monster.ui.confirm(self.i18n.active().uk999.addAddress, function() {
+
+							uk999AddAddress();
+
+						});
 
 					}
 
