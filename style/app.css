@@ -31,3 +31,37 @@
     background-image: url('static/images/US_flag.png');
     background-repeat: no-repeat;
 }
+
+.features {
+    display: flex;
+    align-items: center; /* Center icons vertically within the .features div */
+    padding-top: 18px !important;
+}
+
+.monster-phone-number-wrapper .monster-number-flag {
+    margin-top: -4px;
+}
+
+#numbers_container .account-section .numbers-wrapper .number-box .number-options .dropdown {
+    margin-top: 5px !important;
+}
+
+#number_details {
+    margin-bottom: 0;
+}
+
+#number_details .row-fluid {
+    padding: 0;
+}
+
+#number_details .help-box,
+#uk_999 .help-box,
+#number_prepend .help-box {
+    width: 90%;
+    margin: 20px auto;
+}
+
+#number_prepend_value {
+    display: block;
+    margin: 0 auto;
+}

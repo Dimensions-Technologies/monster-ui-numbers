@@ -5,7 +5,9 @@ define(function(require) {
 		monster = require('monster'),
 		uk999Enabled = false,
 		uk999EnabledNumbers,
-		allowedCarriers;
+		carrierDisabledNumbers,
+		allowedCarriers,
+		miscSettings = {};
 
 	var dtNumbers = {
 
@@ -21,7 +23,8 @@ define(function(require) {
 			'dtNumbers.getListFeatures': 'numbersGetFeatures',
 			'dtNumbers.editFeatures': 'numbersEditFeatures',
 			'dtNumbers.getCarriersModules': 'numbersGetCarriersModules',
-			'dtNumbers.numberDetails.renderPopup': 'numberGetDetails'
+			'dtNumbers.numberDetails.renderPopup': 'numberGetDetails',
+			'dtNumbers.pushFeatures': 'pushFeatures'
 		},
 		
 		/* Arguments:
@@ -33,7 +36,8 @@ define(function(require) {
 		numbersDisplayFeaturesMenu: function(arrayNumbers, parent, callback) {
 
 			var self = this,
-				uk999EnabledNumber = false;
+				uk999EnabledNumber = false,
+				carrierEnabledNumber = true;
 
 			_.each(arrayNumbers, function(number) {
 				if (number.state === 'port_in' || number.used_by === 'mobile') {
@@ -48,13 +52,18 @@ define(function(require) {
 					uk999EnabledNumber = false;
 				}
 
-
+				if (carrierDisabledNumbers.data.numbers.hasOwnProperty(number.phoneNumber)) {
+					// The phoneNumber exists in uk999EnabledNumbers.data.numbers
+					carrierEnabledNumber = false;
+				}
+				
 				var numberDiv = parent.find('[data-phonenumber="' + number.phoneNumber + '"]'),
 					args = {
 						target: numberDiv.find('.number-options'),
 						numberData: number,
 						uk999Enabled: uk999Enabled,
 						uk999EnabledNumber: uk999EnabledNumber,
+						carrierEnabledNumber: carrierEnabledNumber,
 						afterUpdate: function(features) {
 							monster.ui.highlight(numberDiv);
 							//monster.ui.paintNumberFeaturesIcon(features, numberDiv.find('.features'));
@@ -76,6 +85,9 @@ define(function(require) {
 				container = args.container || $('#monster_content'),
 				callbackAfterRender = args.callbackAfterRender,
 				viewType = args.viewType || 'manager'
+
+			// set variables for use elsewhere
+			miscSettings = args.miscSettings;
 
 			// check if 'uk_999_enabled' exists and is true on account doc
 			self.callApi({
@@ -103,12 +115,30 @@ define(function(require) {
 					accountId: self.accountId,
 					phoneNumber: '',
 					filters: {
-						"has_key": "dimension.uk_999"
+						"has_key": "dimension.uk_999",
+						"paginate": "false"
 					}
 					
 				},
 				success: function(data) {
 					uk999EnabledNumbers = data;
+				}
+			});
+
+			// get numbers which have uk_999 data on number document
+			self.callApi({
+				resource: 'numbers.get',
+				data: {
+					accountId: self.accountId,
+					phoneNumber: '',
+					filters: {
+						"filter_dimension.number_state": "disabled",
+						"paginate": "false"
+					}
+					
+				},
+				success: function(data) {
+					carrierDisabledNumbers = data;
 				}
 			});
 
@@ -2407,12 +2437,15 @@ define(function(require) {
 		
 		},
 
-		numberDetailsRender: function(dataNumber) {
+		numberDetailsRender: function(dataNumber, accountId, callbacks) {
 
 			var self = this,
 				popup_html = $(self.getTemplate({
 					name: 'numberDetails',
-					data: dataNumber || {},
+					data: {
+						...dataNumber || {},
+						miscSettings: miscSettings
+					},
 					submodule: 'numbers'
 				})),
 				popup;
@@ -2432,8 +2465,17 @@ define(function(require) {
 				}
 			
 			}
+
+			if (dataNumber.hasOwnProperty('dimension') && dataNumber.dimension.number_state == 'disabled') {
+				$('#enableButton', popup_html).show();
+				$('#disableButton', popup_html).hide();
+			} 
 			
-		
+			else {
+				$('#enableButton', popup_html).hide();
+				$('#disableButton', popup_html).show();
+			}
+
 			popup_html.find('.cancel-link').on('click', function(e) {
 				e.preventDefault();
 				popup.dialog('close');
@@ -2443,9 +2485,142 @@ define(function(require) {
 				title: self.i18n.active().numberDetails.dialogTitle
 			});
 
+			popup_html.find('#enableNumber_btn').on('click', function(ev) {		
+				
+				ev.preventDefault();
+
+				monster.ui.confirm(self.i18n.active().numberStatus.enableNumber, function() { 
+
+					data = _.extend(dataNumber, { dimension: { number_state: 'enabled' }});
+
+					var callbackSuccess = function callbackSuccess(data) {
+						var phoneNumber = monster.util.formatPhoneNumber(data.data.id),
+							template = self.getTemplate({
+								name: '!' + self.i18n.active().numberStatus.enableNumberConfirmation,
+								data: {
+									phoneNumber: phoneNumber
+								},
+								submodule: 'numbers'
+							});
+	
+						monster.ui.toast({
+							type: 'success',
+							message: template
+						});
+	
+						popup.dialog('close');
+	
+						callbacks.success && callbacks.success(data);
+					};
+
+					self.updateNumberStatus(dataNumber.id, accountId, data, {	
+						success: function(data) {
+							self.pushFeatures(data);
+							callbackSuccess(data);
+						}
+					});
+
+				});
+
+			});
+
+			popup_html.find('#disableNumber_btn').on('click', function(ev) {		
+		
+				ev.preventDefault();
+
+				// prevent number being disabled if emergency services address has been set
+				if (dataNumber.hasOwnProperty('dimension') && dataNumber.dimension.hasOwnProperty('uk_999')) {
+
+					monster.ui.alert('warning', self.i18n.active().numberStatus.preventNumberDisable);
+				
+				} else {
+
+					monster.ui.confirm(self.i18n.active().numberStatus.disableNumber, function() { 
+
+						data = _.extend(dataNumber, { dimension: { number_state: 'disabled' }});
+	
+						var callbackSuccess = function callbackSuccess(data) {
+							var phoneNumber = monster.util.formatPhoneNumber(data.data.id),
+								template = self.getTemplate({
+									name: '!' + self.i18n.active().numberStatus.disableNumberConfirmation,
+									data: {
+										phoneNumber: phoneNumber
+									},
+									submodule: 'numbers'
+								});
+		
+							monster.ui.toast({
+								type: 'success',
+								message: template
+							});
+		
+							popup.dialog('close');
+		
+							callbacks.success && callbacks.success(data);
+						};
+	
+						self.updateNumberStatus(dataNumber.id, accountId, data, {	
+							success: function(data) {
+								self.pushFeatures(data);
+								callbackSuccess(data);
+							}
+						});
+	
+					});
+
+				}
+				
+			});
+
+		},
+
+		updateNumberStatus: function(phoneNumber, accountId, data, callbacks) {
+
+			var self = this;
+
+			// the back-end doesn't let us set features anymore, they return the field based on the key set on that document
+			delete data.features;
+			
+			self.callApi({
+				resource: 'numbers.patch',
+				data: {
+					accountId: accountId,
+					phoneNumber: phoneNumber,
+					data: data,
+					generateError: false
+				},
+				success: function(_data, status) {
+					callbacks.success && callbacks.success(_data);
+				},
+				error: function(_data, status, globalHandler) {
+					globalHandler(_data, { generateError: true });
+				}
+			});
+			
+		},
+
+		pushFeatures: function(data) {
+
+			var data = data.data;
+
+			if (data.hasOwnProperty('dimension')) {
+
+				if (data.dimension.hasOwnProperty('uk_999') && !data.features.includes('uk_999')) {
+					features = data.features || [];
+					features.push('uk_999');
+				}
+	
+				if (data.dimension.hasOwnProperty('number_state') && data.dimension.number_state == 'disabled' && !data.features.includes('carrier_disabled')) {
+					features = data.features || [];
+					features.push('carrier_disabled');
+				}
+
+			}
+			
 		}
 
 	};
 
 	return dtNumbers;
+
 });

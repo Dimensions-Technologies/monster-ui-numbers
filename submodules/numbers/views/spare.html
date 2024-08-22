@@ -96,7 +96,7 @@
 								
 								{{#if features}}
 									{{#each features}}
-									
+
 										{{#compare this "e911"}}
 											{{> featureIcon feature="e911" color="red" icon="fa fa-ambulance" tooltip=@root.i18n.iconNumberFeatures.e911.tooltip}}
 										{{/compare}}
@@ -126,6 +126,9 @@
 										{{/compare}}
 										{{#compare this "mms"}}
 											{{> featureIcon feature="mms" color="blue" icon="fa fa-commenting" tooltip=@root.i18n.iconNumberFeatures.mms.tooltip}}
+										{{/compare}}
+										{{#compare this "carrier_disabled"}}
+											{{> featureIcon feature="carrier_disabled" color="red" icon="fa fa-exclamation-triangle" tooltip=@root.i18n.numberStatus.carrierDisable}}
 										{{/compare}}
 										
 									{{/each}}
@@ -164,7 +167,7 @@
 								
 								{{#if features}}
 									{{#each features}}
-									
+
 										{{#compare this "e911"}}
 											{{> featureIcon feature="e911" color="red" icon="fa fa-ambulance" tooltip=@root.i18n.iconNumberFeatures.e911.tooltip}}
 										{{/compare}}
@@ -194,6 +197,9 @@
 										{{/compare}}
 										{{#compare this "mms"}}
 											{{> featureIcon feature="mms" color="blue" icon="fa fa-commenting" tooltip=@root.i18n.iconNumberFeatures.mms.tooltip}}
+										{{/compare}}
+										{{#compare this "carrier_disabled"}}
+											{{> featureIcon feature="carrier_disabled" color="red" icon="fa fa-exclamation-triangle" tooltip=@root.i18n.numberStatus.carrierDisable}}
 										{{/compare}}
 										
 									{{/each}}

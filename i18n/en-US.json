@@ -763,6 +763,17 @@
 
 	},
 
+	"numberStatus": {
+		"enable": "Enable",
+		"disable": "Disable",
+		"carrierDisable": "Disabled Number",
+		"enableNumber": "Are you sure you wish to enable this number?",
+		"enableNumberConfirmation": "{{phoneNumber}} has been enabled",
+		"disableNumber": "Are you sure you wish to disable this number?",
+		"disableNumberConfirmation": "{{phoneNumber}} has been disabled",
+		"preventNumberDisable": "This number has an assigned Emergency Services address. <br> You must remove it before the number can be disabled."
+	},
+
 	"e911": {
 		"email": {
 			"label": "Email Address(es)",
@@ -843,7 +854,7 @@
 		"postalCode": "Postcode",
 		"rotatedText": "For emergency services",
 		"state": "County",
-		"successUK999": "Emergency Services address details of <br> {{phoneNumber}} updated.",
+		"successUK999": "Emergency Services address details for <br> {{phoneNumber}} updated",
 		"title": "Address Details",
 		"verifyLocation": "Verify Location",
 		"__comment": "UI-1355: Add USPS format to addresses",
@@ -1060,11 +1071,11 @@
 	"__comment": "UI-1219: Adding the prepend feature to numbers",
 	"__version": "v3.20_s1",
 	"numberPrepend": {
-		"dialogTitle": "Number Prepend Setup",
+		"dialogTitle": "Number Prepend",
 		"title": "Text to prepend",
 		"label": "Prepend",
 		"help": "This text will appear before your number when receiving a call. This can be used to better identify which number was called when you use more than one. You should add a space at the end of the text entered to ensure there is a space between the text and number.",
-		"successUpdate": "You successfully updated the prepended text for {{phoneNumber}}"
+		"successUpdate": "Prepend text for {{phoneNumber}} updated"
 	},
 
 	"__comment": "UI-228: Adding the numberSelector common control",

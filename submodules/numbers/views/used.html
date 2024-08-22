@@ -93,6 +93,9 @@
 									{{#compare this "mms"}}
 										{{> featureIcon feature="mms" color="blue" icon="fa fa-commenting" tooltip=@root.i18n.iconNumberFeatures.mms.tooltip}}
 									{{/compare}}
+									{{#compare this "carrier_disabled"}}
+										{{> featureIcon feature="carrier_disabled" color="red" icon="fa fa-exclamation-triangle" tooltip=@root.i18n.numberStatus.carrierDisable}}
+									{{/compare}}
 									
 								{{/each}}
 							{{/if}}

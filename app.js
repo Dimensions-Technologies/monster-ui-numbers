@@ -1,11 +1,12 @@
 define(function(require) {
 	var $ = require('jquery'),
-		monster = require('monster');
+		monster = require('monster'),
+		miscSettings = {};
 
 	var app = {
 		name: 'dt-numbers',
 
-		css: [ 'app' ],
+		css: [ 'app', 'numbers' ],
 
 		subModules: [
 			'numbers',
@@ -53,15 +54,51 @@ define(function(require) {
 			var numberManager = $(self.getTemplate({
 				name: 'app'
 			}));
+
+			monster.waterfall([
+
+				function() {
+
+					// check whitelable doc for dimension configuration for app
+					if (monster.config.whitelabel.hasOwnProperty('dimension')) {
+
+						var data;
+						data = monster.config.whitelabel;
+						
+						if (data.dimension.hasOwnProperty('dt_numbers')) {
+
+							if (data.dimension.dt_numbers.hasOwnProperty('miscSettings')) {	
+
+								data.dimension.dt_numbers.miscSettings.forEach(function(action) {
+									miscSettings[action] = true;
+								});
+
+							}													
+
+						}
+
+						// log to console if enabled
+						if (miscSettings.enableConsoleLogging) {
+							console.log('miscSettings:', miscSettings);
+						}
+
+					}
+
+				},
 			
-			monster.pub('dtNumbers.render', {
-				container: numberManager,
-				callbackAfterRender: function(numberControl) {
-					parent
-						.empty()
-						.append(numberControl);
-				}
-			});
+				monster.pub('dtNumbers.render', {
+					container: numberManager,
+					callbackAfterRender: function(numberControl) {
+						parent
+							.empty()
+							.append(numberControl);
+					},
+					miscSettings
+				})
+
+			]);
+
+
 		}
 	};
 

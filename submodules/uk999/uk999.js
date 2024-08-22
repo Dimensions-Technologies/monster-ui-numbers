@@ -60,7 +60,7 @@ define(function(require) {
 
 				if (dataNumber.dimension.hasOwnProperty('uk_999')) {
 					$('#addButton', popupHtml).hide();
-				} 
+				}
 				
 				else {
 					$('#removeButton', popupHtml).hide();
@@ -400,8 +400,6 @@ define(function(require) {
 
 				}
 
-				//var uk999FormData = self.uk999Normalize(monster.ui.getFormData('uk_999'));
-
 				var uk999NormalizedFormData = self.uk999Normalize(uk999FormData);
 
 				_.extend(dataNumber, { dimension: { uk_999: uk999NormalizedFormData }});
@@ -430,11 +428,7 @@ define(function(require) {
 				self.uk999PatchNumber(dataNumber.id, accountId, dataNumber, {	
 					success: function(data) {
 
-						if (data.data.dimension.hasOwnProperty('uk_999') && !data.data.features.includes('uk_999')) {
-							features = data.data.features || [];
-							features.push('uk_999');
-						}
-
+						monster.pub('dtNumbers.pushFeatures', data);
 						callbackSuccess(data);
 
 					}
@@ -489,25 +483,32 @@ define(function(require) {
 							
 							delete dataNumber.dimension.uk_999;
 
+							var callbackSuccess = function callbackSuccess(data) {
+								var phoneNumber = monster.util.formatPhoneNumber(data.data.id),
+									template = self.getTemplate({
+										name: '!' + self.i18n.active().uk999.successUK999,
+										data: {
+											phoneNumber: phoneNumber
+										},
+										submodule: 'uk999'
+									});
+			
+								monster.ui.toast({
+									type: 'success',
+									message: template
+								});
+			
+								popup.dialog('close');
+			
+								callbacks.success && callbacks.success(data);
+							};
+
 							self.uk999UpdateNumber(dataNumber.id, accountId, dataNumber, {
 								success: function(data) {
-									var phoneNumber = monster.util.formatPhoneNumber(data.data.id),
-										template = self.getTemplate({
-											name: '!' + self.i18n.active().uk999.successUK999,
-											data: {
-												phoneNumber: phoneNumber
-											},
-											submodule: 'uk999'
-										});
 
-									monster.ui.toast({
-										type: 'success',
-										message: template
-									});
+									monster.pub('dtNumbers.pushFeatures', data);
+									callbackSuccess(data);
 
-									popup.dialog('close');
-
-									callbacks.success && callbacks.success(data);
 								}
 
 							});
@@ -567,7 +568,7 @@ define(function(require) {
 			
 			var self = this;
 
-			// The back-end doesn't let us set features anymore, they return the field based on the key set on that document.
+			// the back-end doesn't let us set features anymore, they return the field based on the key set on that document.
 			delete data.features;
 
 			self.callApi({

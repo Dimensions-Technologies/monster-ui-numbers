@@ -56,16 +56,13 @@ define(function(require) {
 								submodule: 'numberPrepend'
 							});
 
-                        if (data.data.hasOwnProperty('dimension') && data.data.dimension.hasOwnProperty('uk_999') && !data.data.features.includes('uk_999')) {
-							features = data.data.features || [];
-							features.push('uk_999');
-						}
-                       
+						monster.pub('dtNumbers.pushFeatures', data);
+
 						monster.ui.toast({
 							type: 'success',
 							message: template
 						});
-
+						
 						popup.dialog('close');
 
 						callbacks.success && callbacks.success(data);

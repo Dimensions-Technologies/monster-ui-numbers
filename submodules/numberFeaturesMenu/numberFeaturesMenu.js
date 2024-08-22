@@ -16,20 +16,27 @@ define(function(require) {
 				numberData = args.numberData,
 				uk999Enabled = args.uk999Enabled,
 				uk999EnabledNumber = args.uk999EnabledNumber,
+				carrierEnabledNumber = args.carrierEnabledNumber,
 				phoneNumber = numberData.hasOwnProperty('phoneNumber') ? numberData.phoneNumber : numberData.id;
-				
+
 				// if uk_999_enable is present and true push into features_avaialble
 				if (uk999Enabled === true && !numberData.features_available.includes('uk_999')) {
 					features = numberData.features_available || [];
 					features.push('uk_999');
 				}
 
-				// if uk_999_enable is present and true push into features_avaialble
+				// if uk_999_enable is present and true push into features
 				if (uk999EnabledNumber === true && !numberData.features.includes('uk_999')) {
 					features = numberData.features || [];
 					features.push('uk_999');
 				}
-				
+
+				// if number is disabled at carrier level push into features
+				if (carrierEnabledNumber === false && !numberData.features.includes('carrier_disabled')) {
+					features = numberData.features || [];
+					features.push('carrier_disabled');
+				}
+
 				template = $(self.getTemplate({
 					name: 'dropdown',
 					data: self.numberFeaturesMenuFormatData(numberData),
