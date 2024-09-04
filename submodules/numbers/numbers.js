@@ -2517,6 +2517,16 @@ define(function(require) {
 
 		numberDetailsRender: function(dataNumber, accountId, callbacks) {
 
+			miscSettings.allowNumberStateToggle = false;
+
+			if (dataNumber.hasOwnProperty('dimension') && dataNumber.dimension.hasOwnProperty('number_metadata_public')) {
+
+				if (dataNumber.dimension.number_metadata_public.source === 'ported_in' && miscSettings.enableNumberStateToggle) {
+					miscSettings.allowNumberStateToggle = true
+				}
+			
+			}
+
 			var self = this,
 				popup_html = $(self.getTemplate({
 					name: 'numberDetails',
@@ -2527,7 +2537,7 @@ define(function(require) {
 					submodule: 'numbers'
 				})),
 				popup;
-			
+
 			if (dataNumber.hasOwnProperty('dimension') && dataNumber.dimension.hasOwnProperty('number_metadata_public')) {
 
 				if (dataNumber.dimension.number_metadata_public.type === 'snddi') {
