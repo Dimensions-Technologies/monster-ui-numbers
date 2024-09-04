@@ -35,11 +35,13 @@ define(function(require) {
 
 		numbersDisplayFeaturesMenu: function(arrayNumbers, parent, callback) {
 
-			var self = this,
-				uk999EnabledNumber = false,
-				carrierEnabledNumber = true;
+			var self = this;
 
 			_.each(arrayNumbers, function(number) {
+
+				var uk999EnabledNumber = false, 
+					carrierEnabledNumber = true;
+
 				if (number.state === 'port_in' || number.used_by === 'mobile') {
 					return;
 				}
@@ -68,7 +70,8 @@ define(function(require) {
 							monster.ui.highlight(numberDiv);
 							//monster.ui.paintNumberFeaturesIcon(features, numberDiv.find('.features'));
 							self.paintNumberFeaturesIcon(features, numberDiv.find('.features'));
-						}
+						},
+						miscSettings: miscSettings
 					};
 					
 				monster.pub('dtNumbers.numberFeaturesMenu.render', args);
@@ -89,181 +92,190 @@ define(function(require) {
 			// set variables for use elsewhere
 			miscSettings = args.miscSettings;
 
-			// check if 'uk_999_enabled' exists and is true on account doc
-			self.callApi({
-				resource: 'account.get',
-				data: {
-					accountId: self.accountId
-					
+			monster.waterfall([
+
+				function(callback) {
+					// check if 'uk_999_enabled' exists and is true on account doc
+					self.callApi({
+						resource: 'account.get',
+						data: {
+							accountId: self.accountId
+						},
+						success: function(data) {
+							if (data.data.hasOwnProperty('dimension')) {
+								uk999Enabled = (data.data.dimension.hasOwnProperty('uk_999_enabled') && data.data.dimension.uk_999_enabled == true) ? true : false;
+								callback(null);
+							} else {
+								uk999Enabled = false;
+								callback(null);
+							}
+						}
+					});
 				},
-				success: function(data) {
-					
-					if (data.data.hasOwnProperty('dimension')) {
-						uk999Enabled = (data.data.dimension.hasOwnProperty('uk_999_enabled') && data.data.dimension.uk_999_enabled == true) ? true : false;	
-					} else {
-						uk999Enabled = false;
-					}
-					
 
-				}
-			});		
-
-			// get numbers which have uk_999 data on number document
-			self.callApi({
-				resource: 'numbers.get',
-				data: {
-					accountId: self.accountId,
-					phoneNumber: '',
-					filters: {
-						"has_key": "dimension.uk_999",
-						"paginate": "false"
-					}
-					
+				function(callback) {
+					// get numbers which have uk_999 data on number document
+					self.callApi({
+						resource: 'numbers.get',
+						data: {
+							accountId: self.accountId,
+							phoneNumber: '',
+							filters: {
+								"has_key": "dimension.uk_999",
+								"paginate": "false"
+							}
+						},
+						success: function(data) {
+							uk999EnabledNumbers = data;
+							callback(null);
+						}
+					});
 				},
-				success: function(data) {
-					uk999EnabledNumbers = data;
-				}
-			});
 
-			// get numbers which have uk_999 data on number document
-			self.callApi({
-				resource: 'numbers.get',
-				data: {
-					accountId: self.accountId,
-					phoneNumber: '',
-					filters: {
-						"filter_dimension.number_state": "disabled",
-						"paginate": "false"
-					}
-					
+				function(callback) {
+					// get numbers disabled numbers
+					self.callApi({
+						resource: 'numbers.get',
+						data: {
+							accountId: self.accountId,
+							phoneNumber: '',
+							filters: {
+								"filter_dimension.number_state": "disabled",
+								"paginate": "false"
+							}
+							
+						},
+						success: function(data) {
+							carrierDisabledNumbers = data;
+							callback(null);
+						}
+					});
 				},
-				success: function(data) {
-					carrierDisabledNumbers = data;
-				}
-			});
 
-			// get allowed carriers from reseller account doc or local account if not masquerading
-			if (monster.util.isMasquerading()) {
-				
-				self.callApi({
-
-					resource: 'account.get',
-					data: {
-						accountId: self.accountId
-						
-					},
-					success: function(data) {
-	
+				function(callback) {
+					// get allowed carriers from reseller account doc or local account if not masquerading
+					if (monster.util.isMasquerading()) {
 						self.callApi({
-	
 							resource: 'account.get',
 							data: {
-								accountId: data.metadata.reseller_id
-								
+								accountId: self.accountId
 							},
 							success: function(data) {
-								
+								self.callApi({
+									resource: 'account.get',
+									data: {
+										accountId: data.metadata.reseller_id
+									},
+									success: function(data) {
+										if (data.data.hasOwnProperty('dimension')) {
+											allowedCarriers = (data.data.dimension.hasOwnProperty('allowed_carriers')) ? data.data.dimension.allowed_carriers : [];
+											callback(null);
+										} else {
+											allowedCarriers = [];
+											callback(null);
+										}					
+									}
+								});
+							}
+						})
+			
+					} else {
+						self.callApi({
+							resource: 'account.get',
+							data: {
+								accountId: self.accountId
+							},
+							success: function(data) {
 								if (data.data.hasOwnProperty('dimension')) {
 									allowedCarriers = (data.data.dimension.hasOwnProperty('allowed_carriers')) ? data.data.dimension.allowed_carriers : [];
+									callback(null);
 								} else {
 									allowedCarriers = [];
-								}
-																		
+									callback(null);
+								}									
 							}
-	
+						});		
+					};
+				},
+
+				function() {
+					self.numbersGetData(viewType, function(data) {
+						data.viewType = viewType;
+						data = self.numbersFormatData(data);
+
+						var numbersView = $(self.getTemplate({
+								name: 'layout',
+								data: data,
+								submodule: 'numbers'
+							})),
+							usedView = $(self.getTemplate({
+								name: 'used',
+								data: data,
+								submodule: 'numbers'
+							})),
+							arrayNumbers = data.listAccounts.length ? data.listAccounts[0].usedNumbers : [];
+					
+						//self.numbersDisplayFeaturesMenu(arrayNumbers, usedView, () => {
+						
+						// number features menu on used numbers
+						self.numbersDisplayFeaturesMenu(arrayNumbers, usedView);
+
+						// used numbers 
+						numbersView.find('.list-numbers[data-type="used"]').append(usedView);
+
+						self.numbersGetFeatures();
+
+						self.numbersRenderSpare({
+							parent: numbersView,
+							dataNumbers: {
+								...data,
+								miscSettings: miscSettings
+							}
 						});
-	
-					}
-				})
-	
-			} else {
-				
-				self.callApi({
-	
-					resource: 'account.get',
-					data: {
-						accountId: self.accountId
 						
-					},
-					success: function(data) {
+						// call again to render uk_999 in ui
+						self.numbersRenderSpare({
+							parent: numbersView,
+							dataNumbers: {
+								...data,
+								miscSettings: miscSettings
+							}
+						});
 						
-						if (data.data.hasOwnProperty('dimension')) {
-							allowedCarriers = (data.data.dimension.hasOwnProperty('allowed_carriers')) ? data.data.dimension.allowed_carriers : [];
-						} else {
-							allowedCarriers = [];
-						}
-																
-					}
+						// call new render function to draw features
+						self.numbersRenderUsed({
+							parent: numbersView,
+							dataNumbers: {
+								...data,
+								miscSettings: miscSettings
+							}
+						});
 
-				});		
+						self.numbersRenderExternal({
+							parent: numbersView,
+							dataNumbers: {
+								...data,
+								miscSettings: miscSettings
+							}
+						});
 
-			};
+						self.numbersBindEvents(numbersView, data);
 
-			self.numbersGetData(viewType, function(data) {
-				data.viewType = viewType;
-				data = self.numbersFormatData(data);
+						container
+							.empty()
+							.append(numbersView);
 
-				var numbersView = $(self.getTemplate({
-						name: 'layout',
-						data: data,
-						submodule: 'numbers'
-					})),
-					usedView = $(self.getTemplate({
-						name: 'used',
-						data: data,
-						submodule: 'numbers'
-					})),
-					arrayNumbers = data.listAccounts.length ? data.listAccounts[0].usedNumbers : [];
+						setTimeout(function() {
+							var viewType = container.find('.half-box.selected').data('type');
+
+							container.find('.list-numbers[data-type="' + viewType + '"] .search-custom input').focus();
+						});
+
+						callbackAfterRender && callbackAfterRender(container);
 			
-				//self.numbersDisplayFeaturesMenu(arrayNumbers, usedView, () => {
-				
-				// number features menu on used numbers
-				self.numbersDisplayFeaturesMenu(arrayNumbers, usedView);
-
-				// used numbers 
-				numbersView.find('.list-numbers[data-type="used"]').append(usedView);
-
-				self.numbersGetFeatures();
-
-				self.numbersRenderSpare({
-					parent: numbersView,
-					dataNumbers: data
-				});
-				
-				// call again to render uk_999 in ui
-				self.numbersRenderSpare({
-					parent: numbersView,
-					dataNumbers: data
-				});
-
-				// call new render function to draw features
-				self.numbersRenderUsed({
-					parent: numbersView,
-					dataNumbers: data
-				});
-
-				self.numbersRenderExternal({
-					parent: numbersView,
-					dataNumbers: data
-				});
-
-				self.numbersBindEvents(numbersView, data);
-
-				container
-					.empty()
-					.append(numbersView);
-
-				setTimeout(function() {
-					var viewType = container.find('.half-box.selected').data('type');
-
-					container.find('.list-numbers[data-type="' + viewType + '"] .search-custom input').focus();
-				});
-
-				callbackAfterRender && callbackAfterRender(container);
-	
-
-			});
-
+					});
+				}
+			]);
 		},
 
 		numbersRefresh: function(pArgs) {
@@ -335,7 +347,6 @@ define(function(require) {
 					container.find('.list-numbers[data-type="' + viewType + '"] .search-custom input').focus();
 				});
 				
-
 				callbackAfterRender && callbackAfterRender(container);
 
 			});
@@ -433,8 +444,17 @@ define(function(require) {
 				listType = dataNumbers.viewType && dataNumbers.viewType === 'manager' ? 'full' : 'partial',
 				listSearchedAccounts = [ self.accountId ],
 				showLinks = function() {
+
 					var methodToUse = parent.find('.number-box.selected').size() > 0 ? 'addClass' : 'removeClass';
 					parent.find('.list-numbers:visible #trigger_links')[methodToUse]('active');
+
+					// support for delete button within header
+					if (parent.find('.number-box.selected').length > 0) {
+						parent.find('.list-numbers:visible .accounts-numbers #delete_numbers').prop('disabled', false).removeClass('deleted-numbers-disabled');
+					} else {
+						parent.find('.list-numbers:visible .accounts-numbers #delete_numbers').prop('disabled', true).addClass('deleted-numbers-disabled');
+					}
+					
 				},
 				displayNumberList = function(accountId, callback, forceRefresh) {
 					var alreadySearched = _.indexOf(listSearchedAccounts, accountId) >= 0,
@@ -667,7 +687,7 @@ define(function(require) {
 
 			parent.on('click', '.account-header .action-number.add-external', function(e) {
 				self.numbersAddExternalNumbers($(this).parents('.account-section').data('id'), function() {
-					self.numbersRender({ container: $('#number_manager') });
+					self.numbersRender({ container: $('#number_manager'), miscSettings });
 				});
 			});
 
@@ -1467,25 +1487,54 @@ define(function(require) {
 			});
 		},
 
-		numbersAddFreeformNumbers: function(numbers_data, accountId, carrierName, state, numberMetadataPublic, callback) {
+		numbersAddFreeformNumbers: function(numbersData, accountId, carrierName, state, numberMetadataPublic, callback) {
 			var self = this;
 
 			if (monster.util.canAddExternalNumbers()) {
-				self.numbersCreateBlockNumber(numbers_data, accountId, carrierName, state, numberMetadataPublic, function(data) {
-					if (data.hasOwnProperty('error')) {
+				self.numbersCreateBlockNumber(numbersData, accountId, carrierName, state, numberMetadataPublic, function(data) {
+				
+					if (data.error && Object.keys(data.error).length > 0) {
 						self.numbersShowRecapAddNumbers(data);
 					} else {
+
+						// webhook to external service
+						if (miscSettings.enableNumberAddedNotifications) {
+
+							var requestData = {
+								account_id: self.accountId,
+								action: 'number_added',
+								numbers_data: numbersData,
+								...numberMetadataPublic
+							};
+
+							if (miscSettings.includeAuthTokenWithinNotifications) {
+								requestData.auth_token = monster.util.getAuthToken();
+							}
+
+							monster.request({
+								resource: 'notification.number.added',
+								data: {
+									data: requestData,
+									removeMetadataAPI: true
+								}
+							});
+
+						}
+
 						monster.ui.toast({
 							type: 'success',
 							message: self.i18n.active().numbers.addExternal.successAdd
 						});
+
 					}
 
 					callback && callback();
 				});
 			} else {
+				// If the user doesn't have the rights to add numbers, show an alert
 				monster.ui.alert(self.i18n.active().numbers.noRightsAddNumber);
 			}
+
 		},
 
 		numbersGetCarrierInfo: function(callback) {
@@ -1680,7 +1729,7 @@ define(function(require) {
 						
 						else {
 							
-							self.numbersAddFreeformNumbers(numbersData, accountId, carrierName, state, numberMetadataPublic, function() {
+							self.numbersAddFreeformNumbers(numbersData, accountId, carrierName, state, numberMetadataPublic, function() {							
 								popup.dialog('close');
 	
 								callback && callback();
@@ -1784,6 +1833,10 @@ define(function(require) {
 				.find('.list-numbers[data-type="spare"]')
 				.empty()
 				.append(template);
+
+			// disable delete button	
+			template.find('#delete_numbers').prop('disabled', true).addClass('deleted-numbers-disabled');
+
 
 			self.numbersDisplayFeaturesMenu(arrayNumbersSpare, template);
 
@@ -1933,7 +1986,32 @@ define(function(require) {
 					generateError: false
 				},
 				success: function(_dataNumbers, status) {
+
+					// webhook to external service
+					if (miscSettings.enableNumberDeletedNotifications) {
+
+						var requestData = {
+							account_id: self.accountId,
+							action: 'number_deleted',
+							numbers_data: args.numbers
+						};
+
+						if (miscSettings.includeAuthTokenWithinNotifications) {
+							requestData.auth_token = monster.util.getAuthToken();
+						}
+
+						monster.request({
+							resource: 'notification.number.deleted',
+							data: {
+								data: requestData,
+								removeMetadataAPI: true
+							}
+						});
+
+					}
+
 					callback && callback(_dataNumbers.data);
+
 				},
 				error: function(data, status, globalHandler) {
 					if (data.error === '400' && data.hasOwnProperty('data') && data.data.hasOwnProperty('error')) {
@@ -2516,6 +2594,31 @@ define(function(require) {
 					self.updateNumberStatus(dataNumber.id, accountId, data, {	
 						success: function(data) {
 							self.pushFeatures(data);
+
+							// webhook to external service
+							if (miscSettings.enableNumberEnabledNotifications) {
+
+								var requestData = {
+									account_id: self.accountId,
+									action: 'state_change',
+									number_state: data.data.dimension.number_state,
+									phone_number: data.data.id
+								};
+
+								if (miscSettings.includeAuthTokenWithinNotifications) {
+									requestData.auth_token = monster.util.getAuthToken();
+								}
+
+								monster.request({
+									resource: 'notification.number.enabled',
+									data: {
+										data: requestData,
+										removeMetadataAPI: true
+									}
+								});
+
+							}
+
 							callbackSuccess(data);
 						}
 					});
@@ -2562,6 +2665,31 @@ define(function(require) {
 						self.updateNumberStatus(dataNumber.id, accountId, data, {	
 							success: function(data) {
 								self.pushFeatures(data);
+
+								// webhook to external service
+								if (miscSettings.enableNumberDisabledNotifications) {
+
+									var requestData = {
+										account_id: self.accountId,
+										action: 'state_change',
+										number_state: data.data.dimension.number_state,
+										phone_number: data.data.id
+									};
+	
+									if (miscSettings.includeAuthTokenWithinNotifications) {
+										requestData.auth_token = monster.util.getAuthToken();
+									}
+	
+									monster.request({
+										resource: 'notification.number.disabled',
+										data: {
+											data: requestData,
+											removeMetadataAPI: true
+										}
+									});
+
+								}
+
 								callbackSuccess(data);
 							}
 						});

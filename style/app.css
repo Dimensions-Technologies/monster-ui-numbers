@@ -65,3 +65,42 @@
     display: block;
     margin: 0 auto;
 }
+
+
+/* search box formatting */
+#numbers_container .search-custom input {
+	padding: 6px;
+	height: 20px !important;
+}
+
+#numbers_container .actions-wrapper .form-inline .input-append >[class*=monster-button] {
+    margin-left: 0px;
+    height: 34px;
+    line-height: 0px;
+    display: inline-block;
+}
+
+#delete_numbers {
+    background: none;
+    border: none;
+    padding-bottom: 2px;
+}
+
+#delete_numbers .fa-times {
+    font-size: 16px;
+    line-height: 1;
+}
+
+#numbers_container .account-section.open .account-header #delete_numbers > * {
+    color: #ffffff;
+}
+
+#numbers_container .account-section .account-header #delete_numbers > * {
+    color: #2297FF;
+}
+
+.deleted-numbers-disabled {
+    pointer-events: none; 
+    opacity: 0.5;
+    cursor: not-allowed;
+}

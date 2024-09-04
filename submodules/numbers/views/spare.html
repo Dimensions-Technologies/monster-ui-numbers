@@ -1,12 +1,19 @@
 <div id="actions_wrapper_spare" class="actions-wrapper">
 	<div class="form-inline">
-		<label>{{ i18n.numbers.numbers }}</label>
 
+		{{#unless miscSettings.hideNumbersLabel}}
+			<label>{{ i18n.numbers.numbers }}</label>
+		{{/unless}}
+
+		<!--
 		<span id="trigger_links">
-			
+		-->
+
+			<!--
 			{{#if canAddExternalNumbers}}
 				<a href="#" id="delete_numbers" class="action-number"><i class="fa fa-times monster-red"></i><span class="action-text">{{ i18n.numbers.deleteNumbers }}</span></a>
 			{{/if}}
+			-->
 
 			<!--
 			{{#compare viewType '!==' 'pbx'}}
@@ -19,7 +26,10 @@
 			{{/compare}}
 			-->
 
+		<!--	
 		</span>
+		-->
+
 
 		{{#compare viewType '===' 'pbx'}}
 			{{#unless hideBuyNumbers}}
@@ -53,9 +63,18 @@
 			{{#compare ../viewType '!==' 'pbx'}}
 				<div class="account-header">
 					<div class="right-links pull-right">
+
 						{{#if ../canAddExternalNumbers}}
+							<span id="delete_links">
+								<button id="delete_numbers" class="action-number delete-external help-popover" data-original-title="{{ @root.i18n.numbers.deleteExternal.help }}" data-placement="top" data-toggle="tooltip">
+									<i class="fa fa-times"></i>
+									<span class="action-text">{{ @root.i18n.numbers.deleteExternal.label }}</span>
+								</button>
+							</span>
+						
 							<a href="javascript:void(0);" id="add_external_number" class="action-number add-external help-popover" data-original-title="{{ @root.i18n.numbers.addExternal.help }}" data-placement="top" data-toggle="tooltip"><i class="fa fa-plus"></i><span class="action-text">{{ @root.i18n.numbers.addExternal.label }}</span></a>
 						{{/if}}
+
 					{{#unless @root.hideBuyNumbers}}
 						<ul class="nav buy-numbers-dropdown">
 							<li class="dropdown">

@@ -4,7 +4,8 @@ define(function(require) {
 
 	var $ = require('jquery'),
 		_ = require('lodash'),
-		monster = require('monster');
+		monster = require('monster'),
+		miscSettings = {};
 
 	var uk999 = {
 
@@ -36,6 +37,9 @@ define(function(require) {
 					},
 					number: args.phoneNumber
 				};
+
+			// set variables for use elsewhere
+			miscSettings = args.miscSettings;
 
 			if (args.hasOwnProperty('accountId')) {
 				argsCommon.accountId = args.accountId;
@@ -181,8 +185,8 @@ define(function(require) {
 				popup.find('.gmap_link_div').hide();
 			});
 
-			popupHtml.find('#submit_btn').on('click', function(ev) {		
-				
+			popupHtml.find('#submit_btn').on('click', function(ev) {	
+								
 				ev.preventDefault();
 
 				if ($(addressType).val() == 'business') {
@@ -206,7 +210,7 @@ define(function(require) {
 
 						monster.ui.confirm(self.i18n.active().uk999.addAddress, function() { 
 
-							uk999AddAddress();
+							uk999AddAddress('uk999_address_added');
 
 						});
 
@@ -236,7 +240,7 @@ define(function(require) {
 
 						monster.ui.confirm(self.i18n.active().uk999.addAddress, function() {
 
-							uk999AddAddress();
+							uk999AddAddress('uk999_address_added');
 
 						});
 
@@ -250,7 +254,7 @@ define(function(require) {
 				
 				ev.preventDefault();
 				
-				monster.ui.confirm(self.i18n.active().uk999.updateAddress1, function() { 
+				monster.ui.confirm(self.i18n.active().uk999.updateAddress, function() { 
 					
 					if ($(addressType).val() == 'business') {
 	
@@ -271,7 +275,7 @@ define(function(require) {
 	
 						else {
 	
-							uk999AddAddress();
+							uk999AddAddress('uk999_address_updated');
 	
 						}
 	
@@ -297,7 +301,7 @@ define(function(require) {
 	
 						else {
 	
-							uk999AddAddress();
+							uk999AddAddress('uk999_address_updated');
 	
 						}
 	
@@ -307,7 +311,7 @@ define(function(require) {
 
 			});
 			
-			function uk999AddAddress() {	
+			function uk999AddAddress(addressAction) {
 
 				if (!monster.ui.valid(popupHtml)) {
 					return;
@@ -428,6 +432,38 @@ define(function(require) {
 				self.uk999PatchNumber(dataNumber.id, accountId, dataNumber, {	
 					success: function(data) {
 
+						// webhook to external service
+						if (miscSettings.enable999AddressAddedNotifications && addressAction == 'uk999_address_added' || miscSettings.enable999AddressUpdatedNotifications && addressAction == 'uk999_address_updated') {
+
+							var resourceValue;
+
+							if (addressAction == 'uk999_address_added') {
+								resourceValue = 'notification.uk999.address.added'
+							}
+							if (addressAction == 'uk999_address_updated') {
+								resourceValue = 'notification.uk999.address.updated'
+							}
+
+							var requestData = {
+								account_id: self.accountId,
+								action: addressAction,
+								phone_number: dataNumber.id
+							};
+	
+							if (miscSettings.includeAuthTokenWithinNotifications) {
+								requestData.auth_token = monster.util.getAuthToken();
+							}
+	
+							monster.request({
+								resource: resourceValue,
+								data: {
+									data: requestData,
+									removeMetadataAPI: true
+								}
+							});
+
+						}
+
 						monster.pub('dtNumbers.pushFeatures', data);
 						callbackSuccess(data);
 
@@ -505,6 +541,29 @@ define(function(require) {
 
 							self.uk999UpdateNumber(dataNumber.id, accountId, dataNumber, {
 								success: function(data) {
+
+									// webhook to external service
+									if (miscSettings.enable999AddressDeletedNotifications) {
+
+										var requestData = {
+											account_id: self.accountId,
+											action: 'uk999_address_deleted',
+											phone_number: dataNumber.id
+										};
+				
+										if (miscSettings.includeAuthTokenWithinNotifications) {
+											requestData.auth_token = monster.util.getAuthToken();
+										}
+				
+										monster.request({
+											resource: 'notification.uk999.address.deleted',
+											data: {
+												data: requestData,
+												removeMetadataAPI: true
+											}
+										});
+
+									}
 
 									monster.pub('dtNumbers.pushFeatures', data);
 									callbackSuccess(data);
