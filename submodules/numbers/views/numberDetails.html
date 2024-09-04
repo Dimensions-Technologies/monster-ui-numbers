@@ -80,18 +80,18 @@
 
             <div class="form-actions">
                 <div>
-                    {{#if miscSettings.enabledNumberStateToggle}}
-                    <div class="actions-group" id="disableButton">
-                        <button class="monster-button-danger" id="disableNumber_btn">
-                            {{i18n.numberStatus.disable}}
-                        </button>
-                    </div>
+                    {{#if miscSettings.allowNumberStateToggle}}
+                        <div class="actions-group" id="disableButton">
+                            <button class="monster-button-danger" id="disableNumber_btn">
+                                {{i18n.numberStatus.disable}}
+                            </button>
+                        </div>
 
-                    <div class="actions-group" id="enableButton">
-                        <button class="monster-button-success" id="enableNumber_btn">
-                            {{i18n.numberStatus.enable}}
-                        </button>
-                    </div>
+                        <div class="actions-group" id="enableButton">
+                            <button class="monster-button-success" id="enableNumber_btn">
+                                {{i18n.numberStatus.enable}}
+                            </button>
+                        </div>
                     {{/if}}
                 </div>
                 <div>
