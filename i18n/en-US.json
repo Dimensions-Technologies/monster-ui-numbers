@@ -615,6 +615,12 @@
 
 		"__comment": "UI-1285: Adding the Add External Action to the Number Manager",
 		"__version": "3.22",
+		
+		"deleteExternal": {
+			"label": "Delete",
+			"help": "Delete numbers from the account."
+		},
+		
 		"addExternal": {
 			"label": "Add",
 			"help": "Add numbers to the account.",
@@ -671,7 +677,7 @@
 
 			"__comment": "UI-2448: Delete recap popup",
 			"__version": "4.1",
-			"successAdd": "You successfully added phone numbers to the system.",
+			"successAdd": "The phone numbers have been successfully added to the system.",
 			"resultsDialog": {
 				"headline": "Here is the summary of which numbers were successfully added and those that weren't.",
 				"title": "Summary of the Add Number operation",
@@ -840,10 +846,10 @@
 		"addressLine2": "Address Line 2",
 		"city": "City",
 		"dialogTitle": "Emergency Services Address Details",
-		"addAddress": "Are you sure you wish to add an address to this phone number? The address will be added to the Emergency Services database.",
+		"addAddress": "Are you sure you wish to add an address to this phone number? <br> The address will be added to the Emergency Services database.",
 		"removeAddress1": "Are you sure you wish to remove the address from this phone number?",
 		"removeAddress2": "Removing the address will update the Emergency Services database.",
-		"updateAddress1": "Are you sure you wish to update the address for the phone number?",
+		"updateAddress": "Are you sure you wish to update the address for this phone number?",
 		"removeAddressError": "Address can't be removed from this number as the number is set as the Account's Emergency Caller ID.",
 		"addAddressErrorBusiness": "Please ensure that the following fields are populated: Business Name, Address Line 1, Address Line 2, Locality, Postcode.",
 		"addAddressErrorResidential": "Please ensure that the following fields are populated: Forename, Surname, Address Line 1, Address Line 2, Locality, Postcode.",

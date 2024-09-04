@@ -22,6 +22,76 @@ define(function(require) {
 		},
 
 		requests: {
+			'notification.number.added': {
+				apiRoot: monster.config.whitelabel.dimension?.dt_numbers?.notificationSettings?.numberAdded?.apiRoot,
+				url: monster.config.whitelabel.dimension?.dt_numbers?.notificationSettings?.numberAdded?.url,
+                verb: 'POST',
+                generateError: false,
+                removeHeaders: [
+                    'X-Kazoo-Cluster-ID',
+                    'X-Auth-Token'
+                ]
+            },
+			'notification.number.deleted': {
+				apiRoot: monster.config.whitelabel.dimension?.dt_numbers?.notificationSettings?.numberDeleted?.apiRoot,
+				url: monster.config.whitelabel.dimension?.dt_numbers?.notificationSettings?.numberDeleted?.url,
+                verb: 'POST',
+                generateError: false,
+                removeHeaders: [
+                    'X-Kazoo-Cluster-ID',
+                    'X-Auth-Token'
+                ]
+            },
+			'notification.number.enabled': {
+				apiRoot: monster.config.whitelabel.dimension?.dt_numbers?.notificationSettings?.numberEnabled?.apiRoot,
+				url: monster.config.whitelabel.dimension?.dt_numbers?.notificationSettings?.numberEnabled?.url,
+                verb: 'POST',
+                generateError: false,
+                removeHeaders: [
+                    'X-Kazoo-Cluster-ID',
+                    'X-Auth-Token'
+                ]
+            },
+			'notification.number.disabled': {
+				apiRoot: monster.config.whitelabel.dimension?.dt_numbers?.notificationSettings?.numberDisabled?.apiRoot,
+				url: monster.config.whitelabel.dimension?.dt_numbers?.notificationSettings?.numberDisabled?.url,
+                verb: 'POST',
+                generateError: false,
+                removeHeaders: [
+                    'X-Kazoo-Cluster-ID',
+                    'X-Auth-Token'
+                ]
+            },
+			'notification.uk999.address.added': {
+				apiRoot: monster.config.whitelabel.dimension?.dt_numbers?.notificationSettings?.uk999AddressAdded?.apiRoot,
+				url: monster.config.whitelabel.dimension?.dt_numbers?.notificationSettings?.uk999AddressAdded?.url,
+                verb: 'POST',
+                generateError: false,
+                removeHeaders: [
+                    'X-Kazoo-Cluster-ID',
+                    'X-Auth-Token'
+                ]
+            },
+			'notification.uk999.address.updated': {
+				apiRoot: monster.config.whitelabel.dimension?.dt_numbers?.notificationSettings?.uk999AddressUpdated?.apiRoot,
+				url: monster.config.whitelabel.dimension?.dt_numbers?.notificationSettings?.uk999AddressUpdated?.url,
+                verb: 'POST',
+                generateError: false,
+                removeHeaders: [
+                    'X-Kazoo-Cluster-ID',
+                    'X-Auth-Token'
+                ]
+            },
+			'notification.uk999.address.deleted': {
+				apiRoot: monster.config.whitelabel.dimension?.dt_numbers?.notificationSettings?.uk999AddressDeleted?.apiRoot,
+				url: monster.config.whitelabel.dimension?.dt_numbers?.notificationSettings?.uk999AddressDeleted?.url,
+                verb: 'POST',
+                generateError: false,
+                removeHeaders: [
+                    'X-Kazoo-Cluster-ID',
+                    'X-Auth-Token'
+                ]
+            }
 		},
 
 		subscribe: {
@@ -104,4 +174,3 @@ define(function(require) {
 
 	return app;
 });
-
