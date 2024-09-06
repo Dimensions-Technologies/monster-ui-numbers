@@ -1152,8 +1152,6 @@ define(function(require) {
 			
 					// perform search if the search string has at least two characters (numbers or text)
 					if (searchString.length >= 2) {
-						console.log('searchString', searchString);
-
 						searchListNumbers(searchString, usedList);
 					} else {
 						// if fewer than two characters, reset the list
