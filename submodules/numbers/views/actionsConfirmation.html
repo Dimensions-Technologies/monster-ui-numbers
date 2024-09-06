@@ -1,6 +1,11 @@
 <div id="action_confirmation">
 	{{#if remove}}
-		<h4>{{i18n.numbers.dialogConfirm.delete.questionPartOne}}<span class="monster-primary-color">{{numberCount}}</span>{{i18n.numbers.dialogConfirm.delete.questionPartTwo}}</h4>
+		{{#unless miscSettings.embeddedPortalView}}
+			<h4>{{i18n.numbers.dialogConfirm.delete.questionPartOne}}<span class="monster-primary-color">{{numberCount}}</span>{{i18n.numbers.dialogConfirm.delete.questionPartTwo}}</h4>
+		{{/unless}}
+		{{#if miscSettings.embeddedPortalView}}
+			<h5>{{i18n.numbers.dialogConfirm.delete.questionPartOne}}<span class="monster-primary-color">{{numberCount}}</span>{{i18n.numbers.dialogConfirm.delete.questionPartTwo}}</h5>
+		{{/if}}
 	{{/if}}
 
 	{{#if move}}
@@ -16,17 +21,27 @@
 	<div class="table-wrapper">
 		<table class="table">
 			{{#each accountList}}
-				<thead>
-					<tr>
-						<th>{{@root.i18n.numbers.dialogConfirm.from}}<span class="monster-primary-color">{{accountName}}</span></th>
-					</tr>
-				</thead>
+				
+				{{#unless ../miscSettings.embeddedPortalView}}
+					<thead>
+						<tr>
+							<th>{{@root.i18n.numbers.dialogConfirm.from}}<span class="monster-primary-color">{{accountName}}</span></th>
+						</tr>
+					</thead>
+				{{/unless}}
+				
 				<tbody>
 					{{#each this.numbers}}
 						<tr>
 							<td data-number="{{this}}">
-								<div class="pull-left">{{this}}</div>
-								<i class="fa fa-times-circle-o pull-right remove-number"></i>
+								{{#unless ../../miscSettings.embeddedPortalView}}
+									<div class="pull-left phone-number">{{this}}</div>
+									<i class="fa fa-times-circle-o pull-right remove-number"></i>
+								{{/unless}}
+								
+								{{#if ../../miscSettings.embeddedPortalView}}
+									<div class="center phone-number">{{this}}</div>
+								{{/if}}
 							</td>
 						</tr>
 					{{/each}}

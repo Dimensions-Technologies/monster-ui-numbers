@@ -19,9 +19,11 @@
 		{{#compare this "prepend"}}
 			{{> featureIcon feature="prepend" color="orange" icon="fa fa-file-text-o" tooltip=@root.i18n.iconNumberFeatures.prepend.tooltip}}
 		{{/compare}}
-		{{#compare this "local"}}
-			{{> featureIcon feature="local" color="purple" icon="fa fa-rocket" tooltip=@root.i18n.iconNumberFeatures.local.tooltip}}
-		{{/compare}}
+		{{#unless ../miscSettings.hideLocalFeatureIcon}}
+			{{#compare this "local"}}
+				{{> featureIcon feature="local" color="purple" icon="fa fa-rocket" tooltip=@root.i18n.iconNumberFeatures.local.tooltip}}
+			{{/compare}}
+		{{/unless}}
 		{{#compare this "mobile"}}
 			{{> featureIcon feature="mobile" color="yellow" icon="fa fa-mobile-phone" tooltip=@root.i18n.iconNumberFeatures.mobile.tooltip}}
 		{{/compare}}

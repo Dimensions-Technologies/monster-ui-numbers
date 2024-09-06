@@ -25,7 +25,11 @@
 			<div style="padding-top: 20px;"></div>
 
 			<div class="customize-number-field">
-				<label class="popup-label" for="allowed_carriers" style="width: 100px;">{{i18n.numbers.addExternal.carrier.label}}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.carrier.carrierHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
+				<label class="popup-label" for="allowed_carriers" style="width: 100px;">{{i18n.numbers.addExternal.carrier.label}}
+					{{#unless miscSettings.hideToolTips}}
+						<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.carrier.carrierHelp}}" data-placement="right" data-toggle="tooltip"></i>
+					{{/unless}}
+				</label>
 				<select class="input-large" id="allowed_carriers" name="allowed-carrier">
 					{{#each allowedCarriers}}
 						<option value="{{this}}">{{this}}</option>
@@ -34,22 +38,35 @@
 			</div>
 
 			<div class="customize-number-field">
-				<label class="popup-label" for="number_source" style="width: 100px;">{{i18n.numbers.addExternal.numberSource.source}}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberSource.sourceHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
+				<label class="popup-label" for="number_source" style="width: 100px;">{{i18n.numbers.addExternal.numberSource.source}}
+					{{#unless miscSettings.hideToolTips}}
+						<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberSource.sourceHelp}}" data-placement="right" data-toggle="tooltip"></i>
+					{{/unless}}
+				</label>
 				<select class="input-large" id="number_source" name="number-source">
 					<option></option>
 					<option value="ported_in">{{ i18n.numbers.addExternal.numberSource.ported_in }}</option>
 					<option value="new_provide">{{ i18n.numbers.addExternal.numberSource.new_provide }}</option>
 				</select>
-				<label class="popup-label" for="number_classification" style="width: 100px; padding-left: 10px;">{{i18n.numbers.addExternal.numberSource.classification}}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberSource.classificationHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
+				<label class="popup-label" for="number_classification" style="width: 100px; padding-left: 10px;">{{i18n.numbers.addExternal.numberSource.classification}}
+					{{#unless miscSettings.hideToolTips}}
+						<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberSource.classificationHelp}}" data-placement="right" data-toggle="tooltip"></i>
+					{{/unless}}
+				</label>
 				<select class="input-large" id="number_classification" name="number-type">
 					<option></option>
 					<option value="geographic">{{ i18n.numbers.addExternal.numberSource.geographic }}</option>
 					<option value="non_geographic">{{ i18n.numbers.addExternal.numberSource.non_geographic }}</option>
+					<option value="international">{{ i18n.numbers.addExternal.numberSource.international }}</option>
 				</select>
 			</div>
 
 			<div class="customize-number-field" id="customize_number_type">
-				<label class="popup-label" for="number_type" style="width: 100px;">{{i18n.numbers.addExternal.numberType.type}}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberType.typeHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
+				<label class="popup-label" for="number_type" style="width: 100px;">{{i18n.numbers.addExternal.numberType.type}}
+					{{#unless miscSettings.hideToolTips}}
+						<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberType.typeHelp}}" data-placement="right" data-toggle="tooltip"></i>
+					{{/unless}}
+				</label>
 				<select class="input-large" id="number_type" name="number-type">
 					<option></option>
 					<option value="snddi">{{ i18n.numbers.addExternal.numberType.snddi }}</option>
@@ -58,49 +75,65 @@
 			</div>
 
 			<div class="customize-number-field" id="customize_number_single">
-				<label class="popup-label" for="number_single" style="width: 100px;">{{i18n.numbers.addExternal.numberType.numberSingle}}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberType.singleHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
+				<label class="popup-label" for="number_single" style="width: 100px;">{{i18n.numbers.addExternal.numberType.numberSingle}}
+					{{#unless miscSettings.hideToolTips}}
+						<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberType.singleHelp}}" data-placement="right" data-toggle="tooltip"></i>
+					{{/unless}}
+				</label>
 				<input type="text" style="width: 196px;" id="number_single" name="number-single"/>
 			</div>
 
 			<div class="customize-number-field" id="customize_number_range">
-				<label class="popup-label" for="number_range_start" style="width: 100px;">{{i18n.numbers.addExternal.numberType.rangeStart}}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberType.rangeStartHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
+				<label class="popup-label" for="number_range_start" style="width: 100px;">{{i18n.numbers.addExternal.numberType.rangeStart}}
+					{{#unless miscSettings.hideToolTips}}
+						<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberType.rangeStartHelp}}" data-placement="right" data-toggle="tooltip"></i>
+					{{/unless}}
+				</label>
 				<input type="text" style="width: 196px;" id="number_range_start" name="number-range-start" />
-				<label class="popup-label" for="number_range_quantity" style="width: 100px; padding-left: 10px;">{{i18n.numbers.addExternal.numberType.rangeQty}}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberType.rangeQtyHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
+				<label class="popup-label" for="number_range_quantity" style="width: 100px; padding-left: 10px;">{{i18n.numbers.addExternal.numberType.rangeQty}}
+					{{#unless miscSettings.hideToolTips}}
+						<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberType.rangeQtyHelp}}" data-placement="right" data-toggle="tooltip"></i>
+					{{/unless}}
+				</label>
 				<input type="number" style="width: 196px;" id="number_range_quantity" name="number-range-quantity" min="1" max="1000" />
 			</div>
 			
-			{{#if isAllowedToPickCarrier}}
-
-				<div class="customize-number-field">
-					<div style="padding-top: 40px;"></div>
-					<label class="popup-label" for="number_state" style="width: 100px;">{{i18n.numbers.addExternal.numberState.label}}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberState.defaultHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
-					<select class="input-large" id="number_state" name="number-state">
-						<option value="_uiDefaultState">{{i18n.numbers.addExternal.numberState.default }}</option>
-						{{#each @root.states}}
-							<option value="{{this}}">{{this}}</option>
-						{{/each}}
-					</select>
-				</div>
-
-				<div class="customize-number-field">
-					<label class="popup-label" for="carrier_module" style="width: 100px;">{{i18n.numbers.addExternal.renameCarrier.label}}</label>
-					<select class="select-module input-large" id="carrier_module" name="carrier-module">
-						{{#select @root.selectedCarrier}}
-							{{#each @root.carriers}}
-								<option value="{{this.key}}">{{this.friendlyValue}}</option>
+			{{#unless miscSettings.hideCarrierModules}}
+				{{#if isAllowedToPickCarrier}}
+					<div class="customize-number-field">
+						<div style="padding-top: 40px;"></div>
+						<label class="popup-label" for="number_state" style="width: 100px;">{{i18n.numbers.addExternal.numberState.label}}
+							{{#unless miscSettings.hideToolTips}}
+								<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.numbers.addExternal.numberState.defaultHelp}}" data-placement="right" data-toggle="tooltip"></i>
+							{{/unless}}
+						</label>
+						<select class="input-large" id="number_state" name="number-state">
+							<option value="_uiDefaultState">{{i18n.numbers.addExternal.numberState.default }}</option>
+							{{#each @root.states}}
+								<option value="{{this}}">{{this}}</option>
 							{{/each}}
-						{{/select}}
-					</select>
-				</div>
-
-				<div class="customize-number-field">
-					<div class="custom-carrier-block{{#compare selectedCarrier "===" "_uiCustomChoice"}} active{{/compare}}">
-						<label class="popup-label" for="custom_carrier_value">{{i18n.numbers.addExternal.renameCarrier.customCarrierName}}</label>
-						<input type="text" id="custom_carrier_value"/>
+						</select>
 					</div>
-				</div>
 
-			{{/if}}
+					<div class="customize-number-field">
+						<label class="popup-label" for="carrier_module" style="width: 100px;">{{i18n.numbers.addExternal.renameCarrier.label}}</label>
+						<select class="select-module input-large" id="carrier_module" name="carrier-module">
+							{{#select @root.selectedCarrier}}
+								{{#each @root.carriers}}
+									<option value="{{this.key}}">{{this.friendlyValue}}</option>
+								{{/each}}
+							{{/select}}
+						</select>
+					</div>
+
+					<div class="customize-number-field">
+						<div class="custom-carrier-block{{#compare selectedCarrier "===" "_uiCustomChoice"}} active{{/compare}}">
+							<label class="popup-label" for="custom_carrier_value">{{i18n.numbers.addExternal.renameCarrier.customCarrierName}}</label>
+							<input type="text" id="custom_carrier_value"/>
+						</div>
+					</div>
+				{{/if}}
+			{{/unless}}
 
 		</div>
 	</form>

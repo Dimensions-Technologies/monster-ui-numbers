@@ -7,7 +7,9 @@ define(function(require) {
 		uk999EnabledNumbers,
 		carrierDisabledNumbers,
 		allowedCarriers,
-		miscSettings = {};
+		miscSettings = {},
+		defaultCountryCode = null,
+		numberStateToggleCarriers = {};
 
 	var dtNumbers = {
 
@@ -67,7 +69,7 @@ define(function(require) {
 						uk999EnabledNumber: uk999EnabledNumber,
 						carrierEnabledNumber: carrierEnabledNumber,
 						afterUpdate: function(features) {
-							monster.ui.highlight(numberDiv);
+							//monster.ui.highlight(numberDiv);
 							//monster.ui.paintNumberFeaturesIcon(features, numberDiv.find('.features'));
 							self.paintNumberFeaturesIcon(features, numberDiv.find('.features'));
 						},
@@ -91,6 +93,8 @@ define(function(require) {
 
 			// set variables for use elsewhere
 			miscSettings = args.miscSettings;
+			defaultCountryCode = args.defaultCountryCode;
+			numberStateToggleCarriers = args.numberStateToggleCarriers;
 
 			monster.waterfall([
 
@@ -205,7 +209,10 @@ define(function(require) {
 
 						var numbersView = $(self.getTemplate({
 								name: 'layout',
-								data: data,
+								data: {
+									...data,
+									miscSettings: miscSettings
+								},
 								submodule: 'numbers'
 							})),
 							usedView = $(self.getTemplate({
@@ -292,7 +299,10 @@ define(function(require) {
 								
 				var numbersView = $(self.getTemplate({
 						name: 'layout',
-						data: data,
+						data: {
+							...data,
+							miscSettings: miscSettings
+						},
 						submodule: 'numbers'
 					})),
 					usedView = $(self.getTemplate({
@@ -336,7 +346,7 @@ define(function(require) {
 				});
 
 				self.numbersBindEvents(numbersView, data);
-				
+
 				container
 					.empty()
 					.append(numbersView);
@@ -677,17 +687,30 @@ define(function(require) {
 			function syncNumbers(accountId) {
 				self.numbersSyncUsedBy(accountId, function(numbers) {
 					displayNumberList(accountId, function(numbers) {
-						monster.ui.toast({
-							type: 'success',
-							message: self.i18n.active().numbers.sync.success
-						});
+						if (miscSettings.enableBottomToast) {
+							monster.ui.toast({
+								type: 'success',
+								message: self.i18n.active().numbers.sync.success,
+								options: {
+									positionClass: 'toast-bottom-right',
+									timeOut: 3000,
+									extendedTimeOut: 1000,
+								}
+							});
+						} else {
+							monster.ui.toast({
+								type: 'success',
+								message: self.i18n.active().numbers.sync.success
+							});
+						};
 					}, true);
 				});
 			};
 
 			parent.on('click', '.account-header .action-number.add-external', function(e) {
 				self.numbersAddExternalNumbers($(this).parents('.account-section').data('id'), function() {
-					self.numbersRender({ container: $('#number_manager'), miscSettings });
+					// variables are being passed to they are not cleared on reload of data
+					self.numbersRender({ container: $('#number_manager'), miscSettings, defaultCountryCode, numberStateToggleCarriers});
 				});
 			});
 
@@ -793,11 +816,26 @@ define(function(require) {
 				});
 
 				if (e911ErrorMessage) {
-					monster.ui.alert('error', e911ErrorMessage);
+					if (miscSettings.enableBottomToast) {
+						monster.ui.toast({
+							type: 'error',
+							message: e911ErrorMessage,
+							options: {
+								positionClass: 'toast-bottom-right',
+								timeOut: 8000,
+								extendedTimeOut: 5000,
+							}
+						});
+					} else {
+						monster.ui.alert('error', e911ErrorMessage);
+					};
 				} else {
 					var dialogTemplate = $(self.getTemplate({
 							name: 'actionsConfirmation',
-							data: dataTemplate,
+							data: {
+								...dataTemplate,
+								miscSettings: miscSettings
+							},
 							submodule: 'numbers'
 						})),
 						requestData = {
@@ -805,10 +843,20 @@ define(function(require) {
 							accountId: self.accountId
 						};
 
+					// update the dialog to show formatted phone numbers
+					dialogTemplate.find('.phone-number').each(function() {
+						var numberElement = $(this),
+							number = numberElement.closest('td').data('number'),
+							formattedNumber = monster.util.formatPhoneNumber(number);
+						numberElement.text(formattedNumber);
+					});	
+
+					
 					var popup = monster.ui.dialog(dialogTemplate, {
 						width: '540px',
-						title: 'Delete Numbers - Confirmation'
+						title: 'Delete Phone Numbers'
 					});
+					
 
 					dialogTemplate.on('click', '.remove-number', function() {
 						for (var number in requestData.numbers) {
@@ -855,7 +903,22 @@ define(function(require) {
 
 							popup.dialog('close');
 
-							self.numbersShowDeletedNumbers(data);
+							if (miscSettings.enableBottomToast) {
+
+								var successCount = Object.keys(data.success).length;
+
+								monster.ui.toast({
+									type: 'success',
+									message: successCount + self.i18n.active().numbers.deleteExternal.successDelete,
+									options: {
+										positionClass: 'toast-bottom-right',
+										timeOut: 8000,
+										extendedTimeOut: 5000,
+									}
+								});
+							} else {
+								self.numbersShowDeletedNumbers(data);
+							}
 
 							self.numbersRenderSpare({ parent: parent, dataNumbers: dataNumbers });
 						});
@@ -995,10 +1058,23 @@ define(function(require) {
 
 								popup.dialog('close');
 
-								monster.ui.toast({
-									type: 'success',
-									message: template
-								});
+								if (miscSettings.enableBottomToast) {
+									monster.ui.toast({
+										type: 'success',
+										message: template,
+										options: {
+											positionClass: 'toast-bottom-right',
+											timeOut: 3000,
+											extendedTimeOut: 1000,
+										}
+									});
+								} else {
+									monster.ui.toast({
+										type: 'success',
+										message: template
+									});
+								};
+
 							}
 						});
 					});
@@ -1018,98 +1094,185 @@ define(function(require) {
 				});
 			});
 
-			var searchListNumbers = function(searchString, parent) {
-				var viewList = parent;
+			// local account search with filtering
+			if (miscSettings.enableLocalNumberSearch) {
 
-				searchString = monster.util.unformatPhoneNumber(searchString);
+				var normalizeNumber = function(number) {
+					return number.replace(/\D/g, ''); // remove everything that's not a digit
+				};
 
-				self.numbersSearchAccount(searchString, function(data) {
-					if (data.account_id) {
-						if (_.find(dataNumbers.listAccounts, function(val) { return val.id === data.account_id; })) {
-							displayNumberList(data.account_id, function() {
-								var section = viewList.find('[data-id="' + data.account_id + '"]'),
-									numberBox = section.find('[data-phonenumber="' + data.number + '"]');
+				var searchListNumbers = function(searchString, parent) {
+					
+					var numberTextSearchString = normalizeNumber(searchString.toLowerCase());
+					var usedByTextSearchString = searchString.toLowerCase(); 
+					var numberItems = parent.find('.number-box');
 
-								if (numberBox.size() > 0) {
-									section.addClass('open');
-									monster.ui.highlight(numberBox, {
-										timer: 5000
-									});
-								} else {
-									var type = parent.attr('data-type') === 'spare' ? 'notSpareNumber' : 'notUsedNumber',
-										template = self.getTemplate({
-											name: '!' + self.i18n.active().numbers[type],
-											data: {
-												number: data.number,
-												accountName: section.data('name')
-											},
-											submodule: 'numbers'
-										});
+					numberItems.each(function() {
+						
+						var numberText = normalizeNumber($(this).find('.monster-phone-number-value').text().toLowerCase()); 
+						var usedByText = $(this).find('.used-by').text().toLowerCase();
+						var validNumber = false;
 
-									monster.ui.toast({
-										type: 'warning',
-										message: template
-									});
-								}
-							});
+						if (numberTextSearchString.length > 0) {
+							validNumber = true
+						}
+
+						// check if the search string matches either the phone number or the used by field
+						if (validNumber == true && numberText.includes(numberTextSearchString) || usedByText.includes(usedByTextSearchString)) {
+							$(this).show();
 						} else {
-							self.numbersGetSubAccountNumber(data.account_id, data.number, function(dataNumber) {
-								var dataEntity = {
-									id: data.number
-								};
+							$(this).hide();
+						}
+					});
 
-								if (dataNumber.hasOwnProperty('used_by')) {
-									dataEntity.used_by = dataNumber.used_by;
-								}
+				};
 
-								monster.pub('common.accountAncestors.render', {
-									accountId: data.account_id,
-									entity: {
-										type: 'number',
-										data: dataEntity
+				var resetListNumbers = function(parent) {
+					parent.find('.number-box').show();
+				};
+			
+				// event handler for typing in the search input for spare numbers (real-time search)
+				parent.on('input', '.list-numbers[data-type="spare"] .search-custom input[type="text"]', function(e) {
+					var searchString = e.target.value.toLowerCase(),
+						spareList = parent.find('.list-numbers[data-type="spare"]');
+			
+					// perform search if the search string has at least two characters (numbers or text)
+					if (searchString.length >= 2) {
+						searchListNumbers(searchString, spareList);
+					} else {
+						// if fewer than two characters, reset the list
+						resetListNumbers(spareList);
+					}
+				});
+			
+				// event handler for typing in the search input for used numbers (real-time search)
+				parent.on('input', '.list-numbers[data-type="used"] .search-custom input[type="text"]', function(e) {
+					var searchString = e.target.value.toLowerCase(),
+						usedList = parent.find('.list-numbers[data-type="used"]');
+			
+					// perform search if the search string has at least two characters (numbers or text)
+					if (searchString.length >= 2) {
+						console.log('searchString', searchString);
+
+						searchListNumbers(searchString, usedList);
+					} else {
+						// if fewer than two characters, reset the list
+						resetListNumbers(usedList);
+					}
+				});
+			
+			}
+
+			// classic search
+			else {
+
+				var searchListNumbers = function(searchString, parent) {
+					var viewList = parent;
+
+					searchString = monster.util.unformatPhoneNumber(searchString);
+
+					self.numbersSearchAccount(searchString, function(data) {
+						if (data.account_id) {
+							if (_.find(dataNumbers.listAccounts, function(val) { return val.id === data.account_id; })) {
+								displayNumberList(data.account_id, function() {
+									var section = viewList.find('[data-id="' + data.account_id + '"]'),
+										numberBox = section.find('[data-phonenumber="' + data.number + '"]');
+
+									if (numberBox.size() > 0) {
+										section.addClass('open');
+										monster.ui.highlight(numberBox, {
+											timer: 5000
+										});
+									} else {
+										var type = parent.attr('data-type') === 'spare' ? 'notSpareNumber' : 'notUsedNumber',
+											template = self.getTemplate({
+												name: '!' + self.i18n.active().numbers[type],
+												data: {
+													number: data.number,
+													accountName: section.data('name')
+												},
+												submodule: 'numbers'
+											});
+
+										if (miscSettings.enableBottomToast) {
+											monster.ui.toast({
+												type: 'warning',
+												message: template,
+												options: {
+													positionClass: 'toast-bottom-right',
+													timeOut: 3000,
+													extendedTimeOut: 1000,
+												}
+											});
+										} else {
+											monster.ui.toast({
+												type: 'warning',
+												message: template
+											});
+										};
+
 									}
 								});
-							});
+							} else {
+								self.numbersGetSubAccountNumber(data.account_id, data.number, function(dataNumber) {
+									var dataEntity = {
+										id: data.number
+									};
+
+									if (dataNumber.hasOwnProperty('used_by')) {
+										dataEntity.used_by = dataNumber.used_by;
+									}
+
+									monster.pub('common.accountAncestors.render', {
+										accountId: data.account_id,
+										entity: {
+											type: 'number',
+											data: dataEntity
+										}
+									});
+								});
+							}
+						}
+					});
+				};
+
+				parent.on('click', '.list-numbers[data-type="spare"] button.search-numbers', function(e) {
+					var spareList = parent.find('.list-numbers[data-type="spare"]'),
+						searchString = spareList.find('.search-custom input[type="text"]').val().toLowerCase();
+
+					searchListNumbers(searchString, spareList);
+				});
+
+				parent.on('keyup', '.list-numbers[data-type="spare"] .search-custom input[type="text"]', function(e) {
+					if (e.keyCode === 13) {
+						var val = e.target.value.toLowerCase(),
+							spareList = parent.find('.list-numbers[data-type="spare"]');
+
+						if (val) {
+							searchListNumbers(val, spareList);
 						}
 					}
 				});
-			};
 
-			parent.on('click', '.list-numbers[data-type="spare"] button.search-numbers', function(e) {
-				var spareList = parent.find('.list-numbers[data-type="spare"]'),
-					searchString = spareList.find('.search-custom input[type="text"]').val().toLowerCase();
+				parent.on('click', '.list-numbers[data-type="used"] button.search-numbers', function(e) {
+					var usedList = parent.find('.list-numbers[data-type="used"]'),
+						searchString = usedList.find('.search-custom input[type="text"]').val().toLowerCase();
 
-				searchListNumbers(searchString, spareList);
-			});
+					searchListNumbers(searchString, usedList);
+				});
 
-			parent.on('keyup', '.list-numbers[data-type="spare"] .search-custom input[type="text"]', function(e) {
-				if (e.keyCode === 13) {
-					var val = e.target.value.toLowerCase(),
-						spareList = parent.find('.list-numbers[data-type="spare"]');
+				parent.on('keyup', '.list-numbers[data-type="used"] .search-custom input[type="text"]', function(e) {
+					if (e.keyCode === 13) {
+						var val = e.target.value.toLowerCase(),
+							usedList = parent.find('.list-numbers[data-type="used"]');
 
-					if (val) {
-						searchListNumbers(val, spareList);
+						if (val) {
+							searchListNumbers(val, usedList);
+						}
 					}
-				}
-			});
+				});
 
-			parent.on('click', '.list-numbers[data-type="used"] button.search-numbers', function(e) {
-				var usedList = parent.find('.list-numbers[data-type="used"]'),
-					searchString = usedList.find('.search-custom input[type="text"]').val().toLowerCase();
-
-				searchListNumbers(searchString, usedList);
-			});
-
-			parent.on('keyup', '.list-numbers[data-type="used"] .search-custom input[type="text"]', function(e) {
-				if (e.keyCode === 13) {
-					var val = e.target.value.toLowerCase(),
-						usedList = parent.find('.list-numbers[data-type="used"]');
-
-					if (val) {
-						searchListNumbers(val, usedList);
-					}
-				}
-			});
+			}
 
 			self.numbersBindExternalNumbersEvents(parent, dataNumbers);
 		},
@@ -1446,7 +1609,19 @@ define(function(require) {
 				},
 				error: function(parsedError, error, globalHandler) {
 					if ([403, 404].includes(error.status)) {
-						monster.ui.alert(self.i18n.active().numbers.dialogAlertNowAllowed.info);
+						if (miscSettings.enableBottomToast) {
+							monster.ui.toast({
+								type: 'error',
+								message: self.i18n.active().numbers.dialogAlertNowAllowed.info,
+								options: {
+									positionClass: 'toast-bottom-right',
+									timeOut: 8000,
+									extendedTimeOut: 5000,
+								}
+							});
+						} else {
+							monster.ui.alert(self.i18n.active().numbers.dialogAlertNowAllowed.info);
+						};
 					} else {
 						globalHandler(parsedError, { generateError: true });
 					}
@@ -1521,10 +1696,24 @@ define(function(require) {
 
 						}
 
-						monster.ui.toast({
-							type: 'success',
-							message: self.i18n.active().numbers.addExternal.successAdd
-						});
+						var successCount = Object.keys(data.success).length;
+
+						if (miscSettings.enableBottomToast) {
+							monster.ui.toast({
+								type: 'success',
+								message: successCount + self.i18n.active().numbers.addExternal.successAddToast,
+								options: {
+									positionClass: 'toast-bottom-right',
+									timeOut: 3000,
+									extendedTimeOut: 1000,
+								}
+							});
+						} else {
+							monster.ui.toast({
+								type: 'success',
+								message: self.i18n.active().numbers.addExternal.successAdd
+							});
+						};
 
 					}
 
@@ -1532,7 +1721,19 @@ define(function(require) {
 				});
 			} else {
 				// If the user doesn't have the rights to add numbers, show an alert
-				monster.ui.alert(self.i18n.active().numbers.noRightsAddNumber);
+				if (miscSettings.enableBottomToast) {
+					monster.ui.toast({
+						type: 'error',
+						message: self.i18n.active().numbers.noRightsAddNumber,
+						options: {
+							positionClass: 'toast-bottom-right',
+							timeOut: 8000,
+							extendedTimeOut: 5000,
+						}
+					});
+				} else {
+					monster.ui.alert(self.i18n.active().numbers.noRightsAddNumber);
+				};
 			}
 
 		},
@@ -1616,7 +1817,10 @@ define(function(require) {
 
 				var dialogTemplate = $(self.getTemplate({
 						name: 'addExternal',
-						data: data,
+						data: {
+							...data,
+							miscSettings: miscSettings
+						},
 						submodule: 'numbers'
 					})),
 					CUSTOM_CHOICE = '_uiCustomChoice';
@@ -1703,43 +1907,91 @@ define(function(require) {
 					phoneNumbers = phoneNumbers.replace(/[\n]/g, ' ');
 					phoneNumbers = phoneNumbers.replace(/[-().]/g, '').split(' ');
 
-					_.each(phoneNumbers, function(number) {
-						phoneNumber = number.match(/^\+(.*)$/);
+					// check length of the entered number
+					if (phoneNumbers[0].length >= 12) {
 
-						if (phoneNumber && phoneNumber[1]) {
-							numbersData.push(number);
-						}
-					});
-
-					if (numbersData.length > 0) {
-
-						var allowedCarriers = dialogTemplate.find('#allowed_carriers').val(),
-							numberSource = dialogTemplate.find('#number_source').val(),
-							numberClassification = dialogTemplate.find('#number_classification').val(),
-							numberType = dialogTemplate.find('#number_type').val();
-
-						// check if all required fields have been populated
-						var anyFieldIsNull = !allowedCarriers || !numberSource || !numberClassification || !numberType;
-
-						if (anyFieldIsNull) {
-							
-							monster.ui.alert('warning', self.i18n.active().numbers.addExternal.dialog.invalidNumbers2);
-
-						} 
-						
-						else {
-							
-							self.numbersAddFreeformNumbers(numbersData, accountId, carrierName, state, numberMetadataPublic, function() {							
-								popup.dialog('close');
+						_.each(phoneNumbers, function(number) {
+							phoneNumber = number.match(/^\+(.*)$/);
 	
-								callback && callback();
-							});
-
+							if (phoneNumber && phoneNumber[1]) {
+								numbersData.push(number);
+							}
+						});
+	
+						if (numbersData.length > 0) {
+	
+							var allowedCarriers = dialogTemplate.find('#allowed_carriers').val(),
+								numberSource = dialogTemplate.find('#number_source').val(),
+								numberClassification = dialogTemplate.find('#number_classification').val(),
+								numberType = dialogTemplate.find('#number_type').val();
+	
+							// check if all required fields have been populated
+							var anyFieldIsNull = !allowedCarriers || !numberSource || !numberClassification || !numberType;
+	
+							if (anyFieldIsNull) {
+								
+								if (miscSettings.enableBottomToast) {
+									monster.ui.toast({
+										type: 'error',
+										message: self.i18n.active().numbers.addExternal.dialog.invalidNumbers2,
+										options: {
+											positionClass: 'toast-bottom-right',
+											timeOut: 8000,
+											extendedTimeOut: 5000,
+										}
+									});
+								} else {
+									monster.ui.alert('warning', self.i18n.active().numbers.addExternal.dialog.invalidNumbers2);
+								};
+	
+							} 
+							
+							else {
+								
+								self.numbersAddFreeformNumbers(numbersData, accountId, carrierName, state, numberMetadataPublic, function() {							
+									popup.dialog('close');
+		
+									callback && callback();
+								});
+	
+							}
+	
+						} else {
+	
+							if (miscSettings.enableBottomToast) {
+								monster.ui.toast({
+									type: 'error',
+									message: self.i18n.active().numbers.addExternal.dialog.invalidNumbers1,
+									options: {
+										positionClass: 'toast-bottom-right',
+										timeOut: 8000,
+										extendedTimeOut: 5000,
+									}
+								});
+							} else {
+								monster.ui.alert('warning', self.i18n.active().numbers.addExternal.dialog.invalidNumbers1);
+							};
+	
 						}
 
 					} else {
-						monster.ui.alert('warning', self.i18n.active().numbers.addExternal.dialog.invalidNumbers1);
+
+						if (miscSettings.enableBottomToast) {
+							monster.ui.toast({
+								type: 'error',
+								message: self.i18n.active().numbers.addExternal.dialog.invalidNumbers3,
+								options: {
+									positionClass: 'toast-bottom-right',
+									timeOut: 8000,
+									extendedTimeOut: 5000,
+								}
+							});
+						} else {
+							monster.ui.alert('warning', self.i18n.active().numbers.addExternal.dialog.invalidNumbers3);
+						};
+
 					}
+
 				});
 
 				var popup = monster.ui.dialog(dialogTemplate, {
@@ -1752,6 +2004,7 @@ define(function(require) {
 				dialogTemplate.find('#number_type').on('change', function() {
 					if ($(this).val() === "range") {
 						$('#customize_number_range').show();
+						$('#number_range_start').val(defaultCountryCode);
 						$('#customize_number_single').hide();
 						$('#number_single').val(null);
 					} 
@@ -1760,6 +2013,7 @@ define(function(require) {
 						$('#number_range_start').val(null);
 						$('#number_range_quantity').val(null);
 						$('#customize_number_single').show();
+						$('#number_single').val(defaultCountryCode);
 					} 
 					else {
 						$('#customize_number_range').hide();
@@ -1770,10 +2024,25 @@ define(function(require) {
 					}
 				});
 
-
 				dialogTemplate.find('#number_range_quantity').on('change', function() {
 					if ($(this).val() < 0 || $(this).val() > 1000) {
-						monster.ui.alert('warning', self.i18n.active().numbers.addExternal.numberType.rangeQtyError);
+
+						if (miscSettings.enableBottomToast) {
+							monster.ui.toast({
+								type: 'error',
+								message: self.i18n.active().numbers.addExternal.numberType.rangeQtyError,
+								options: {
+									positionClass: 'toast-bottom-right',
+									timeOut: 8000,
+									extendedTimeOut: 5000,
+								}
+							});
+							dialogTemplate.find('#number_range_quantity').val(null);
+						} else {
+							monster.ui.alert('warning', self.i18n.active().numbers.addExternal.numberType.rangeQtyError);
+							dialogTemplate.find('#number_range_quantity').val(null);
+						};
+
 					}
 
 					else {
@@ -1824,7 +2093,10 @@ define(function(require) {
 				dataNumbers = args.dataNumbers,
 				template = $(self.getTemplate({
 					name: 'spare',
-					data: dataNumbers,
+					data: {
+						...dataNumbers,
+						miscSettings: miscSettings
+					},
 					submodule: 'numbers'
 				})),
 				arrayNumbersSpare = dataNumbers.listAccounts.length ? dataNumbers.listAccounts[0].spareNumbers : [];
@@ -1837,6 +2109,13 @@ define(function(require) {
 			// disable delete button	
 			template.find('#delete_numbers').prop('disabled', true).addClass('deleted-numbers-disabled');
 
+			if (miscSettings.hideLocalFeatureIcon) {
+				template.find('.feature-local').hide();
+			}
+
+			if (miscSettings.hideToolTips) {
+				template.find('[data-toggle="tooltip"]').removeAttr('data-toggle');
+			}
 
 			self.numbersDisplayFeaturesMenu(arrayNumbersSpare, template);
 
@@ -1848,7 +2127,10 @@ define(function(require) {
 				dataNumbers = args.dataNumbers,
 				template = $(self.getTemplate({
 					name: 'used',
-					data: dataNumbers,
+					data: {
+						...dataNumbers,
+						miscSettings: miscSettings
+					},
 					submodule: 'numbers'
 				})),
 
@@ -1858,6 +2140,14 @@ define(function(require) {
 				.find('.list-numbers[data-type="used"]')
 				.empty()
 				.append(template);
+
+			if (miscSettings.hideLocalFeatureIcon) {
+				template.find('.feature-local').hide();
+			}
+
+			if (miscSettings.hideToolTips) {
+				template.find('[data-toggle="tooltip"]').removeAttr('data-toggle');
+			}
 
 			self.numbersDisplayFeaturesMenu(arrayNumbersUsed, template);
 
@@ -1964,10 +2254,22 @@ define(function(require) {
 					if (_data.hasOwnProperty('data') && _data.data.hasOwnProperty('cause') && _data.data.cause === 'account_disabled' && _data.data.hasOwnProperty('number')) {
 						success && success(_data.data);
 					} else {
-						monster.ui.toast({
-							type: 'error',
-							message: self.i18n.active().numbers.numberNotFound
-						});
+						if (miscSettings.enableBottomToast) {
+							monster.ui.toast({
+								type: 'error',
+								message: self.i18n.active().numbers.numberNotFound,
+								options: {
+									positionClass: 'toast-bottom-right',
+									timeOut: 3000,
+									extendedTimeOut: 1000,
+								}
+							});
+						} else {
+							monster.ui.toast({
+								type: 'error',
+								message: self.i18n.active().numbers.numberNotFound
+							});
+						};
 					}
 				}
 			});
@@ -2430,7 +2732,20 @@ define(function(require) {
 							submodule: 'numbers'
 						});
 
-						monster.ui.alert('warning', message);
+						if (miscSettings.enableBottomToast) {
+							monster.ui.toast({
+								type: 'error',
+								message: message,
+								options: {
+									positionClass: 'toast-bottom-right',
+									timeOut: 8000,
+									extendedTimeOut: 5000,
+								}
+							});
+						} else {
+							monster.ui.alert('warning', message);
+						};
+
 					}
 				}
 			},
@@ -2446,7 +2761,20 @@ define(function(require) {
 						submodule: 'numbers'
 					});
 
-					monster.ui.alert(message);
+					if (miscSettings.enableBottomToast) {
+						monster.ui.toast({
+							type: 'error',
+							message: message,
+							options: {
+								positionClass: 'toast-bottom-right',
+								timeOut: 8000,
+								extendedTimeOut: 5000,
+							}
+						});
+					} else {
+						monster.ui.alert('warning', message);
+					};
+
 				}
 			});
 		},
@@ -2479,12 +2807,17 @@ define(function(require) {
 
 		// pulled paintNumberFeaturesIcon into app from core
 		paintNumberFeaturesIcon: function(features, target) {
-
 			var self = this
 
 			// Can't jQuery it as it's used by Handlebars with a helper, and it needs to return HTML
 			var sortedFeatures = features && features.length ? features.sort() : [],
-				template = monster.template(self, 'monster-number-features', { features: sortedFeatures });
+				template = $(self.getTemplate({
+					name: 'monster-number-features',
+					data: {
+						features: sortedFeatures,
+						miscSettings: miscSettings
+					}
+				}))
 
 			monster.ui.tooltips($(template));
 
@@ -2521,8 +2854,13 @@ define(function(require) {
 
 			if (dataNumber.hasOwnProperty('dimension') && dataNumber.dimension.hasOwnProperty('number_metadata_public')) {
 
-				if (dataNumber.dimension.number_metadata_public.source === 'ported_in' && miscSettings.enableNumberStateToggle) {
-					miscSettings.allowNumberStateToggle = true
+				var carrierName = dataNumber.dimension.number_metadata_public.carrier;
+
+				if (numberStateToggleCarriers.hasOwnProperty(carrierName) && numberStateToggleCarriers[carrierName] === true) {
+					if (dataNumber.dimension.number_metadata_public.source === 'ported_in' && miscSettings.enableNumberStateToggle) {
+						miscSettings.allowNumberStateToggle = true
+					}
+
 				}
 			
 			}
@@ -2591,10 +2929,22 @@ define(function(require) {
 								submodule: 'numbers'
 							});
 	
-						monster.ui.toast({
-							type: 'success',
-							message: template
-						});
+						if (miscSettings.enableBottomToast) {
+							monster.ui.toast({
+								type: 'success',
+								message: template,
+								options: {
+									positionClass: 'toast-bottom-right',
+									timeOut: 3000,
+									extendedTimeOut: 1000,
+								}
+							});
+						} else {
+							monster.ui.toast({
+								type: 'success',
+								message: template
+							});
+						};
 	
 						popup.dialog('close');
 	
@@ -2644,7 +2994,19 @@ define(function(require) {
 				// prevent number being disabled if emergency services address has been set
 				if (dataNumber.hasOwnProperty('dimension') && dataNumber.dimension.hasOwnProperty('uk_999')) {
 
-					monster.ui.alert('warning', self.i18n.active().numberStatus.preventNumberDisable);
+					if (miscSettings.enableBottomToast) {
+						monster.ui.toast({
+							type: 'error',
+							message: self.i18n.active().numberStatus.preventNumberDisableToast,
+							options: {
+								positionClass: 'toast-bottom-right',
+								timeOut: 8000,
+								extendedTimeOut: 5000,
+							}
+						});
+					} else {
+						monster.ui.alert('warning', self.i18n.active().numberStatus.preventNumberDisable);
+					};
 				
 				} else {
 
@@ -2661,11 +3023,23 @@ define(function(require) {
 									},
 									submodule: 'numbers'
 								});
-		
-							monster.ui.toast({
-								type: 'success',
-								message: template
-							});
+
+							if (miscSettings.enableBottomToast) {
+								monster.ui.toast({
+									type: 'success',
+									message: template,
+									options: {
+										positionClass: 'toast-bottom-right',
+										timeOut: 3000,
+										extendedTimeOut: 1000,
+									}
+								});
+							} else {
+								monster.ui.toast({
+									type: 'success',
+									message: template
+								});
+							};
 		
 							popup.dialog('close');
 		

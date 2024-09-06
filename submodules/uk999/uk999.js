@@ -55,7 +55,10 @@ define(function(require) {
 				accountId = pAccountId || self.accountId,
 				popupHtml = $(self.getTemplate({
 					name: 'dialog',
-					data: self.uk999Format(dataNumber.dimension.uk_999),
+					data: {
+						...self.uk999Format(dataNumber.dimension.uk_999),
+						miscSettings: miscSettings
+					},
 					submodule: 'uk999'
 				})),
 				popup;
@@ -130,7 +133,19 @@ define(function(require) {
 
 					if (!postcodeRegex.test(postcode)) {
 
-						monster.ui.alert('warning', self.i18n.active().uk999.invalidPostcode);
+						if (miscSettings.enableBottomToast) {
+							monster.ui.toast({
+								type: 'error',
+								message: self.i18n.active().uk999.invalidPostcode,
+								options: {
+									positionClass: 'toast-bottom-right',
+									timeOut: 8000,
+									extendedTimeOut: 5000,
+								}
+							});
+						} else {
+							monster.ui.alert('warning', self.i18n.active().uk999.invalidPostcode);
+						};
 						
 						$(addressPostcode).val(null);
 					
@@ -201,8 +216,20 @@ define(function(require) {
 					var anyFieldIsNull = !businessName || !addressLine1 || !addressLine2 || !locality || !postcode;
 
 					if (anyFieldIsNull) {
-							
-						monster.ui.alert('warning', self.i18n.active().uk999.addAddressErrorBusiness);
+						
+						if (miscSettings.enableBottomToast) {
+							monster.ui.toast({
+								type: 'error',
+								message: self.i18n.active().uk999.addAddressErrorBusiness,
+								options: {
+									positionClass: 'toast-bottom-right',
+									timeOut: 8000,
+									extendedTimeOut: 5000,
+								}
+							});
+						} else {
+							monster.ui.alert('warning', self.i18n.active().uk999.addAddressErrorBusiness);
+						};
 
 					}
 
@@ -232,7 +259,19 @@ define(function(require) {
 
 					if (anyFieldIsNull) {
 							
-						monster.ui.alert('warning', self.i18n.active().uk999.addAddressErrorResidential);
+						if (miscSettings.enableBottomToast) {
+							monster.ui.toast({
+								type: 'error',
+								message: self.i18n.active().uk999.addAddressErrorResidential,
+								options: {
+									positionClass: 'toast-bottom-right',
+									timeOut: 8000,
+									extendedTimeOut: 5000,
+								}
+							});
+						} else {
+							monster.ui.alert('warning', self.i18n.active().uk999.addAddressErrorResidential);
+						};
 
 					}
 
@@ -268,8 +307,20 @@ define(function(require) {
 						var anyFieldIsNull = !businessName || !addressLine1 || !addressLine2 || !locality || !postcode;
 	
 						if (anyFieldIsNull) {
-								
-							monster.ui.alert('warning', self.i18n.active().uk999.addAddressErrorBusiness);
+							
+							if (miscSettings.enableBottomToast) {
+								monster.ui.toast({
+									type: 'error',
+									message: self.i18n.active().uk999.addAddressErrorBusiness,
+									options: {
+										positionClass: 'toast-bottom-right',
+										timeOut: 8000,
+										extendedTimeOut: 5000,
+									}
+								});
+							} else {
+								monster.ui.alert('warning', self.i18n.active().uk999.addAddressErrorBusiness);
+							};
 	
 						}
 	
@@ -295,7 +346,19 @@ define(function(require) {
 	
 						if (anyFieldIsNull) {
 								
-							monster.ui.alert('warning', self.i18n.active().uk999.addAddressErrorResidential);
+							if (miscSettings.enableBottomToast) {
+								monster.ui.toast({
+									type: 'error',
+									message: self.i18n.active().uk999.addAddressErrorResidential,
+									options: {
+										positionClass: 'toast-bottom-right',
+										timeOut: 8000,
+										extendedTimeOut: 5000,
+									}
+								});
+							} else {
+								monster.ui.alert('warning', self.i18n.active().uk999.addAddressErrorResidential);
+							};
 	
 						}
 	
@@ -418,10 +481,22 @@ define(function(require) {
 							submodule: 'uk999'
 						});
 
-					monster.ui.toast({
-						type: 'success',
-						message: template
-					});
+					if (miscSettings.enableBottomToast) {
+						monster.ui.toast({
+							type: 'success',
+							message: template,
+							options: {
+								positionClass: 'toast-bottom-right',
+								timeOut: 3000,
+								extendedTimeOut: 1000,
+							}
+						});
+					} else {
+						monster.ui.toast({
+							type: 'success',
+							message: template
+						});
+					};
 
 					popup.dialog('close');
 
@@ -487,7 +562,21 @@ define(function(require) {
 							if (data.data.caller_id.hasOwnProperty('emergency')) {
 								// if number is set as account emergency caller id prevent removal of address
 								if (dataNumber.id == data.data.caller_id.emergency.number) {
-									monster.ui.alert('warning', self.i18n.active().uk999.removeAddressError);
+									
+									if (miscSettings.enableBottomToast) {
+										monster.ui.toast({
+											type: 'error',
+											message: self.i18n.active().uk999.removeAddressError,
+											options: {
+												positionClass: 'toast-bottom-right',
+												timeOut: 8000,
+												extendedTimeOut: 5000,
+											}
+										});
+									} else {
+										monster.ui.alert('warning', self.i18n.active().uk999.removeAddressError);
+									};
+
 								}
 								else {
 									uk999ConfirmRemoval();
@@ -529,10 +618,22 @@ define(function(require) {
 										submodule: 'uk999'
 									});
 			
-								monster.ui.toast({
-									type: 'success',
-									message: template
-								});
+								if (miscSettings.enableBottomToast) {
+									monster.ui.toast({
+										type: 'success',
+										message: template,
+										options: {
+											positionClass: 'toast-bottom-right',
+											timeOut: 3000,
+											extendedTimeOut: 1000,
+										}
+									});
+								} else {
+									monster.ui.toast({
+										type: 'success',
+										message: template
+									});
+								};
 			
 								popup.dialog('close');
 			

@@ -5,7 +5,11 @@
 	<div class="row-fluid">
 		
 			<div class="control-group" style="border-bottom: 1px solid #e5e5e5; padding-bottom: 15px;">
-				<label class="control-label" for="addressType">{{ i18n.uk999.addressType }}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.uk999.addressTypeHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
+				<label class="control-label" for="addressType">{{ i18n.uk999.addressType }}
+					{{#unless miscSettings.hideToolTips}}
+						<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.uk999.addressTypeHelp}}" data-placement="right" data-toggle="tooltip"></i>
+					{{/unless}}
+				</label>
 				<div class="controls">
 					<select id="addressType" name="address_type">
 						<option value="business"{{#compare address_type '===' 'business'}} selected{{/compare}}>{{ i18n.uk999.addressTypeBusiness }}</option>
@@ -36,7 +40,11 @@
 			</div>
 
 			<div class="control-group" id="bussuffixGroup">
-				<label class="control-label" for="addressBussuffix">{{ i18n.uk999.addressBussuffix }}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.uk999.addressBussuffixHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
+				<label class="control-label" for="addressBussuffix">{{ i18n.uk999.addressBussuffix }}
+					{{#unless miscSettings.hideToolTips}}
+						<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.uk999.addressBussuffixHelp}}" data-placement="right" data-toggle="tooltip"></i>
+					{{/unless}}
+				</label>
 				<div class="controls">
 					<select id="addressBussuffix" name="address.bussuffix">
 						<option value="">Select an option</option>
@@ -90,14 +98,22 @@
 			{{/if}}-->
 
 			<div class="control-group" style="border-bottom: 1px solid #e5e5e5; padding-bottom: 20px;">
-				<label for="notification_contact_emails" class="control-label">{{ i18n.uk999.email.label}}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.uk999.email.help}}" data-placement="right" data-toggle="tooltip"></i></label>
+				<label for="notification_contact_emails" class="control-label">{{ i18n.uk999.email.label}}
+					{{#unless miscSettings.hideToolTips}}
+						<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.uk999.email.help}}" data-placement="right" data-toggle="tooltip"></i>
+					{{/unless}}
+				</label>
 				<div class="controls">
 					<textarea name="notification_contact_emails" id="notification_contact_emails" placeholder="{{i18n.uk999.email.placeholder}}">{{notification_contact_emails}}</textarea>
 				</div>
 			</div>
 
 			<div class="control-group">
-				<label class="control-label" for="addressStatus">{{ i18n.uk999.addressStatus }}<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.uk999.addressStatusHelp}}" data-placement="right" data-toggle="tooltip"></i></label>
+				<label class="control-label" for="addressStatus">{{ i18n.uk999.addressStatus }}
+					{{#unless miscSettings.hideToolTips}}
+						<i class="help-popover fa fa-question-circle fa-lg" data-original-title="{{i18n.uk999.addressStatusHelp}}" data-placement="right" data-toggle="tooltip"></i>
+					{{/unless}}
+				</label>
 				<div class="controls">
 					<input id="addressStatus" type="text" placeholder=' ' name="address_status" value="{{address_status}}" style="background-color: #eeeeee; opacity: 1; cursor: default;" disabled />
 				</div>

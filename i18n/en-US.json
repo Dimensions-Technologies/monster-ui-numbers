@@ -546,7 +546,7 @@
 		"numbers": "Numbers",
 		"addNumbers": "Add Numbers",
 		"moveNumbers": "Move To",
-		"searchNumbers": "Search a number...",
+		"searchNumbers": "Search...",
 		"go": "Go",
 		"verify": "Verify",
 		"verified": "Verified",
@@ -559,7 +559,7 @@
 		"noUsedNumber": "There are no numbers used in any application for this account.",
 		"spareNumbers": "Spare Numbers",
 		"externalNumbers": "Caller ID Numbers",
-		"usedNumbers": "Numbers in use",
+		"usedNumbers": "Numbers in Use",
 		"helpSpareNumbers": "This shows the list of numbers not used anywhere in this account. You can assign those numbers to your sub-accounts or delete these numbers from your account.",
 		"helpUsedNumbers": "This list displays where your numbers are used. You can also see the list of numbers used by your sub-accounts.",
 		"helpExternalNumbers": "In order to use a number outside of this PBX for caller ID, it must first be added as a verified number.",
@@ -572,17 +572,17 @@
 			"from": "From ",
 			"cancel": "Cancel",
 			"delete": {
-				"title": "Delete Numbers - Confirmation",
-				"questionPartOne": "Are you sure you want to delete ",
-				"questionPartTwo": " number(s)?",
-				"button": "Delete number(s)"
+				"title": "Delete Numbers",
+				"questionPartOne": "This will delete ",
+				"questionPartTwo": " selected number(s)",
+				"button": "Delete"
 			},
 			"move": {
-				"title": "Move Numbers - Confirmation",
+				"title": "Move Numbers",
 				"questionPartOne": "Are you sure you want to move ",
 				"questionPartTwo": " number(s) to ",
 				"questionPartThree": "?",
-				"button": "move number(s)"
+				"button": "Move"
 			}
 		},
 		"dialogAlertNowAllowed": {
@@ -618,14 +618,15 @@
 		
 		"deleteExternal": {
 			"label": "Delete",
-			"help": "Delete numbers from the account."
+			"help": "Delete numbers from the account.",
+			"successDelete": " number(s) have been successfully deleted from the system."
 		},
 		
 		"addExternal": {
 			"label": "Add",
 			"help": "Add numbers to the account.",
 			"dialog": {
-				"title": "Add your phone numbers to the platform",
+				"title": "Add Phone Numbers",
 				"fieldText1": "Use the form below to add numbers to the platform.",
 				"fieldText2": "Numbers should be entered in e164 format with no space.",
 				"beginImport": "Begin Import",
@@ -633,6 +634,7 @@
 				"help2": "** If importing multiple numbers, each number must be separated by a space.",
 				"invalidNumbers1": "Please ensure the number(s) being added are formatted correctly as e164. If a DDI Range is being added please ensure the Quantity has been set.",
 				"invalidNumbers2": "Please ensure all fields on the form have been populated.",
+				"invalidNumbers3": "Please ensure the number entered is a valid phone number",
 				"forceActivate": {
 					"text": "Add and assign to account",
 					"help": "Unchecking this will only add the numbers to the numbers pool, so they can be purchased via the Number Search tool. Checking the box will add the numbers and purchase them immediately."
@@ -664,6 +666,7 @@
 				"new_provide": "New Provide",
 				"geographic": "Geographic (01/02)",
 				"non_geographic": "Non-Geographic (03/08)",
+				"international": "International",
 				"premium": "Premium",
 				"sourceHelp": "Specify if the number(s) being added is being ported in, or if it's a new provide.",
 				"classificationHelp": "Specify the classification of the number(s) being added."
@@ -678,9 +681,10 @@
 			"__comment": "UI-2448: Delete recap popup",
 			"__version": "4.1",
 			"successAdd": "The phone numbers have been successfully added to the system.",
+			"successAddToast": " number(s) have been successfully added to the system.",
 			"resultsDialog": {
 				"headline": "Here is the summary of which numbers were successfully added and those that weren't.",
-				"title": "Summary of the Add Number operation",
+				"title": "Add Number Summary",
 				"continue": "Continue"
 			},
 
@@ -777,7 +781,8 @@
 		"enableNumberConfirmation": "{{phoneNumber}} has been enabled",
 		"disableNumber": "Are you sure you wish to disable this number?",
 		"disableNumberConfirmation": "{{phoneNumber}} has been disabled",
-		"preventNumberDisable": "This number has an assigned Emergency Services address. <br> You must remove it before the number can be disabled."
+		"preventNumberDisable": "This number has an assigned Emergency Services address. <br> You must remove it before the number can be disabled.",
+		"preventNumberDisableToast": "This number has an assigned Emergency Services address. You must remove it before the number can be disabled."
 	},
 
 	"e911": {

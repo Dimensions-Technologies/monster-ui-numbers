@@ -1,11 +1,26 @@
 <div id="actions_wrapper_used" class="actions-wrapper">
 	<div class="form-inline">
-		<div class="input-append pull-right search-custom">
-			<input class="span2" type="text" placeholder="{{ i18n.numbers.searchNumbers }}"/>
-			<button class="monster-button monster-button-success non-fixed search-numbers" type="button">
-				{{ i18n.numbers.go }}
-			</button>
-		</div>
+		
+		{{#unless miscSettings.embeddedPortalView}}
+			{{#unless miscSettings.enableLocalNumberSearch}}
+				<div class="input-append pull-right search-custom">
+					<input class="span2" type="text" placeholder="{{ i18n.numbers.searchNumbers }}"/>
+					<button class="monster-button monster-button-success non-fixed search-numbers" type="button">
+						{{ i18n.numbers.go }}
+					</button>
+				</div>
+			{{/unless}}
+
+			{{#if miscSettings.enableLocalNumberSearch}}
+				<div class="input-append pull-right search-custom">
+					<input class="span2" type="text" placeholder="{{ i18n.numbers.searchNumbers }}"
+						pattern="[0-9+ ]*" inputmode="tel"
+						onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 32 || (event.charCode == 43 && this.value.indexOf('+') === -1)"
+					/>
+				</div>
+			{{/if}}
+		{{/unless}}
+
 	</div>
 </div>
 <div class="accounts-numbers">
@@ -13,12 +28,25 @@
 		<div class="account-section {{ open }}" data-id="{{ id }}" data-name="{{ name }}">
 			{{#compare ../viewType '!==' 'pbx'}}
 				<div class="account-header">
-					<div class="left-part">
-					</div>
-					<div class="expandable">
-						{{ name }}
-						<span class="count">({{ countUsedNumbers }})</span>
-					</div>
+					
+					{{#unless ../miscSettings.embeddedPortalView}}
+						<div class="left-part">
+						</div>
+						<div class="expandable">
+							{{ name }}
+							<span class="count">({{ countUsedNumbers }})</span>
+						</div>
+					{{/unless}}
+					
+					{{#if ../miscSettings.embeddedPortalView}}
+						<div class="left-part search-custom">
+							<div class="search-box">
+								<i class="fa fa-search"></i>
+								<input class="span2 search-query" type="text" placeholder="{{ @root.i18n.numbers.searchNumbers }}"/>
+							</div>
+						</div>
+					{{/if}}
+
 				</div>
 			{{/compare}}
 			<div class="numbers-wrapper">

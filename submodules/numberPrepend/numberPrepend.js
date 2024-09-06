@@ -1,7 +1,8 @@
 define(function(require) {
 	var $ = require('jquery'),
 		_ = require('lodash'),
-		monster = require('monster');
+		monster = require('monster'),
+		miscSettings = {};
 
 	var numberPrepend = {
 		requests: {
@@ -18,6 +19,9 @@ define(function(require) {
 					},
 					number: args.phoneNumber
 				};
+
+			// set variables for use elsewhere
+			miscSettings = args.miscSettings;
 
 			if (args.hasOwnProperty('accountId')) {
 				argsCommon.accountId = args.accountId;
@@ -58,11 +62,23 @@ define(function(require) {
 
 						monster.pub('dtNumbers.pushFeatures', data);
 
-						monster.ui.toast({
-							type: 'success',
-							message: template
-						});
-						
+						if (miscSettings.enableBottomToast) {
+							monster.ui.toast({
+								type: 'success',
+								message: template,
+								options: {
+									positionClass: 'toast-bottom-right',
+									timeOut: 3000,
+									extendedTimeOut: 1000,
+								}
+							});
+						} else {
+							monster.ui.toast({
+								type: 'success',
+								message: template
+							});
+						};
+
 						popup.dialog('close');
 
 						callbacks.success && callbacks.success(data);
