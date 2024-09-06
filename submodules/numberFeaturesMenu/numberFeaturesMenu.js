@@ -43,7 +43,10 @@ define(function(require) {
 
 			template = $(self.getTemplate({
 				name: 'dropdown',
-				data: self.numberFeaturesMenuFormatData(numberData),
+				data: {
+					...self.numberFeaturesMenuFormatData(numberData),
+					miscSettings: miscSettings
+				},
 				submodule: 'numberFeaturesMenu'
 			}));
 
@@ -103,15 +106,32 @@ define(function(require) {
 					: self.accountId;
 
 				self.numbersSyncOne(phoneNumber, accountId, function() {
-					monster.ui.toast({
-						type: 'success',
-						message: self.getTemplate({
-							name: '!' + self.i18n.active().numberFeaturesMenu.syncSuccess,
-							data: {
-								number: monster.util.formatPhoneNumber(phoneNumber)
+					if (miscSettings.enableBottomToast) {
+						monster.ui.toast({
+							type: 'success',
+							message: self.getTemplate({
+								name: '!' + self.i18n.active().numberFeaturesMenu.syncSuccess,
+								data: {
+									number: monster.util.formatPhoneNumber(phoneNumber)
+								}
+							}),
+							options: {
+								positionClass: 'toast-bottom-right',
+								timeOut: 3000,
+								extendedTimeOut: 1000,
 							}
-						})
-					});
+						});
+					} else {
+						monster.ui.toast({
+							type: 'success',
+							message: self.getTemplate({
+								name: '!' + self.i18n.active().numberFeaturesMenu.syncSuccess,
+								data: {
+									number: monster.util.formatPhoneNumber(phoneNumber)
+								}
+							})
+						});
+					};
 				});
 			});
 		},

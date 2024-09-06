@@ -1,5 +1,6 @@
-@import "../../../../css/partials/base";
-
+/* _colors.scss */
+/* unique color names */
+/* semantic color names */
 #numbers_container {
 	display: block;
 	max-width: 902px;
@@ -7,11 +8,12 @@
 
 #numbers_container .top-box {
 	display: flex;
-
-	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
-	box-sizing: border-box;         /* Opera/IE 8+ */
-
+	-webkit-box-sizing: border-box;
+	/* Safari/Chrome, other WebKit */
+	-moz-box-sizing: border-box;
+	/* Firefox, other Gecko */
+	box-sizing: border-box;
+	/* Opera/IE 8+ */
 	background: #f9f9f9;
 	border-left: 4px solid #E2E2E2;
 	border-right: 4px solid #E2E2E2;
@@ -19,16 +21,17 @@
 	border-radius: 4px;
 	font-size: 16px;
 	width: 100%;
-
 	height: 80px;
 }
 
-#numbers_container .top-box > .half-box {
+#numbers_container .top-box>.half-box {
 	flex-grow: 1;
-	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
-	box-sizing: border-box;         /* Opera/IE 8+ */
-
+	-webkit-box-sizing: border-box;
+	/* Safari/Chrome, other WebKit */
+	-moz-box-sizing: border-box;
+	/* Firefox, other Gecko */
+	box-sizing: border-box;
+	/* Opera/IE 8+ */
 	border-top: 4px solid #ddd;
 	color: #333;
 	cursor: pointer;
@@ -38,32 +41,39 @@
 	padding: 5px 0px 5px 25px;
 }
 
-#numbers_container .top-box > .half-box:hover {
-	background: rgb(240,240,240); /* Old browsers */
-	background: -moz-linear-gradient(top,  rgba(240,240,240,1) 0%, rgba(249,249,249,1) 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(240,240,240,1)), color-stop(100%,rgba(249,249,249,1))); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top,  rgba(240,240,240,1) 0%,rgba(249,249,249,1) 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top,  rgba(240,240,240,1) 0%,rgba(249,249,249,1) 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top,  rgba(240,240,240,1) 0%,rgba(249,249,249,1) 100%); /* IE10+ */
-	background: linear-gradient(to bottom,  rgba(240,240,240,1) 0%,rgba(249,249,249,1) 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f0f0', endColorstr='#f9f9f9',GradientType=0 ); /* IE6-9 */
+#numbers_container .top-box>.half-box:hover {
+	background: #f0f0f0;
+	/* Old browsers */
+	background: -moz-linear-gradient(top, #f0f0f0 0%, #f9f9f9 100%);
+	/* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f0f0f0), color-stop(100%, #f9f9f9));
+	/* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #f0f0f0 0%, #f9f9f9 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #f0f0f0 0%, #f9f9f9 100%);
+	/* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #f0f0f0 0%, #f9f9f9 100%);
+	/* IE10+ */
+	background: linear-gradient(to bottom, #f0f0f0 0%, #f9f9f9 100%);
+	/* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f0f0f0', endColorstr='#f9f9f9', GradientType=0);
+	/* IE6-9 */
 }
 
-#numbers_container .top-box > .half-box.selected  {
+#numbers_container .top-box>.half-box.selected {
 	background: #fefefe;
-	border-top: 4px solid $primary-color;
+	border-top: 4px solid #2297FF;
 	box-shadow: inset 0 0 5px #cccccc;
-	color: $primary-color;
+	color: #2297FF;
 	font-weight: 600;
 }
 
-#numbers_container .top-box > .half-box .count {
+#numbers_container .top-box>.half-box .count {
 	color: #999;
 	margin-left: 10px;
 }
 
-
-#numbers_container .top-box > .half-box .help-popover {
+#numbers_container .top-box>.half-box .help-popover {
 	background: none repeat scroll 0 0 #FAFAFA;
 	border-radius: 15px 15px 15px 15px;
 	box-shadow: 0 1px 1px #999999;
@@ -75,7 +85,6 @@
 	margin-top: 20px;
 	text-align: center;
 	width: 20px;
-
 	float: right;
 }
 
@@ -95,7 +104,7 @@
 #numbers_container .account-section .numbers-wrapper .number-box {
 	position: relative;
 	border: 1px solid #ccc;
-	border-bottom-width: 0px;
+	/*border-bottom-width: 0px;*/
 	margin-top: -1px;
 }
 
@@ -112,18 +121,16 @@
 	margin-top: 4px;
 }
 
-#numbers_container .account-section .numbers-wrapper .number-box .phone-number/*,
-.dialog-spare-container .numbers .number-box .phone-number*/ {
+#numbers_container .account-section .numbers-wrapper .number-box .phone-number {
 	display: inline-block;
 	width: 150px;
-
-	& > i:not(:first-child) {
-		margin-left: 10px;
-	}
 }
 
-#numbers_container .account-section .numbers-wrapper .number-box .locality/*,
-.dialog-spare-container .numbers .number-box .locality*/ {
+#numbers_container .account-section .numbers-wrapper .number-box .phone-number>i:not(:first-child) {
+	margin-left: 10px;
+}
+
+#numbers_container .account-section .numbers-wrapper .number-box .locality {
 	width: 250px;
 }
 
@@ -132,14 +139,12 @@
 }
 
 #numbers_container .account-section .numbers-wrapper .number-box .locality,
-#numbers_container .account-section .numbers-wrapper .number-box .used-by/*,
-.dialog-spare-container .numbers .number-box .locality*/ {
+#numbers_container .account-section .numbers-wrapper .number-box .used-by {
 	margin-left: 30px;
 	display: inline-block;
 }
 
-#numbers_container .account-section .numbers-wrapper .number-box .locality .flag/*,
-.dialog-spare-container .numbers .number-box .locality .flag*/ {
+#numbers_container .account-section .numbers-wrapper .number-box .locality .flag {
 	margin-right: 10px;
 }
 
@@ -189,15 +194,15 @@
 	display: inline-block;
 }
 
-#numbers_container .account-section.open .account-header .right-links a > *{
+#numbers_container .account-section.open .account-header .right-links a>* {
 	color: #ffffff;
 }
 
-#numbers_container .account-section .account-header .right-links a > *{
-	color: $primary-color;
+#numbers_container .account-section .account-header .right-links a>* {
+	color: #2297FF;
 }
 
-#numbers_container .account-section .account-header .right-links i{
+#numbers_container .account-section .account-header .right-links i {
 	margin-right: 6px;
 	text-decoration: none !important;
 }
@@ -207,7 +212,7 @@
 	white-space: nowrap;
 }
 
-#numbers_container .account-section .account-header .right-links > * {
+#numbers_container .account-section .account-header .right-links>* {
 	margin-right: 10px;
 }
 
@@ -220,22 +225,23 @@
 	background: transparent !important;
 }
 
-#numbers_container .dropdown-toggle > i:hover {
+#numbers_container .dropdown-toggle>i:hover {
 	color: #000;
 }
 
-#numbers_container .account-section .account-header input[type="checkbox"], #numbers_container .account-section .account-header .count {
+#numbers_container .account-section .account-header input[type="checkbox"],
+#numbers_container .account-section .account-header .count {
 	display: none;
 }
 
-#numbers_container .account-section.open .account-header input[type="checkbox"], #numbers_container .account-section.open .account-header .count {
+#numbers_container .account-section.open .account-header input[type="checkbox"],
+#numbers_container .account-section.open .account-header .count {
 	display: inline-block;
 }
 
 #numbers_container .account-section.open .account-header {
-	background-color:$primary-color;
+	background-color: #2297FF;
 	color: #ffffff;
-
 	border-bottom-right-radius: 0px !important;
 	border-bottom-left-radius: 0px !important;
 }
@@ -267,17 +273,17 @@
 
 #numbers_container .actions-wrapper #trigger_links {
 	display: none;
+}
 
-	&.active {
-		display: inline;
-	}
+#numbers_container .actions-wrapper #trigger_links.active {
+	display: inline;
 }
 
 #numbers_container .buy-numbers-dropdown {
 	display: inline-block;
 }
 
-#numbers_container .actions-wrapper label{
+#numbers_container .actions-wrapper label {
 	font-size: 16px;
 	font-weight: 600;
 	margin-right: 20px;
@@ -294,13 +300,13 @@
 	text-decoration: underline;
 }
 
-#numbers_container .actions-wrapper a i{
+#numbers_container .actions-wrapper a i {
 	margin-right: 5px;
 }
 
-/* #numbers_container .features i {
-	display: none;
-} */
+#numbers_container .features i {
+    margin-right: 10px;
+}
 
 #numbers_container .features i.active {
 	display: inline-block;
@@ -318,49 +324,49 @@
 
 /* Dialog Spare Numbers */
 /*.dialog-spare-container {
-	padding: 15px;
+    padding: 15px;
 }
 
 .dialog-spare-container .grid-numbers .title {
-	border-radius: 4px 4px 0 0;
-	color: #FFFFFF;
-	line-height: 30px;
-	padding: 10px;
-	width: 600px;
+    border-radius: 4px 4px 0 0;
+    color: #FFFFFF;
+    line-height: 30px;
+    padding: 10px;
+    width: 600px;
 }
 
 .dialog-spare-container .number-box > input[type="checkbox"] {
-	margin-right: 10px;
+    margin-right: 10px;
 }
 
 .dialog-spare-container .grid-numbers {
-	padding-bottom: 10px;
+    padding-bottom: 10px;
 }
 
 .dialog-spare-container .grid-numbers .numbers {
-	border: 1px solid #DDD;
-	max-height: 372px;
-	overflow: auto;
+    border: 1px solid #DDD;
+    max-height: 372px;
+    overflow: auto;
 }
 
 .dialog-spare-container .grid-numbers .numbers .number-box {
-	border: 1px solid #DDD;
+    border: 1px solid #DDD;
 }
 
 .dialog-spare-container .grid-numbers .numbers .number-box.no-data:hover {
-	cursor: default;
-	background: inherit;
+    cursor: default;
+    background: inherit;
 }
 
 .dialog-spare-container .grid-numbers .empty-search-row {
-	text-align: center;
-	padding: 10px;
+    text-align: center;
+    padding: 10px;
 }
 
 .dialog-spare-container .dialog-buttons-wrapper a.cancel-link {
-	margin-right: 30px;
-	vertical-align: middle;
-	color: $primary-color;
+    margin-right: 30px;
+    vertical-align: middle;
+    color: $primary-color;
 }*/
 
 /* Dialog Confirmation Actions */
@@ -371,9 +377,17 @@
 	text-align: center;
 }
 
+#action_confirmation h5 {
+	margin-bottom: 0px;
+	padding: 15px 15px 25px;
+	text-align: center;
+}
+
 #action_confirmation .table-wrapper {
 	max-height: 420px;
 	overflow-y: auto;
+	max-width: 90%;
+    margin: 0 auto;
 }
 
 #action_confirmation thead th {
@@ -382,23 +396,57 @@
 	text-shadow: none;
 }
 
-#action_confirmation th { padding: 15px 8px 15px 20px; }
-#action_confirmation td { padding-left: 60px; padding-right: 15px; }
-#action_confirmation tr { background-color: #f9f9f9; }
-#action_confirmation tr:nth-child(odd) { background-color: #f9f9f9; }
+#action_confirmation th {
+	padding: 15px 8px 15px 20px;
+}
+
+#action_confirmation td {
+	padding-left: 60px;
+	padding-right: 15px;
+}
+
+#action_confirmation tr {
+	background-color: #f9f9f9;
+}
+
+#action_confirmation tr:nth-child(odd) {
+	background-color: #f9f9f9;
+}
 
 #action_confirmation td i.remove-number {
 	position: relative;
 	top: 7px;
 }
 
-#action_confirmation td i.remove-number:hover { cursor: pointer }
+#action_confirmation td i.remove-number:hover {
+	cursor: pointer;
+}
 
-#action_confirmation .actions { padding: 15px; }
+#action_confirmation .actions {
+	padding: 15px;
+}
 
-#action_confirmation .actions a { text-decoration: none; margin-right: 10px; }
+#action_confirmation .actions a {
+	text-decoration: none;
+	margin-right: 10px;
+}
 
-#action_confirmation .actions a:hover { text-decoration: underline; }
+#action_confirmation .actions a:hover {
+	text-decoration: underline;
+}
+
+#action_confirmation .center.phone-number {
+	text-align: center;
+}
+
+#action_confirmation td:has(.center.phone-number) {
+    padding-left: 0px;
+}
+
+#action_confirmation td {
+    padding-left: 60px;
+    padding-right: 15px;
+}
 
 /* Delete confirmation popup */
 .delete-confirmation-popup {
@@ -456,7 +504,7 @@
 }
 
 #numbers_add_external .customize-number-field select {
-	margin-bottom: 0
+	margin-bottom: 0;
 }
 
 #numbers_add_external .customize-number-field .custom-carrier-block {
@@ -475,4 +523,18 @@
 
 #numbers_add_external .customize-number-field {
 	margin-top: 5px;
+}
+
+
+/* custom search box formatting */
+#numbers_container .left-part.search-custom input {
+	margin-bottom: -40px;
+}
+
+#numbers_container .left-part.search-custom .search-box > i.fa-search {
+    margin-top: 24px !important;
+}
+
+#numbers_container .left-part.search-custom .search-query {
+    padding-left: 28px !important;
 }

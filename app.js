@@ -1,7 +1,9 @@
 define(function(require) {
 	var $ = require('jquery'),
 		monster = require('monster'),
-		miscSettings = {};
+		miscSettings = {},
+		defaultCountryCode = null,
+		numberStateToggleCarriers = {};
 
 	var app = {
 		name: 'dt-numbers',
@@ -127,7 +129,7 @@ define(function(require) {
 
 			monster.waterfall([
 
-				function() {
+				function(callback) {
 
 					// check whitelable doc for dimension configuration for app
 					if (monster.config.whitelabel.hasOwnProperty('dimension')) {
@@ -138,33 +140,53 @@ define(function(require) {
 						if (data.dimension.hasOwnProperty('dt_numbers')) {
 
 							if (data.dimension.dt_numbers.hasOwnProperty('miscSettings')) {	
-
 								data.dimension.dt_numbers.miscSettings.forEach(function(action) {
 									miscSettings[action] = true;
 								});
+							}
 
-							}													
+							if (data.dimension.dt_numbers.hasOwnProperty('defaultCountryCode')) {	
+								defaultCountryCode = data.dimension.dt_numbers.defaultCountryCode
+							}
+
+							if (data.dimension.dt_numbers.hasOwnProperty('numberStateToggleCarriers')) {	
+								data.dimension.dt_numbers.numberStateToggleCarriers.forEach(function(action) {
+									numberStateToggleCarriers[action] = true;
+								});
+							}
 
 						}
 
 						// log to console if enabled
 						if (miscSettings.enableConsoleLogging) {
 							console.log('miscSettings:', miscSettings);
+							console.log('defaultCountryCode', defaultCountryCode);
+							console.log('numberStateToggleCarriers', numberStateToggleCarriers);
 						}
 
+						callback()
+
+					} else {
+						callback()
 					}
 
 				},
-			
-				monster.pub('dtNumbers.render', {
-					container: numberManager,
-					callbackAfterRender: function(numberControl) {
-						parent
-							.empty()
-							.append(numberControl);
-					},
-					miscSettings
-				})
+
+				function() {
+
+					monster.pub('dtNumbers.render', {
+						container: numberManager,
+						callbackAfterRender: function(numberControl) {
+							parent
+								.empty()
+								.append(numberControl);
+						},
+						miscSettings,
+						defaultCountryCode,
+						numberStateToggleCarriers
+					})
+
+				}
 
 			]);
 

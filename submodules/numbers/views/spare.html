@@ -5,32 +5,6 @@
 			<label>{{ i18n.numbers.numbers }}</label>
 		{{/unless}}
 
-		<!--
-		<span id="trigger_links">
-		-->
-
-			<!--
-			{{#if canAddExternalNumbers}}
-				<a href="#" id="delete_numbers" class="action-number"><i class="fa fa-times monster-red"></i><span class="action-text">{{ i18n.numbers.deleteNumbers }}</span></a>
-			{{/if}}
-			-->
-
-			<!--
-			{{#compare viewType '!==' 'pbx'}}
-				<li class="dropdown dropdown-move">
-					<a href="#" id="move_numbers" role="button" class="action-number dropdown-toggle" data-toggle="dropdown"><i class="fa fa-share monster-yellow"></i><span class="action-text">{{ i18n.numbers.moveNumbers }}</span></a>
-					<ul class="dropdown-menu accounts-dropdown">
-						<li class="content-centered"><i class="fa fa-spinner fa-spin"></i></li>
-					</ul>
-				</li>
-			{{/compare}}
-			-->
-
-		<!--	
-		</span>
-		-->
-
-
 		{{#compare viewType '===' 'pbx'}}
 			{{#unless hideBuyNumbers}}
 			<ul class="nav buy-numbers-dropdown">
@@ -47,13 +21,31 @@
 			{{#unless hidePort}}
 				<a href="#" id="port_numbers" class="action-number port"><i class="fa fa-external-link monster-primary-color"></i><span class="action-text">{{ @root.i18n.numbers.port }}</span></a>
 			{{/unless}}
-			<a href="#" id="sync_numbers" class="action-number sync help-popover" data-original-title="{{ @root.i18n.numbers.sync.help }}" data-placement="top" data-toggle="tooltip"><i class="fa fa-refresh monster-orange"></i><span class="action-text">{{ @root.i18n.numbers.sync.label }}</span></a>
-		{{/compare}}
 
-		<div class="input-append pull-right search-custom">
-			<input class="span2" type="text" placeholder="{{ i18n.numbers.searchNumbers }}"/>
-			<button class="monster-button monster-button-success non-fixed search-numbers" type="button">{{ i18n.numbers.go }}</button>
-		</div>
+			{{#unless miscSettings.hideSyncFeature}}
+				<a href="#" id="sync_numbers" class="action-number sync help-popover" data-original-title="{{ @root.i18n.numbers.sync.help }}" data-placement="top" data-toggle="tooltip"><i class="fa fa-refresh monster-orange"></i><span class="action-text">{{ @root.i18n.numbers.sync.label }}</span></a>
+			{{/unless}}
+		
+			{{/compare}}
+
+		{{#unless miscSettings.embeddedPortalView}}
+			{{#unless miscSettings.enableLocalNumberSearch}}
+				<div class="input-append pull-right search-custom">
+					<input class="span2" type="text" placeholder="{{ i18n.numbers.searchNumbers }}"/>
+					<button class="monster-button monster-button-success non-fixed search-numbers" type="button">{{ i18n.numbers.go }}</button>
+				</div>
+			{{/unless}}
+			
+			{{#if miscSettings.enableLocalNumberSearch}}
+				<div class="input-append pull-right search-custom">
+					<input class="span2" type="text" placeholder="{{ i18n.numbers.searchNumbers }}"
+						pattern="[0-9+ ]*" inputmode="tel"
+						onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 32 || (event.charCode == 43 && this.value.indexOf('+') === -1)"
+					/>
+				</div>
+			{{/if}}
+		{{/unless}}
+
 	</div>
 </div>
 
@@ -64,16 +56,15 @@
 				<div class="account-header">
 					<div class="right-links pull-right">
 
-						{{#if ../canAddExternalNumbers}}
-							<span id="delete_links">
-								<button id="delete_numbers" class="action-number delete-external help-popover" data-original-title="{{ @root.i18n.numbers.deleteExternal.help }}" data-placement="top" data-toggle="tooltip">
-									<i class="fa fa-times"></i>
-									<span class="action-text">{{ @root.i18n.numbers.deleteExternal.label }}</span>
-								</button>
-							</span>
-						
-							<a href="javascript:void(0);" id="add_external_number" class="action-number add-external help-popover" data-original-title="{{ @root.i18n.numbers.addExternal.help }}" data-placement="top" data-toggle="tooltip"><i class="fa fa-plus"></i><span class="action-text">{{ @root.i18n.numbers.addExternal.label }}</span></a>
-						{{/if}}
+					{{#if ../canAddExternalNumbers}}
+						<span id="delete_links">
+							<button id="delete_numbers" class="action-number delete-external help-popover" data-original-title="{{ @root.i18n.numbers.deleteExternal.help }}" data-placement="top" data-toggle="tooltip">
+								<i class="fa fa-times"></i>
+								<span class="action-text">{{ @root.i18n.numbers.deleteExternal.label }}</span>
+							</button>
+						</span>
+						<a href="javascript:void(0);" id="add_external_number" class="action-number add-external help-popover" data-original-title="{{ @root.i18n.numbers.addExternal.help }}" data-placement="top" data-toggle="tooltip"><i class="fa fa-plus"></i><span class="action-text">{{ @root.i18n.numbers.addExternal.label }}</span></a>
+					{{/if}}
 
 					{{#unless @root.hideBuyNumbers}}
 						<ul class="nav buy-numbers-dropdown">
@@ -87,20 +78,44 @@
 							</li>
 						</ul>
 					{{/unless}}
-						{{#unless ../hidePort}}
-							<a href="javascript:void(0);" id="port_numbers" class="action-number port"><i class="fa fa-external-link"></i><span class="action-text">{{ @root.i18n.numbers.port }}</span></a>
+						
+						{{#unless ../miscSettings.hideSyncFeature}}
+							{{#unless ../hidePort}}
+								<a href="javascript:void(0);" id="port_numbers" class="action-number port"><i class="fa fa-external-link"></i><span class="action-text">{{ @root.i18n.numbers.port }}</span></a>
+							{{/unless}}
+							<a href="javascript:void(0);" id="port_numbers" class="action-number sync help-popover" data-original-title="{{ @root.i18n.numbers.sync.help }}" data-placement="top" data-toggle="tooltip"><i class="fa fa-refresh"></i><span class="action-text">{{ @root.i18n.numbers.sync.label }}</span></a>
 						{{/unless}}
-						<a href="javascript:void(0);" id="port_numbers" class="action-number sync help-popover" data-original-title="{{ @root.i18n.numbers.sync.help }}" data-placement="top" data-toggle="tooltip"><i class="fa fa-refresh"></i><span class="action-text">{{ @root.i18n.numbers.sync.label }}</span></a>
+						
 					</div>
-					{{#if ../canAddExternalNumbers}}
-					<div class="left-part">
-						<input type="checkbox"></input>
-					</div>
+					
+					{{#unless ../miscSettings.embeddedPortalView}}
+						{{#if ../canAddExternalNumbers}}
+						<div class="left-part">
+							<input type="checkbox"></input>
+						</div>
+						{{/if}}
+						<div class="expandable">
+							{{ name }}
+							<span class="count">({{ countSpareNumbers }})</span>
+						</div>
+					{{/unless}}
+
+
+					{{#if ../miscSettings.embeddedPortalView}}
+						<div class="left-part search-custom">
+							<div class="search-box">
+								<i class="fa fa-search"></i>
+								<input class="span2 search-query" type="text" placeholder="{{ @root.i18n.numbers.searchNumbers }}"
+									pattern="[0-9+ ]*" inputmode="tel"
+									onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 32 || (event.charCode == 43 && this.value.indexOf('+') === -1)"
+								/>
+							</div>
+						</div>
 					{{/if}}
-					<div class="expandable">
-						{{ name }}
-						<span class="count">({{ countSpareNumbers }})</span>
-					</div>
+
+
+
+
 				</div>
 			{{/compare}}
 
@@ -175,14 +190,6 @@
 							<div class="number-options pull-right"></div>
 							<div class="phone-number monster-phone-number" data-state="{{this.state}}"{{#compare this.state "!==" "in_service"}} data-toggle="tooltip" data-placement="top" data-original-title="{{ formatVariableToDisplay this.state }}"{{/compare}}>{{#monsterNumberWrapper this.phoneNumber}}{{/monsterNumberWrapper}}</div>
 							<div class="features pull-right">
-								
-								<!--
-								{{#ifInArray 'uk_999' this.features}}
-									<i class="monster-red fa fa-ambulance feature-dash_e911" data-toggle="tooltip" data-placement="top" data-original-title="{{@root.i18n.numbers.e911IconHelp}}"></i>
-								{{/ifInArray}}
-								
-								{{#numberFeatures features}}{{/numberFeatures}}
-								-->
 								
 								{{#if features}}
 									{{#each features}}

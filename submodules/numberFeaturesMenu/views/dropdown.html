@@ -20,13 +20,17 @@
 				{{#ifInArray 'failover' features}}
 					{{> featureItem feature="failover" icon="icon-telicon-failover" label=@root.i18n.failover.label}}
 				{{/ifInArray}}
-				{{#ifInArray 'carrier_name' features}}
-					{{> featureItem feature="rename-carrier" icon="fa fa-exchange" label=@root.i18n.numberRenameCarrier.label}}
-				{{/ifInArray}}
+				{{#unless miscSettings.hideCarrierModules}}
+					{{#ifInArray 'carrier_name' features}}
+						{{> featureItem feature="rename-carrier" icon="fa fa-exchange" label=@root.i18n.numberRenameCarrier.label}}
+					{{/ifInArray}}
+				{{/unless}}
 				{{#ifInArray 'messaging' features}}
 					{{> featureItem feature="messaging" icon="fa fa-comment" label=@root.i18n.numberMessaging.labels.messaging}}
 				{{/ifInArray}}
+				{{#unless miscSettings.hideSyncFeature}}
 					{{> featureItem feature="sync" icon="fa fa-refresh" label=@root.i18n.numbers.sync.label}}
+				{{/unless}}
 				</ul>
 			</li>
 		</ul>
