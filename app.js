@@ -3,7 +3,8 @@ define(function(require) {
 		monster = require('monster'),
 		miscSettings = {},
 		defaultCountryCode = null,
-		numberStateToggleCarriers = {};
+		numberStateToggleCarriers = {},
+		allowedCarriers = {};
 
 	var app = {
 		name: 'dt-numbers',
@@ -139,10 +140,8 @@ define(function(require) {
 						
 						if (data.dimension.hasOwnProperty('dt_numbers')) {
 
-							if (data.dimension.dt_numbers.hasOwnProperty('miscSettings')) {	
-								data.dimension.dt_numbers.miscSettings.forEach(function(action) {
-									miscSettings[action] = true;
-								});
+							if (data.dimension.dt_numbers.hasOwnProperty('miscSettings')) {
+								miscSettings = data.dimension.dt_numbers.miscSettings;
 							}
 
 							if (data.dimension.dt_numbers.hasOwnProperty('defaultCountryCode')) {	
@@ -150,9 +149,11 @@ define(function(require) {
 							}
 
 							if (data.dimension.dt_numbers.hasOwnProperty('numberStateToggleCarriers')) {	
-								data.dimension.dt_numbers.numberStateToggleCarriers.forEach(function(action) {
-									numberStateToggleCarriers[action] = true;
-								});
+								numberStateToggleCarriers = data.dimension.dt_numbers.numberStateToggleCarriers;
+							}
+
+							if (data.dimension.dt_numbers.hasOwnProperty('allowedCarriers')) {	
+								allowedCarriers = data.dimension.dt_numbers.allowedCarriers;
 							}
 
 						}
@@ -162,6 +163,7 @@ define(function(require) {
 							console.log('miscSettings:', miscSettings);
 							console.log('defaultCountryCode', defaultCountryCode);
 							console.log('numberStateToggleCarriers', numberStateToggleCarriers);
+							console.log('allowedCarriers', allowedCarriers);
 						}
 
 						callback()
@@ -183,7 +185,8 @@ define(function(require) {
 						},
 						miscSettings,
 						defaultCountryCode,
-						numberStateToggleCarriers
+						numberStateToggleCarriers,
+						allowedCarriers
 					})
 
 				}
