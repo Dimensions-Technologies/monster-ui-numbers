@@ -95,6 +95,7 @@ define(function(require) {
 			miscSettings = args.miscSettings;
 			defaultCountryCode = args.defaultCountryCode;
 			numberStateToggleCarriers = args.numberStateToggleCarriers;
+			allowedCarriers = Object.keys(args.allowedCarriers).filter(carrier => args.allowedCarriers[carrier]);
 
 			monster.waterfall([
 
@@ -154,52 +155,6 @@ define(function(require) {
 							callback(null);
 						}
 					});
-				},
-
-				function(callback) {
-					// get allowed carriers from reseller account doc or local account if not masquerading
-					if (monster.util.isMasquerading()) {
-						self.callApi({
-							resource: 'account.get',
-							data: {
-								accountId: self.accountId
-							},
-							success: function(data) {
-								self.callApi({
-									resource: 'account.get',
-									data: {
-										accountId: data.metadata.reseller_id
-									},
-									success: function(data) {
-										if (data.data.hasOwnProperty('dimension')) {
-											allowedCarriers = (data.data.dimension.hasOwnProperty('allowed_carriers')) ? data.data.dimension.allowed_carriers : [];
-											callback(null);
-										} else {
-											allowedCarriers = [];
-											callback(null);
-										}					
-									}
-								});
-							}
-						})
-			
-					} else {
-						self.callApi({
-							resource: 'account.get',
-							data: {
-								accountId: self.accountId
-							},
-							success: function(data) {
-								if (data.data.hasOwnProperty('dimension')) {
-									allowedCarriers = (data.data.dimension.hasOwnProperty('allowed_carriers')) ? data.data.dimension.allowed_carriers : [];
-									callback(null);
-								} else {
-									allowedCarriers = [];
-									callback(null);
-								}									
-							}
-						});		
-					};
 				},
 
 				function() {
