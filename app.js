@@ -4,7 +4,8 @@ define(function(require) {
 		miscSettings = {},
 		defaultCountryCode = null,
 		numberStateToggleCarriers = {},
-		allowedCarriers = {};
+		allowedCarriers = {},
+		notificationSettings = {};
 
 	var app = {
 		name: 'dt-numbers',
@@ -153,7 +154,11 @@ define(function(require) {
 							}
 
 							if (data.dimension.dt_numbers.hasOwnProperty('allowedCarriers')) {	
-								allowedCarriers = data.dimension.dt_numbers.allowedCarriers;
+								allowedCarriers = Object.keys(data.dimension.dt_numbers.allowedCarriers).filter(carrier => data.dimension.dt_numbers.allowedCarriers[carrier]);
+							}
+
+							if (data.dimension.dt_numbers.hasOwnProperty('notificationSettings')) {	
+								notificationSettings = data.dimension.dt_numbers.notificationSettings;
 							}
 
 						}
@@ -164,6 +169,7 @@ define(function(require) {
 							console.log('defaultCountryCode', defaultCountryCode);
 							console.log('numberStateToggleCarriers', numberStateToggleCarriers);
 							console.log('allowedCarriers', allowedCarriers);
+							console.log('notificationSettings', notificationSettings);
 						}
 
 						callback()
@@ -186,7 +192,8 @@ define(function(require) {
 						miscSettings,
 						defaultCountryCode,
 						numberStateToggleCarriers,
-						allowedCarriers
+						allowedCarriers,
+						notificationSettings
 					})
 
 				}
