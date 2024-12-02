@@ -6,10 +6,11 @@ define(function(require) {
 		uk999Enabled = false,
 		uk999EnabledNumbers,
 		carrierDisabledNumbers,
-		allowedCarriers,
+		allowedCarriers = [],
 		miscSettings = {},
 		defaultCountryCode = null,
-		numberStateToggleCarriers = {};
+		numberStateToggleCarriers = {},
+		notificationSettings = {};
 
 	var dtNumbers = {
 
@@ -95,7 +96,8 @@ define(function(require) {
 			miscSettings = args.miscSettings;
 			defaultCountryCode = args.defaultCountryCode;
 			numberStateToggleCarriers = args.numberStateToggleCarriers;
-			allowedCarriers = Object.keys(args.allowedCarriers).filter(carrier => args.allowedCarriers[carrier]);
+			allowedCarriers = args.allowedCarriers;
+			notificationSettings = args.notificationSettings;
 
 			monster.waterfall([
 
@@ -665,7 +667,7 @@ define(function(require) {
 			parent.on('click', '.account-header .action-number.add-external', function(e) {
 				self.numbersAddExternalNumbers($(this).parents('.account-section').data('id'), function() {
 					// variables are being passed to they are not cleared on reload of data
-					self.numbersRender({ container: $('#number_manager'), miscSettings, defaultCountryCode, numberStateToggleCarriers});
+					self.numbersRender({ container: $('#number_manager'), allowedCarriers, miscSettings, defaultCountryCode, numberStateToggleCarriers, notificationSettings});
 				});
 			});
 
@@ -1639,12 +1641,26 @@ define(function(require) {
 								requestData.auth_token = monster.util.getAuthToken();
 							}
 
-							monster.request({
-								resource: 'notification.number.added',
-								data: {
-									data: requestData,
-									removeMetadataAPI: true
+							var numberHash = numbersData[0];
+
+							self.computeHash(numberHash, function(numberHash) {
+
+								if (miscSettings.enableConsoleLogging) {
+									console.log('numberHash', numbersData[0]);
+									console.log('checksum', numberHash);
 								}
+		
+								monster.request({
+									resource: 'notification.number.added',
+									data: {
+										data: {
+											...requestData,
+											checksum: numberHash
+										},
+										removeMetadataAPI: true
+									}
+								});
+		
 							});
 
 						}
@@ -2255,12 +2271,26 @@ define(function(require) {
 							requestData.auth_token = monster.util.getAuthToken();
 						}
 
-						monster.request({
-							resource: 'notification.number.deleted',
-							data: {
-								data: requestData,
-								removeMetadataAPI: true
+						var numberHash = args.numbers[0];
+
+						self.computeHash(numberHash, function(numberHash) {
+
+							if (miscSettings.enableConsoleLogging) {
+								console.log('numberHash', args.numbers[0]);
+								console.log('checksum', numberHash);
 							}
+
+							monster.request({
+								resource: 'notification.number.deleted',
+								data: {
+									data: {
+										...requestData,
+										checksum: numberHash
+									},
+									removeMetadataAPI: true
+								}
+							});
+	
 						});
 
 					}
@@ -2922,12 +2952,26 @@ define(function(require) {
 									requestData.auth_token = monster.util.getAuthToken();
 								}
 
-								monster.request({
-									resource: 'notification.number.enabled',
-									data: {
-										data: requestData,
-										removeMetadataAPI: true
+								var numberHash = data.data.id;
+
+								self.computeHash(numberHash, function(numberHash) {
+
+									if (miscSettings.enableConsoleLogging) {
+										console.log('numberHash', data.data.id);
+										console.log('checksum', numberHash);
 									}
+
+									monster.request({
+										resource: 'notification.number.enabled',
+										data: {
+											data: {
+												...requestData,
+												checksum: numberHash
+											},
+											removeMetadataAPI: true
+										}
+									});
+			
 								});
 
 							}
@@ -3016,13 +3060,27 @@ define(function(require) {
 									if (miscSettings.includeAuthTokenWithinNotifications) {
 										requestData.auth_token = monster.util.getAuthToken();
 									}
-	
-									monster.request({
-										resource: 'notification.number.disabled',
-										data: {
-											data: requestData,
-											removeMetadataAPI: true
+
+									var numberHash = data.data.id;
+
+									self.computeHash(numberHash, function(numberHash) {
+
+										if (miscSettings.enableConsoleLogging) {
+											console.log('numberHash', data.data.id);
+											console.log('checksum', numberHash);
 										}
+
+										monster.request({
+											resource: 'notification.number.disabled',
+											data: {
+												data: {
+													...requestData,
+													checksum: numberHash
+												},
+												removeMetadataAPI: true
+											}
+										});
+				
 									});
 
 								}
@@ -3082,6 +3140,28 @@ define(function(require) {
 
 			}
 			
+		},
+
+		computeHash: function(number, callback) {
+
+			var key = notificationSettings.requestKey,
+				encoder = new TextEncoder(),
+				data = encoder.encode(number + key);
+
+			crypto.subtle.digest("SHA-256", data)
+				.then(function(buffer) {
+					var hashedBytes = new Uint8Array(buffer);
+					var hexString = Array.from(hashedBytes)
+						.map(function(b) { return b.toString(16).padStart(2, '0').toUpperCase(); })
+						.join('');
+
+					callback && callback(hexString);
+				})
+				.catch(function(error) {
+					console.error("Error Computing Hash:", error);
+					callback && callback("");
+				});
+
 		}
 
 	};
