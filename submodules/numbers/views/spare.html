@@ -119,7 +119,7 @@
 					{{#each spareNumbers}}
 						<div class="number-box" data-state="{{this.state}}" data-phoneNumber="{{this.phoneNumber}}">
 							<div class="number-options pull-right"></div>
-							<input type="checkbox"></input>
+							<input class="number-options-checkbox" type="checkbox"></input>
 							<div class="phone-number monster-phone-number" data-state="{{this.state}}"{{#compare this.state "!==" "in_service"}} data-toggle="tooltip" data-placement="top" data-original-title="{{ formatVariableToDisplay this.state }}"{{/compare}}>{{#monsterNumberWrapper this.phoneNumber}}{{/monsterNumberWrapper}}</div>
 							<div class="features pull-right">
 								

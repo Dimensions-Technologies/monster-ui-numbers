@@ -680,8 +680,8 @@ define(function(require) {
 			});
 
 			/* Add class selected when you click on a number box, check/uncheck  the account checkbox if all/no numbers are checked */
-			parent.on('click', '.number-box:not(.disabled)', function(event) {
-				var currentBox = $(this);
+			parent.on('click', '.number-box:not(.disabled) .number-checkbox', function(event) {
+				var currentBox = $(this).closest('.number-box:not(.disabled)');
 
 				if (!currentBox.hasClass('no-data')) {
 					var section = currentBox.parents('.account-section').first(),

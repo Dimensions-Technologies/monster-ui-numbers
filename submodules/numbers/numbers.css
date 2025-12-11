@@ -104,8 +104,26 @@
 #numbers_container .account-section .numbers-wrapper .number-box {
 	position: relative;
 	border: 1px solid #ccc;
-	/*border-bottom-width: 0px;*/
 	margin-top: -1px;
+	pointer-events: none;
+    background: #f6f6f6;
+	padding: 0px 10px;
+}
+
+#numbers_container .account-section .numbers-wrapper .number-box input[type="checkbox"] {
+    pointer-events: auto;
+}
+
+#numbers_container .account-section .numbers-wrapper .number-box .number-options,
+#numbers_container .account-section .numbers-wrapper .number-box .number-options * {
+    pointer-events: auto;
+}
+
+#numbers_container .account-section .numbers-wrapper .number-box.selected {
+    font-weight: 400;
+    border-top: 1px solid #ccc !important;
+    background: #f6f6f6;
+    box-shadow: none;
 }
 
 #numbers_container .account-section .numbers-wrapper .number-box .number-options {
@@ -142,6 +160,7 @@
 #numbers_container .account-section .numbers-wrapper .number-box .used-by {
 	margin-left: 30px;
 	display: inline-block;
+	padding-left: 10px;
 }
 
 #numbers_container .account-section .numbers-wrapper .number-box .locality .flag {
@@ -537,4 +556,59 @@
 
 #numbers_container .left-part.search-custom .search-query {
     padding-left: 28px !important;
+}
+
+#numbers_container .account-section.open .numbers-wrapper {
+   	max-height: 900px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.numbers-wrapper {
+	scrollbar-width: auto;
+	scrollbar-color: rgba(0,0,0,0.2) transparent;
+	border-right: 2px solid #ddd;
+}
+
+.numbers-wrapper::-webkit-scrollbar {
+	width: 12px;
+	height: 12px;
+}
+
+.numbers-wrapper::-webkit-scrollbar-thumb {
+	background-color: rgba(0,0,0,0.2);
+	border-radius: 6px;
+	border: 3px solid transparent;
+	background-clip: padding-box;
+}
+
+#numbers_container .account-section .numbers-wrapper .number-box:nth-last-child(-n+3) .dropdown-menu {
+    bottom: 100%;
+    top: auto;
+}
+
+#numbers_container .account-section .numbers-wrapper .number-box:nth-last-child(-n+3) .dropdown-menu::before {
+    bottom: -6px;
+    top: auto;
+    border-top: 6px solid rgba(0, 0, 0, 0.2);
+    border-bottom: none;
+}
+
+#numbers_container .account-section .numbers-wrapper .number-box:nth-last-child(-n+3) .dropdown-menu::after {
+    bottom: -5px;
+    top: auto;
+    border-top: 5px solid #fff;
+    border-bottom: none;
+}
+
+#numbers_container .account-section .numbers-wrapper .number-box .dropdown {
+    position: relative;
+}
+
+#numbers_container .account-section .numbers-wrapper .number-box .number-options {
+    overflow: visible;
+}
+
+#numbers_container .account-section .numbers-wrapper .number-box {
+    overflow: visible;
 }
