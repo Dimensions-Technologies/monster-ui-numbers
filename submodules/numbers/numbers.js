@@ -164,6 +164,10 @@ define(function(require) {
 						data.viewType = viewType;
 						data = self.numbersFormatData(data);
 
+						if (miscSettings.limitlistAccounts) {
+							data.listAccounts = data.listAccounts.length ? [ data.listAccounts[0] ] : [];
+						}
+
 						var numbersView = $(self.getTemplate({
 								name: 'layout',
 								data: {
@@ -410,19 +414,40 @@ define(function(require) {
 			var self = this,
 				listType = dataNumbers.viewType && dataNumbers.viewType === 'manager' ? 'full' : 'partial',
 				listSearchedAccounts = [ self.accountId ],
+				
 				showLinks = function() {
 
 					var methodToUse = parent.find('.number-box.selected').size() > 0 ? 'addClass' : 'removeClass';
 					parent.find('.list-numbers:visible #trigger_links')[methodToUse]('active');
 
+					/*
 					// support for delete button within header
 					if (parent.find('.number-box.selected').length > 0) {
 						parent.find('.list-numbers:visible .accounts-numbers #delete_numbers').prop('disabled', false).removeClass('deleted-numbers-disabled');
 					} else {
 						parent.find('.list-numbers:visible .accounts-numbers #delete_numbers').prop('disabled', true).addClass('deleted-numbers-disabled');
 					}
+					*/
+
+					// per-account header delete button enable/disable
+					parent.find('.list-numbers:visible .account-section').each(function() {
+						var $section = $(this);
+						
+						// look for delete button - it's either .delete-external or .delete class
+						var $headerDelete = $section.find('.account-header .right-links a.delete, .account-header .right-links a.delete-external').first();
+						var selectedCount = $section.find('.numbers-wrapper .number-box.selected').length;
+
+						if ($headerDelete.length) {
+							if (selectedCount > 0) {
+								$headerDelete.prop('disabled', false).removeClass('deleted-numbers-disabled');
+							} else {
+								$headerDelete.prop('disabled', true).addClass('deleted-numbers-disabled');
+							}
+						}
+					});
 					
 				},
+
 				displayNumberList = function(accountId, callback, forceRefresh) {
 					var alreadySearched = _.indexOf(listSearchedAccounts, accountId) >= 0,
 						forceRefresh = forceRefresh || false;
@@ -543,6 +568,29 @@ define(function(require) {
 					type = box.data('type');
 
 				if (!box.hasClass('selected')) {
+					// when switching tabs, disable delete button on the tab we are navigating from
+					var $previous = parent.find('.half-box.selected'),
+						previousType = $previous.length ? $previous.data('type') : null;
+
+					if (previousType) {
+						var $prevList = parent.find('.list-numbers[data-type="' + previousType + '"]');
+
+						// disable global delete button if it exists
+						var $prevDelete = $prevList.find('.accounts-numbers #delete_numbers');
+						if ($prevDelete.length) {
+							$prevDelete.prop('disabled', true).addClass('deleted-numbers-disabled');
+						}
+
+						// disable per-account delete buttons (header anchors)
+						$prevList.find('.account-header .delete').prop('disabled', true).addClass('deleted-numbers-disabled');
+					}
+
+					// uncheck ALL checkboxes (header + row) in hidden tabs
+					var $hiddenLists = parent.find('.list-numbers').not('[data-type="' + type + '"]');
+
+					$hiddenLists.find('input.number-checkbox[type="checkbox"]').prop('checked', false);
+					$hiddenLists.find('.number-box.selected').removeClass('selected');
+
 					parent.find('.half-box').removeClass('selected');
 					parent.find('.list-numbers').hide();
 
@@ -569,22 +617,52 @@ define(function(require) {
 
 			/* Click on an account header, open list of numbers of this account. Send an API call to search it if it has not been searched already */
 			parent.on('click', '.expandable', function(event) {
-				var section = $(this).parents('.account-section'),
+
+				var $expandable = $(this),
+					section = $expandable.closest('.account-section'),
 					accountId = section.data('id'),
-					toggle = function() {
-						section.toggleClass('open');
 
-						if (!section.hasClass('open')) {
-							section.find('input[type="checkbox"]:checked').prop('checked', false);
-							section.find('.number-box.selected').removeClass('selected');
-						}
+					// limit scope to the current tab only
+					$currentTab = $expandable.closest('.list-numbers');
 
-						_.each(dataNumbers.listAccounts, function(account) {
-							if (account.id === accountId) {
-								account.open = section.hasClass('open') ? 'open' : '';
-							}
+				var toggle = function() {
+
+					// close other open sections within this tab
+					var otherOpenSections = $currentTab
+						.find('.account-section.open')
+						.not(section);
+
+					otherOpenSections
+						.removeClass('open')
+						.each(function() {
+							var $s = $(this);
+
+							$s.find('input[type="checkbox"]:checked').prop('checked', false);
+							$s.find('.number-box.selected').removeClass('selected');
+
+							var otherId = $s.data('id');
+							_.each(dataNumbers.listAccounts, function(account) {
+								if (account.id === otherId) {
+									account.open = '';
+								}
+							});
 						});
-					};
+
+					// toggle clicked section
+					section.toggleClass('open');
+
+					if (!section.hasClass('open')) {
+						section.find('input[type="checkbox"]:checked').prop('checked', false);
+						section.find('.number-box.selected').removeClass('selected');
+					}
+
+					// sync data model
+					_.each(dataNumbers.listAccounts, function(account) {
+						if (account.id === accountId) {
+							account.open = section.hasClass('open') ? 'open' : '';
+						}
+					});
+				};
 
 				displayNumberList(accountId, function() {
 					toggle();
@@ -680,7 +758,7 @@ define(function(require) {
 			});
 
 			/* Add class selected when you click on a number box, check/uncheck  the account checkbox if all/no numbers are checked */
-			parent.on('click', '.number-box:not(.disabled) .number-checkbox', function(event) {
+			parent.on('click', '.list-numbers:visible .number-box:not(.disabled) .number-checkbox', function(event) {
 				var currentBox = $(this).closest('.number-box:not(.disabled)');
 
 				if (!currentBox.hasClass('no-data')) {
@@ -717,7 +795,7 @@ define(function(require) {
 					},
 					e911ErrorMessage = '';
 
-				parent.find('.number-box.selected').each(function(k, v) {
+				parent.find('.list-numbers:visible .number-box.selected').each(function(k, v) {
 					var box = $(v),
 						number = box.data('phonenumber'),
 						accountId = box.parents('.account-section').data('id'),
@@ -926,7 +1004,10 @@ define(function(require) {
 
 				var dialogTemplate = $(self.getTemplate({
 						name: 'actionsConfirmation',
-						data: dataTemplate,
+						data: {
+							...dataTemplate,
+							miscSettings: miscSettings
+						},
 						submodule: 'numbers'
 					})),
 					requestData = {
@@ -1054,68 +1135,77 @@ define(function(require) {
 			// local account search with filtering
 			if (miscSettings.enableLocalNumberSearch) {
 
-				var normalizeNumber = function(number) {
-					return number.replace(/\D/g, ''); // remove everything that's not a digit
+				var normalizeNumber = function(str) {
+					return (str || '').replace(/\D/g, '');
 				};
 
-				var searchListNumbers = function(searchString, parent) {
-					
-					var numberTextSearchString = normalizeNumber(searchString.toLowerCase());
-					var usedByTextSearchString = searchString.toLowerCase(); 
-					var numberItems = parent.find('.number-box');
+				var DEBOUNCE_MS = 200;
+				var MIN_DIGITS = 2;
+				var MIN_TEXT = 2;
 
-					numberItems.each(function() {
-						
-						var numberText = normalizeNumber($(this).find('.monster-phone-number-value').text().toLowerCase()); 
-						var usedByText = $(this).find('.used-by').text().toLowerCase();
-						var validNumber = false;
+				var searchListNumbers = function(searchString, $list) {
+					var raw = (searchString || '').toLowerCase();
 
-						if (numberTextSearchString.length > 0) {
-							validNumber = true
+					var numberTextSearchString = normalizeNumber(raw);
+					var usedByTextSearchString = raw;
+
+					var $items = $list.find('.number-box').not('.no-results, .no-data, .spacer');
+					var matchCount = 0;
+
+					$items.each(function() {
+						var $box = $(this),
+							numberText = normalizeNumber($box.find('.monster-phone-number-value').text().toLowerCase()),
+							usedByText = ($box.find('.used-by').text() || '').toLowerCase(),
+							matches = false;
+
+						if (numberTextSearchString.length >= MIN_DIGITS) {
+							matches = numberText.includes(numberTextSearchString);
 						}
 
-						// check if the search string matches either the phone number or the used by field
-						if (validNumber == true && numberText.includes(numberTextSearchString) || usedByText.includes(usedByTextSearchString)) {
-							$(this).show();
-						} else {
-							$(this).hide();
+						if (!matches && usedByTextSearchString.length >= MIN_TEXT) {
+							matches = usedByText.includes(usedByTextSearchString);
 						}
+
+						$box.toggle(matches);
+						if (matches) matchCount++;
 					});
 
+					$list.find('.number-box.no-results').toggle(matchCount === 0);
 				};
 
-				var resetListNumbers = function(parent) {
-					parent.find('.number-box').show();
+				var resetListNumbers = function($list) {
+					$list.find('.number-box').not('.no-results').show();
+					$list.find('.number-box.no-results').hide();
 				};
-			
-				// event handler for typing in the search input for spare numbers (real-time search)
+
+				var debounceTimers = { spare: null, used: null };
+
+				var handleSearchInput = function(e, type) {
+					var $list = parent.find('.list-numbers[data-type="' + type + '"]');
+					var raw = (e.target.value || '').trim().toLowerCase();
+
+					clearTimeout(debounceTimers[type]);
+					debounceTimers[type] = setTimeout(function() {
+						var digits = normalizeNumber(raw);
+						var nonDigitsText = raw.replace(/[0-9+\s]/g, '').trim();
+
+						var canSearch = (digits.length >= MIN_DIGITS) || (nonDigitsText.length >= MIN_TEXT);
+
+						if (canSearch) {
+							searchListNumbers(raw, $list);
+						} else {
+							resetListNumbers($list);
+						}
+					}, DEBOUNCE_MS);
+				};
+
 				parent.on('input', '.list-numbers[data-type="spare"] .search-custom input[type="text"]', function(e) {
-					var searchString = e.target.value.toLowerCase(),
-						spareList = parent.find('.list-numbers[data-type="spare"]');
-			
-					// perform search if the search string has at least two characters (numbers or text)
-					if (searchString.length >= 2) {
-						searchListNumbers(searchString, spareList);
-					} else {
-						// if fewer than two characters, reset the list
-						resetListNumbers(spareList);
-					}
+					handleSearchInput(e, 'spare');
 				});
-			
-				// event handler for typing in the search input for used numbers (real-time search)
+
 				parent.on('input', '.list-numbers[data-type="used"] .search-custom input[type="text"]', function(e) {
-					var searchString = e.target.value.toLowerCase(),
-						usedList = parent.find('.list-numbers[data-type="used"]');
-			
-					// perform search if the search string has at least two characters (numbers or text)
-					if (searchString.length >= 2) {
-						searchListNumbers(searchString, usedList);
-					} else {
-						// if fewer than two characters, reset the list
-						resetListNumbers(usedList);
-					}
+					handleSearchInput(e, 'used');
 				});
-			
 			}
 
 			// classic search
@@ -1262,13 +1352,27 @@ define(function(require) {
 						},
 						dialogTemplate = $(self.getTemplate({
 							name: 'actionsConfirmation',
-							data: dataTemplate,
+							data: {
+								...dataTemplate,
+								miscSettings: miscSettings
+							},
 							submodule: 'numbers'
 						})),
 						popup = monster.ui.dialog(dialogTemplate, {
 							width: '540px',
 							title: 'Delete Numbers - Confirmation'
 						});
+
+					// update the dialog to show formatted phone numbers
+					 dialogTemplate.find('.phone-number').each(function() {
+						var $numberElement = $(this),
+							number = $numberElement.closest('td').data('number');
+
+						if (number) {
+							var formattedNumber = monster.util.formatPhoneNumber(number);
+							$numberElement.text(formattedNumber);
+						}
+					});
 
 					dialogTemplate.on('click', '.remove-number', function() {
 						var number = $(this).parent().data('number');
@@ -1344,30 +1448,55 @@ define(function(require) {
 							});
 
 							popup.dialog('close');
-							self.numbersShowDeletedNumbers({
-								success: _
+							
+							if (miscSettings.enableBottomToast) {
+								var successCount = _
 									.chain(formattedResults)
-									.filter(_.flow(
-										_.partial(_.ary(_.get, 2), _, 'error'),
-										_.isUndefined
-									))
-									.map('number')
-									.keyBy()
-									.value(),
-								error: _
-									.chain(formattedResults)
-									.reject(_.flow(
-										_.partial(_.ary(_.get, 2), _, 'error'),
-										_.isUndefined
-									))
-									.keyBy('number')
-									.mapValues(function(data) {
-										return {
-											message: data.error
-										};
+									.filter(function(item) {
+										return _.isUndefined(item.error);
 									})
-									.value()
-							});
+									.size()
+									.value();
+
+								if (successCount > 0) {
+									monster.ui.toast({
+										type: 'success',
+										message:
+											successCount + ' ' +
+											self.i18n.active().numbers.deleteExternal.successDelete,
+										options: {
+											positionClass: 'toast-bottom-right',
+											timeOut: 8000,
+											extendedTimeOut: 5000
+										}
+									});
+								}
+							} else {
+								self.numbersShowDeletedNumbers({
+									success: _
+										.chain(formattedResults)
+										.filter(_.flow(
+											_.partial(_.ary(_.get, 2), _, 'error'),
+											_.isUndefined
+										))
+										.map('number')
+										.keyBy()
+										.value(),
+									error: _
+										.chain(formattedResults)
+										.reject(_.flow(
+											_.partial(_.ary(_.get, 2), _, 'error'),
+											_.isUndefined
+										))
+										.keyBy('number')
+										.mapValues(function(data) {
+											return {
+												message: data.error
+											};
+										})
+										.value()
+								});
+							}
 
 							_.forEach(results, function(data, id) {
 								var ids = _.split(id, ','),
@@ -1393,9 +1522,49 @@ define(function(require) {
 								parent: parent,
 								dataNumbers: dataNumbers
 							});
+							toggleEmptyNumberDropdowns(container);
 						});
 					});
 				};
+			
+			// hide dropdowns with no actions
+			var toggleEmptyNumberDropdowns = function($root) {
+				$root.find('.number-box .dropdown').each(function() {
+					var $dropdown = $(this),
+						$menu = $dropdown.find('.dropdown-menu').first();
+
+					var hasActions = $menu.children('li').filter(function() {
+						var $li = $(this);
+
+						// ignore dividers
+						if ($li.hasClass('divider')) return false;
+
+						// must contain an anchor with text
+						var $a = $li.find('a').first();
+						return $a.length && $.trim($a.text()).length > 0;
+					}).length > 0;
+
+					$menu.children('li.divider').remove();
+
+					$dropdown.toggle(hasActions);
+				});
+			};
+
+			toggleEmptyNumberDropdowns(container);
+
+			var toggleNoResults = function() {
+				// ignore informational rows
+				var $allBoxes = container.find('.numbers-wrapper .number-box');
+				var $noResults = $allBoxes.filter('.no-results');
+
+				// "real" number boxes = not placeholders/no-data/no-results/spacer etc.
+				var $realBoxes = $allBoxes.not('.no-results, .no-data, .spacer, .disabled');
+
+				// show message only when none of the real boxes are visible
+				var hasVisible = $realBoxes.filter(':visible').length > 0;
+
+				$noResults.toggle(!hasVisible);
+			};
 
 			container.on('click', '#add', function(event) {
 				event.preventDefault();
@@ -1417,6 +1586,7 @@ define(function(require) {
 							parent: parent,
 							dataNumbers: dataNumbers
 						});
+						toggleEmptyNumberDropdowns(container);
 					}
 				});
 			});
@@ -1443,6 +1613,7 @@ define(function(require) {
 							parent: parent,
 							dataNumbers: dataNumbers
 						});
+						toggleEmptyNumberDropdowns(container);
 					}
 				});
 			});
@@ -1460,6 +1631,33 @@ define(function(require) {
 					}, _.pick($el.data(), [
 						'id',
 						'number'
+					]));
+				});
+
+				deleteNumbers(selectedNumbersMetadata);
+			});
+
+			container.on('click', '.account-header .delete', function(event) {
+				event.preventDefault();
+
+				var $header = $(this),
+					$section = $header.closest('.account-section'),
+					selected = $section.find('.numbers-wrapper .number-box.selected');
+
+				if (!selected.length) {
+					return;
+				}
+
+				var selectedNumbersMetadata = _.map(selected, function(el) {
+					var $el = $(el),
+						$account = $el.parents('.account-section');
+
+					return _.merge({
+						accountId: $account.data('id'),
+						accountName: $account.data('name')
+					}, _.pick($el.data(), [
+							'id',
+							'number'
 					]));
 				});
 
@@ -1497,6 +1695,7 @@ define(function(require) {
 							parent: parent,
 							dataNumbers: dataNumbers
 						});
+						toggleEmptyNumberDropdowns(container);
 					}
 				}, numberMetadata));
 			});
@@ -1528,6 +1727,7 @@ define(function(require) {
 							parent: parent,
 							dataNumbers: dataNumbers
 						});
+						toggleEmptyNumberDropdowns(container);
 					}
 				});
 			});
@@ -1535,8 +1735,15 @@ define(function(require) {
 			container.on('click', '.delete', function(event) {
 				event.preventDefault();
 
-				var $numberBox = $(this).parents('.number-box'),
-					$accountSection = $numberBox.parents('.account-section'),
+				// Only handle per-number delete anchors that live inside a .number-box
+				var $numberBox = $(this).closest('.number-box');
+
+				if (!$numberBox || $numberBox.length === 0) {
+					// not a per-number delete (likely the account-header delete), ignore here
+					return;
+				}
+
+				var $accountSection = $numberBox.parents('.account-section'),
 					numberMetadata = _.merge({
 						accountId: $accountSection.data('id'),
 						accountName: $accountSection.data('name')
@@ -1547,6 +1754,47 @@ define(function(require) {
 
 				deleteNumbers([numberMetadata]);
 			});
+
+			// local account search with filtering
+			if (miscSettings.enableLocalNumberSearch) {
+				var normalizeNumber = function(number) {
+					return (number || '').replace(/\D/g, '');
+				};
+
+				var debounceTimer = null;
+				var DEBOUNCE_MS = 200;
+				var MIN_DIGITS = 2;
+
+				container.on('input', '.search-custom input[type="text"]', function(e) {
+					var inputEl = e.target;
+
+					clearTimeout(debounceTimer);
+					debounceTimer = setTimeout(function() {
+						var raw = (inputEl.value || '').toLowerCase();
+						var searchDigits = normalizeNumber(raw);
+
+						var numberItems = container.find('.number-box').not('.no-results, .no-data, .spacer');
+
+						if (searchDigits.length < MIN_DIGITS) {
+							numberItems.show();
+							container.find('.number-box.no-results').hide();
+							return;
+						}
+
+						numberItems.each(function() {
+							var $this = $(this),
+								numberText = normalizeNumber(
+									$this.find('.monster-phone-number-value').text() || $this.data('number') || ''
+								);
+
+							$this.toggle(numberText.includes(searchDigits));
+						});
+
+						toggleNoResults();
+					}, DEBOUNCE_MS);
+				});
+			}
+
 		},
 
 		numbersGetSubAccountNumber: function(accountId, number, callback) {
@@ -2078,6 +2326,8 @@ define(function(require) {
 			// disable delete button	
 			template.find('#delete_numbers').prop('disabled', true).addClass('deleted-numbers-disabled');
 
+			template.find('.number-box.no-results').hide();
+
 			if (miscSettings.hideLocalFeatureIcon) {
 				template.find('.feature-local').hide();
 			}
@@ -2085,7 +2335,6 @@ define(function(require) {
 			if (miscSettings.hideToolTips) {
 				template.find('[data-toggle="tooltip"]').removeAttr('data-toggle');
 			}
-
 			self.numbersDisplayFeaturesMenu(arrayNumbersSpare, template);
 
 			args.hasOwnProperty('callback') && args.callback();
@@ -2117,6 +2366,8 @@ define(function(require) {
 			if (miscSettings.hideToolTips) {
 				template.find('[data-toggle="tooltip"]').removeAttr('data-toggle');
 			}
+
+			template.find('.number-box.no-results').hide();
 
 			self.numbersDisplayFeaturesMenu(arrayNumbersUsed, template);
 
@@ -2152,7 +2403,8 @@ define(function(require) {
 								'countExternalNumbers',
 								'externalNumbers'
 							]));
-						})
+						}),
+						miscSettings: miscSettings
 					}, _.omit(dataNumbers, [
 						'listAccounts'
 					])),
@@ -2160,6 +2412,11 @@ define(function(require) {
 				}));
 
 			monster.ui.tooltips(template);
+
+			// disable delete button	
+			template.find('.delete').prop('disabled', true).addClass('deleted-numbers-disabled');
+
+			template.find('.number-box.no-results').hide();
 
 			args.parent
 				.find('.list-numbers[data-type="external"]')

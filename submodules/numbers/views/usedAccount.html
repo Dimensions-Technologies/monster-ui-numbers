@@ -1,7 +1,7 @@
 {{#each usedNumbers}}
 	<div class="number-box disabled" data-state="{{this.state}}" data-phoneNumber="{{this.phoneNumber}}">
 		<div class="number-options pull-right"></div>
-
+		<input class="fake-checkbox" type="checkbox"></input>
 		<div class="phone-number monster-phone-number" data-state="{{this.state}}"{{#compare this.state "!==" "in_service"}} data-toggle="tooltip" data-placement="top" data-original-title="{{ formatVariableToDisplay this.state }}"{{/compare}}>{{#monsterNumberWrapper this.phoneNumber}}{{/monsterNumberWrapper}}</div>
 
 		<div class="used-by">
@@ -92,3 +92,4 @@
 		{{ i18n.numbers.noUsedNumber }}
 	</div>
 {{/each}}
+<div class="number-box spacer"></div>

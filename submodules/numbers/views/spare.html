@@ -26,7 +26,7 @@
 				<a href="#" id="sync_numbers" class="action-number sync help-popover" data-original-title="{{ @root.i18n.numbers.sync.help }}" data-placement="top" data-toggle="tooltip"><i class="fa fa-refresh monster-orange"></i><span class="action-text">{{ @root.i18n.numbers.sync.label }}</span></a>
 			{{/unless}}
 		
-			{{/compare}}
+		{{/compare}}
 
 		{{#unless miscSettings.embeddedPortalView}}
 			{{#unless miscSettings.enableLocalNumberSearch}}
@@ -45,7 +45,6 @@
 				</div>
 			{{/if}}
 		{{/unless}}
-
 	</div>
 </div>
 
@@ -86,15 +85,18 @@
 					{{#unless ../miscSettings.embeddedPortalView}}
 						{{#if ../canAddExternalNumbers}}
 						<div class="left-part">
-							<input type="checkbox"></input>
+							<input class="number-checkbox" type="checkbox"></input>
 						</div>
 						{{/if}}
-						<div class="expandable">
+						{{#if ../miscSettings.limitlistAccounts}}
+							<div class="not-expandable">
+						{{else}}
+							<div class="expandable">
+						{{/if}}
 							{{ name }}
 							<span class="count">({{ countSpareNumbers }})</span>
 						</div>
 					{{/unless}}
-
 
 					{{#if ../miscSettings.embeddedPortalView}}
 						<div class="left-part search-custom">
@@ -107,141 +109,78 @@
 							</div>
 						</div>
 					{{/if}}
-
-
-
-
 				</div>
 			{{/compare}}
 
-			{{#if ../canAddExternalNumbers}}
-				<div class="numbers-wrapper">
-					{{#each spareNumbers}}
-						<div class="number-box" data-state="{{this.state}}" data-phoneNumber="{{this.phoneNumber}}">
-							<div class="number-options pull-right"></div>
-							<input class="number-options-checkbox" type="checkbox"></input>
-							<div class="phone-number monster-phone-number" data-state="{{this.state}}"{{#compare this.state "!==" "in_service"}} data-toggle="tooltip" data-placement="top" data-original-title="{{ formatVariableToDisplay this.state }}"{{/compare}}>{{#monsterNumberWrapper this.phoneNumber}}{{/monsterNumberWrapper}}</div>
-							<div class="features pull-right">
-								
-								{{#if features}}
-									{{#each features}}
+			<div class="numbers-wrapper spare">
+				{{#each spareNumbers}}
+					<div class="number-box" data-state="{{this.state}}" data-phoneNumber="{{this.phoneNumber}}">
+						<div class="number-options pull-right"></div>
+						{{#if ../../canAddExternalNumbers}}
+							<input class="number-checkbox" type="checkbox"></input>
+						{{/if}}
+						<div class="phone-number monster-phone-number" data-state="{{this.state}}"{{#compare this.state "!==" "in_service"}} data-toggle="tooltip" data-placement="top" data-original-title="{{ formatVariableToDisplay this.state }}"{{/compare}}>{{#monsterNumberWrapper this.phoneNumber}}{{/monsterNumberWrapper}}</div>
+						<div class="features pull-right">
+							
+							{{#if features}}
+								{{#each features}}
 
-										{{#compare this "e911"}}
-											{{> featureIcon feature="e911" color="red" icon="fa fa-ambulance" tooltip=@root.i18n.iconNumberFeatures.e911.tooltip}}
-										{{/compare}}
-										{{#compare this "uk_999"}}
-											{{> featureIcon feature="e911" color="red" icon="fa fa-ambulance" tooltip=@root.i18n.uk999.label}}
-										{{/compare}}
-										{{#compare this "failover"}}
-											{{> featureIcon feature="failover" color="green" icon="icon-telicon-failover" tooltip=@root.i18n.iconNumberFeatures.failover.tooltip}}
-										{{/compare}}
-										{{#compare this "outbound_cnam"}}
-											{{> featureIcon feature="outbound_cnam" color="blue" icon="fa fa-user" tooltip=@root.i18n.iconNumberFeatures.outbound_cnam.tooltip}}
-										{{/compare}}
-										{{#compare this "inbound_cnam"}}
-											{{> featureIcon feature="inbound_cnam" color="green" icon="fa fa-user" tooltip=@root.i18n.iconNumberFeatures.inbound_cnam.tooltip}}
-										{{/compare}}
-										{{#compare this "prepend"}}
-											{{> featureIcon feature="prepend" color="orange" icon="fa fa-file-text-o" tooltip=@root.i18n.iconNumberFeatures.prepend.tooltip}}
-										{{/compare}}
-										{{#compare this "local"}}
-											{{> featureIcon feature="local" color="purple" icon="fa fa-rocket" tooltip=@root.i18n.iconNumberFeatures.local.tooltip}}
-										{{/compare}}
-										{{#compare this "mobile"}}
-											{{> featureIcon feature="mobile" color="yellow" icon="fa fa-mobile-phone" tooltip=@root.i18n.iconNumberFeatures.mobile.tooltip}}
-										{{/compare}}
-										{{#compare this "sms"}}
-											{{> featureIcon feature="sms" color="blue" icon="fa fa-comment" tooltip=@root.i18n.iconNumberFeatures.sms.tooltip}}
-										{{/compare}}
-										{{#compare this "mms"}}
-											{{> featureIcon feature="mms" color="blue" icon="fa fa-commenting" tooltip=@root.i18n.iconNumberFeatures.mms.tooltip}}
-										{{/compare}}
-										{{#compare this "carrier_disabled"}}
-											{{> featureIcon feature="carrier_disabled" color="red" icon="fa fa-exclamation-triangle" tooltip=@root.i18n.numberStatus.carrierDisable}}
-										{{/compare}}
-										
-									{{/each}}
-								{{/if}}
+									{{#compare this "e911"}}
+										{{> featureIcon feature="e911" color="red" icon="fa fa-ambulance" tooltip=@root.i18n.iconNumberFeatures.e911.tooltip}}
+									{{/compare}}
+									{{#compare this "uk_999"}}
+										{{> featureIcon feature="e911" color="red" icon="fa fa-ambulance" tooltip=@root.i18n.uk999.label}}
+									{{/compare}}
+									{{#compare this "failover"}}
+										{{> featureIcon feature="failover" color="green" icon="icon-telicon-failover" tooltip=@root.i18n.iconNumberFeatures.failover.tooltip}}
+									{{/compare}}
+									{{#compare this "outbound_cnam"}}
+										{{> featureIcon feature="outbound_cnam" color="blue" icon="fa fa-user" tooltip=@root.i18n.iconNumberFeatures.outbound_cnam.tooltip}}
+									{{/compare}}
+									{{#compare this "inbound_cnam"}}
+										{{> featureIcon feature="inbound_cnam" color="green" icon="fa fa-user" tooltip=@root.i18n.iconNumberFeatures.inbound_cnam.tooltip}}
+									{{/compare}}
+									{{#compare this "prepend"}}
+										{{> featureIcon feature="prepend" color="orange" icon="fa fa-file-text-o" tooltip=@root.i18n.iconNumberFeatures.prepend.tooltip}}
+									{{/compare}}
+									{{#compare this "local"}}
+										{{> featureIcon feature="local" color="purple" icon="fa fa-rocket" tooltip=@root.i18n.iconNumberFeatures.local.tooltip}}
+									{{/compare}}
+									{{#compare this "mobile"}}
+										{{> featureIcon feature="mobile" color="yellow" icon="fa fa-mobile-phone" tooltip=@root.i18n.iconNumberFeatures.mobile.tooltip}}
+									{{/compare}}
+									{{#compare this "sms"}}
+										{{> featureIcon feature="sms" color="blue" icon="fa fa-comment" tooltip=@root.i18n.iconNumberFeatures.sms.tooltip}}
+									{{/compare}}
+									{{#compare this "mms"}}
+										{{> featureIcon feature="mms" color="blue" icon="fa fa-commenting" tooltip=@root.i18n.iconNumberFeatures.mms.tooltip}}
+									{{/compare}}
+									{{#compare this "carrier_disabled"}}
+										{{> featureIcon feature="carrier_disabled" color="red" icon="fa fa-exclamation-triangle" tooltip=@root.i18n.numberStatus.carrierDisable}}
+									{{/compare}}
+									
+								{{/each}}
+							{{/if}}
 
-								{{#*inline "featureIcon"}}
-									<i class="feature-{{feature}} monster-{{color}} {{icon}}" data-toggle="tooltip" data-title="{{tooltip}}"></i>
-								{{/inline}}
+							{{#*inline "featureIcon"}}
+								<i class="feature-{{feature}} monster-{{color}} {{icon}}" data-toggle="tooltip" data-title="{{tooltip}}"></i>
+							{{/inline}}
 
-								{{#compare this.state '===' 'port_in'}}
-									<i class="fa fa-exclamation-triangle monster-red active help-popover" data-toggle="tooltip" data-placement="top" data-original-title="{{@root.i18n.numbers.portIconHelp}}"></i>
-								{{/compare}}
-							</div>
+							{{#compare this.state '===' 'port_in'}}
+								<i class="fa fa-exclamation-triangle monster-red active help-popover" data-toggle="tooltip" data-placement="top" data-original-title="{{@root.i18n.numbers.portIconHelp}}"></i>
+							{{/compare}}
 						</div>
-					{{else}}
-						<div class="number-box no-data">
-							{{ @root.i18n.numbers.noSpareNumber }}
-						</div>
-					{{/each}}
+					</div>
+				{{else}}
+					<div class="number-box no-data">
+						{{ @root.i18n.numbers.noSpareNumber }}
+					</div>
+				{{/each}}
+				<div class="number-box no-results">
+					{{ ../i18n.numbers.noRecordsAvailable }}
 				</div>
-			{{else}}
-				<div class="numbers-wrapper">
-					{{#each spareNumbers}}
-						<div class="number-box" data-state="{{this.state}}" data-phoneNumber="{{this.phoneNumber}}">
-							<div class="number-options pull-right"></div>
-							<div class="phone-number monster-phone-number" data-state="{{this.state}}"{{#compare this.state "!==" "in_service"}} data-toggle="tooltip" data-placement="top" data-original-title="{{ formatVariableToDisplay this.state }}"{{/compare}}>{{#monsterNumberWrapper this.phoneNumber}}{{/monsterNumberWrapper}}</div>
-							<div class="features pull-right">
-								
-								{{#if features}}
-									{{#each features}}
-
-										{{#compare this "e911"}}
-											{{> featureIcon feature="e911" color="red" icon="fa fa-ambulance" tooltip=@root.i18n.iconNumberFeatures.e911.tooltip}}
-										{{/compare}}
-										{{#compare this "uk_999"}}
-											{{> featureIcon feature="e911" color="red" icon="fa fa-ambulance" tooltip=@root.i18n.uk999.label}}
-										{{/compare}}
-										{{#compare this "failover"}}
-											{{> featureIcon feature="failover" color="green" icon="icon-telicon-failover" tooltip=@root.i18n.iconNumberFeatures.failover.tooltip}}
-										{{/compare}}
-										{{#compare this "outbound_cnam"}}
-											{{> featureIcon feature="outbound_cnam" color="blue" icon="fa fa-user" tooltip=@root.i18n.iconNumberFeatures.outbound_cnam.tooltip}}
-										{{/compare}}
-										{{#compare this "inbound_cnam"}}
-											{{> featureIcon feature="inbound_cnam" color="green" icon="fa fa-user" tooltip=@root.i18n.iconNumberFeatures.inbound_cnam.tooltip}}
-										{{/compare}}
-										{{#compare this "prepend"}}
-											{{> featureIcon feature="prepend" color="orange" icon="fa fa-file-text-o" tooltip=@root.i18n.iconNumberFeatures.prepend.tooltip}}
-										{{/compare}}
-										{{#compare this "local"}}
-											{{> featureIcon feature="local" color="purple" icon="fa fa-rocket" tooltip=@root.i18n.iconNumberFeatures.local.tooltip}}
-										{{/compare}}
-										{{#compare this "mobile"}}
-											{{> featureIcon feature="mobile" color="yellow" icon="fa fa-mobile-phone" tooltip=@root.i18n.iconNumberFeatures.mobile.tooltip}}
-										{{/compare}}
-										{{#compare this "sms"}}
-											{{> featureIcon feature="sms" color="blue" icon="fa fa-comment" tooltip=@root.i18n.iconNumberFeatures.sms.tooltip}}
-										{{/compare}}
-										{{#compare this "mms"}}
-											{{> featureIcon feature="mms" color="blue" icon="fa fa-commenting" tooltip=@root.i18n.iconNumberFeatures.mms.tooltip}}
-										{{/compare}}
-										{{#compare this "carrier_disabled"}}
-											{{> featureIcon feature="carrier_disabled" color="red" icon="fa fa-exclamation-triangle" tooltip=@root.i18n.numberStatus.carrierDisable}}
-										{{/compare}}
-										
-									{{/each}}
-								{{/if}}
-
-								{{#*inline "featureIcon"}}
-									<i class="feature-{{feature}} monster-{{color}} {{icon}}" data-toggle="tooltip" data-title="{{tooltip}}"></i>
-								{{/inline}}
-
-								{{#compare this.state '===' 'port_in'}}
-									<i class="fa fa-exclamation-triangle monster-red active help-popover" data-toggle="tooltip" data-placement="top" data-original-title="{{@root.i18n.numbers.portIconHelp}}"></i>
-								{{/compare}}
-							</div>
-						</div>
-					{{else}}
-						<div class="number-box no-data">
-							{{ @root.i18n.numbers.noSpareNumber }}
-						</div>
-					{{/each}}
-				</div>
-			{{/if}}
+				<div class="number-box spacer"></div>
+			</div>
 		</div>
 	{{/each}}
 </div>

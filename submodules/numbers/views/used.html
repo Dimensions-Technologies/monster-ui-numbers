@@ -32,12 +32,16 @@
 					{{#unless ../miscSettings.embeddedPortalView}}
 						<div class="left-part">
 						</div>
-						<div class="expandable">
+						{{#if ../miscSettings.limitlistAccounts}}
+							<div class="not-expandable">
+						{{else}}
+							<div class="expandable">
+						{{/if}}
 							{{ name }}
 							<span class="count">({{ countUsedNumbers }})</span>
 						</div>
 					{{/unless}}
-					
+
 					{{#if ../miscSettings.embeddedPortalView}}
 						<div class="left-part search-custom">
 							<div class="search-box">
@@ -49,11 +53,13 @@
 
 				</div>
 			{{/compare}}
-			<div class="numbers-wrapper">
+			<div class="numbers-wrapper used">
 				{{#each usedNumbers}}
 					<div class="number-box disabled" data-state="{{this.state}}" data-phoneNumber="{{this.phoneNumber}}">
 						<div class="number-options"></div>
-
+						{{#if ../../canAddExternalNumbers}}
+							<input class="fake-checkbox" type="checkbox"></input>
+						{{/if}}
 						<div class="phone-number monster-phone-number" data-state="{{this.state}}"{{#compare this.state "!==" "in_service"}} data-toggle="tooltip" data-placement="top" data-original-title="{{ formatVariableToDisplay this.state }}"{{/compare}}>
 							{{#monsterNumberWrapper this.phoneNumber}}{{/monsterNumberWrapper}}
 						</div>
@@ -142,6 +148,10 @@
 						{{ @root.i18n.numbers.noUsedNumber }}
 					</div>
 				{{/each}}
+				<div class="number-box no-results">
+					{{ ../i18n.numbers.noRecordsAvailable }}
+				</div>
+				<div class="number-box spacer"></div>
 			</div>
 		</div>
 	{{/each}}

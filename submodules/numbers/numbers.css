@@ -6,86 +6,51 @@
 	max-width: 902px;
 }
 
-#numbers_container .top-box {
+#numbers_container .number-tabs {
+    border-bottom: 1px solid #c0c0c9;
+    background-color: #fff;
+    box-shadow: 0 0 5px 0 rgba(48, 48, 57, .3);
+}
+
+#numbers_container .number-tabs-inner {
+	max-width: 902px;
+	margin: 0 auto;
+	height: 50px;
 	display: flex;
-	-webkit-box-sizing: border-box;
-	/* Safari/Chrome, other WebKit */
-	-moz-box-sizing: border-box;
-	/* Firefox, other Gecko */
-	box-sizing: border-box;
-	/* Opera/IE 8+ */
-	background: #f9f9f9;
-	border-left: 4px solid #E2E2E2;
-	border-right: 4px solid #E2E2E2;
-	border-bottom: 4px solid #E2E2E2;
-	border-radius: 4px;
-	font-size: 16px;
-	width: 100%;
-	height: 80px;
+	align-items: flex-end; 
+	gap: 16px;
+	justify-content: flex-start;
 }
 
-#numbers_container .top-box>.half-box {
-	flex-grow: 1;
-	-webkit-box-sizing: border-box;
-	/* Safari/Chrome, other WebKit */
-	-moz-box-sizing: border-box;
-	/* Firefox, other Gecko */
-	box-sizing: border-box;
-	/* Opera/IE 8+ */
-	border-top: 4px solid #ddd;
-	color: #333;
+#numbers_container .list-container {
+	max-width: 902px;
+	margin: 0 auto;
+	padding: 0 16px;
+}
+
+#numbers_container .number-tabs-inner .half-box {
+	line-height: 12px;
+	color: #303039;
+	border-bottom: 3px solid transparent;
+	padding-bottom: 10px;
+}
+
+#numbers_container .number-tabs-inner .half-box.selected {
+	color: #2297ff;
+	position: relative;
+	border-bottom: 3px solid #2297ff;
+}
+
+#numbers_container .number-tabs-inner .half-box:hover {
 	cursor: pointer;
-	font-size: 20px;
-	height: 80px;
-	line-height: 65px;
-	padding: 5px 0px 5px 25px;
 }
 
-#numbers_container .top-box>.half-box:hover {
-	background: #f0f0f0;
-	/* Old browsers */
-	background: -moz-linear-gradient(top, #f0f0f0 0%, #f9f9f9 100%);
-	/* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f0f0f0), color-stop(100%, #f9f9f9));
-	/* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top, #f0f0f0 0%, #f9f9f9 100%);
-	/* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top, #f0f0f0 0%, #f9f9f9 100%);
-	/* Opera 11.10+ */
-	background: -ms-linear-gradient(top, #f0f0f0 0%, #f9f9f9 100%);
-	/* IE10+ */
-	background: linear-gradient(to bottom, #f0f0f0 0%, #f9f9f9 100%);
-	/* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f0f0f0', endColorstr='#f9f9f9', GradientType=0);
-	/* IE6-9 */
+#numbers_container .number-tabs-inner .half-box:hover:not(.selected) {
+	color: #2297ff;
 }
 
-#numbers_container .top-box>.half-box.selected {
-	background: #fefefe;
-	border-top: 4px solid #2297FF;
-	box-shadow: inset 0 0 5px #cccccc;
-	color: #2297FF;
-	font-weight: 600;
-}
-
-#numbers_container .top-box>.half-box .count {
-	color: #999;
-	margin-left: 10px;
-}
-
-#numbers_container .top-box>.half-box .help-popover {
-	background: none repeat scroll 0 0 #FAFAFA;
-	border-radius: 15px 15px 15px 15px;
-	box-shadow: 0 1px 1px #999999;
-	color: #999999;
-	font-size: 17px;
-	height: 20px;
-	line-height: 20px;
-	margin-right: 15px;
-	margin-top: 20px;
-	text-align: center;
-	width: 20px;
-	float: right;
+#numbers_container .number-tabs {
+	position: relative;
 }
 
 #numbers_container .actions-wrapper .dropdown-move {
@@ -103,11 +68,17 @@
 
 #numbers_container .account-section .numbers-wrapper .number-box {
 	position: relative;
-	border: 1px solid #ccc;
+	border: 0px;
+	border-top: 1px solid #e0e0e9;
+	border-right: 1px solid #e0e0e9;
 	margin-top: -1px;
 	pointer-events: none;
     background: #f6f6f6;
 	padding: 0px 10px;
+}
+
+.accounts-numbers {
+	border: 1px solid #e0e0e9;
 }
 
 #numbers_container .account-section .numbers-wrapper .number-box input[type="checkbox"] {
@@ -121,7 +92,7 @@
 
 #numbers_container .account-section .numbers-wrapper .number-box.selected {
     font-weight: 400;
-    border-top: 1px solid #ccc !important;
+    border-top: 1px solid #e0e0e9 !important;
     background: #f6f6f6;
     box-shadow: none;
 }
@@ -177,9 +148,8 @@
 
 #numbers_container .account-section .account-header {
 	background: #F2F2F2;
-	border-left: 1px solid #CCCCCC;
-	border-right: 1px solid #CCCCCC;
-	border-top: 1px solid #CCCCCC;
+	border: 0px;
+	border-bottom: 1px solid #e0e0e9;
 	font-size: 18px;
 	height: 70px;
 	line-height: 70px;
@@ -202,6 +172,10 @@
 #numbers_container .account-section .account-header .expandable {
 	margin: 0 150px 0 40px;
 	cursor: pointer;
+}
+
+#numbers_container .account-section .account-header .not-expandable {
+	margin: 0 150px 0 40px;
 }
 
 #numbers_container .account-section .account-header .right-links {
@@ -259,29 +233,23 @@
 }
 
 #numbers_container .account-section.open .account-header {
-	background-color: #2297FF;
+	background-color: #2297ff;
 	color: #ffffff;
-	border-bottom-right-radius: 0px !important;
-	border-bottom-left-radius: 0px !important;
+	border-radius: 0px !important;
 }
 
 #numbers_container .account-section.open .numbers-wrapper {
 	display: block;
 }
 
-#numbers_container .account-section:nth-of-type(1) .account-header {
-	border-top-left-radius: 8px;
-	border-top-right-radius: 8px;
-}
-
 #numbers_container .account-section:nth-last-of-type(1) .account-header {
 	border-bottom-left-radius: 8px;
 	border-bottom-right-radius: 8px;
-	border-bottom: 1px solid #CCCCCC;
+	border-bottom: 1px solid #e0e0e9;
 }
 
 #numbers_container .account-section:nth-last-of-type(1) .numbers-wrapper .number-box:nth-last-of-type(1) {
-	border-bottom-width: 1px;
+	border-bottom-width: 0px;
 }
 
 #numbers_container .actions-wrapper {
@@ -544,8 +512,6 @@
 	margin-top: 5px;
 }
 
-
-/* custom search box formatting */
 #numbers_container .left-part.search-custom input {
 	margin-bottom: -40px;
 }
@@ -559,56 +525,59 @@
 }
 
 #numbers_container .account-section.open .numbers-wrapper {
-   	max-height: 900px;
-	overflow-y: scroll;
-	overflow-x: hidden;
+    height: calc(80vh - 200px); 
+    overflow-y: scroll;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#numbers_container .account-section.open .numbers-wrapper > .number-box:not(.spacer) {
+    flex: 0 0 auto;
+}
+
+#numbers_container .account-section.open .numbers-wrapper > .number-box.spacer {
+    flex: 1 0 200px;
+    min-height: 200px;
+    position: relative;
+    border-top: 1px solid #e0e0e9;
+	border-right: 1px solid #e0e0e9;
+    margin-top: -1px;
+    pointer-events: none;
+    background: #fff;
+    padding: 0 10px;
 }
 
 .numbers-wrapper {
-	scrollbar-width: auto;
-	scrollbar-color: rgba(0,0,0,0.2) transparent;
-	border-right: 2px solid #ddd;
+    scrollbar-width: auto;
+    scrollbar-color: rgba(0,0,0,0.2) transparent;
 }
 
-.numbers-wrapper::-webkit-scrollbar {
-	width: 12px;
-	height: 12px;
-}
-
+.numbers-wrapper::-webkit-scrollbar { width: 12px; height: 12px; }
 .numbers-wrapper::-webkit-scrollbar-thumb {
-	background-color: rgba(0,0,0,0.2);
-	border-radius: 6px;
-	border: 3px solid transparent;
-	background-clip: padding-box;
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 6px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
 }
 
-#numbers_container .account-section .numbers-wrapper .number-box:nth-last-child(-n+3) .dropdown-menu {
-    bottom: 100%;
-    top: auto;
+.numbers-wrapper::-webkit-scrollbar-track {
+    border-left: 1px solid #e0e0e9 !important;
 }
 
-#numbers_container .account-section .numbers-wrapper .number-box:nth-last-child(-n+3) .dropdown-menu::before {
-    bottom: -6px;
-    top: auto;
-    border-top: 6px solid rgba(0, 0, 0, 0.2);
-    border-bottom: none;
+#numbers_container .fake-checkbox {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    width: 20px;
+    pointer-events: none !important;
 }
 
-#numbers_container .account-section .numbers-wrapper .number-box:nth-last-child(-n+3) .dropdown-menu::after {
-    bottom: -5px;
-    top: auto;
-    border-top: 5px solid #fff;
-    border-bottom: none;
+#form_add_cid_number .btn-group.dropup .monster-button-primary.js-submit.span2 {
+	width: 180px
 }
 
-#numbers_container .account-section .numbers-wrapper .number-box .dropdown {
-    position: relative;
-}
-
-#numbers_container .account-section .numbers-wrapper .number-box .number-options {
-    overflow: visible;
-}
-
-#numbers_container .account-section .numbers-wrapper .number-box {
-    overflow: visible;
+.number-box.no-data,
+.number-box.disabled.no-data,
+.number-box.no-results {
+	text-align: center;
 }

@@ -1,4 +1,5 @@
 {
+	"test": "test",
 	"commonApp": {
 		"cidNumber": {
 			"selector": {
@@ -7,7 +8,7 @@
 			},
 			"add": {
 				"title": "Add Caller ID Number",
-				"text": "All Caller ID Numbers must be validated to comply with STIR/SHAKEN requirements. Once you submit a caller ID number, we'll call you to enter a verification code.",
+				"text": "All Caller ID Numbers must be validated. Once you submit a caller ID number, the system will place a call to that number providing a verification code.",
 				"label": "Caller ID Number",
 				"errorVerify": "Couldn't verify number",
 				"buttons": {
@@ -568,6 +569,7 @@
 		"notUsedNumber": "{{number}}: This number is not used but belongs to {{accountName}}. (Switch to Spare Numbers view to see this number)",
 		"notSpareNumber": "{{number}}: This number is not a spare number but is used by {{accountName}}. (Switch to the Numbers in Use view to see this number)",
 		"numberNotFound": "The number you searched was not found! Make sure to enter the full number as we don't allow partial searches (but the formatting doesn't matter).",
+		"noRecordsAvailable": "No records available.",
 		"dialogConfirm": {
 			"from": "From ",
 			"cancel": "Cancel",
