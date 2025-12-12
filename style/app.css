@@ -3,13 +3,15 @@
 @import url(../submodules/uk999/uk999.css);
 
 /* Hack because of otpimization: can't have relative paths since the folder hierarchy changes after optimization */
-
-#number_manager {
-	margin: 20px auto;
-	display: block;
-	max-width: 902px;
+.number-manager-layout {
+    min-height: 100%;
+    background-color: #f0f0f9;
 }
 
+#numbers_container {
+	max-width: none;
+	margin: 0;
+}
 
 .trunkstore_popup.cnam .left_image {
     background: url('static/images/cid_phone.png') center no-repeat;

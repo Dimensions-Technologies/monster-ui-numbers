@@ -1,18 +1,5 @@
 <div class="actions-wrapper">
 	<div class="form-inline">
-		<label>
-			{{ i18n.numbers.numbers }}
-		</label>
-
-		<span id="trigger_links">
-			<a href="#" id="delete_external_numbers" class="action-number">
-				<i class="fa fa-times monster-red"></i>
-				<span class="action-text">
-					{{ i18n.numbers.deleteNumbers }}
-				</span>
-			</a>
-		</span>
-
 		{{#compare viewType '===' 'pbx'}}
 			<a href="javascript:void(0);" id="add" class="action-number">
 				<i class="fa fa-plus monster-primary-color"></i>
@@ -24,12 +11,18 @@
 	</div>
 </div>
 
-<div class="accounts-numbers">
+<div class="accounts-numbers external">
 	{{#each listAccounts}}
 		<div class="account-section {{ open }}" data-id="{{ id }}" data-name="{{ name }}">
 			{{#compare ../viewType '!==' 'pbx'}}
 				<div class="account-header">
 					<div class="right-links pull-right">
+						<a class="delete" href="javascript:void(0);">
+							<i class="fa fa-times"></i>
+							<span class="action-text">
+								{{@root.i18n.delete}}
+							</span>
+						</a>
 						<a class="add" href="javascript:void(0);">
 							<i class="fa fa-plus"></i>
 							<span class="action-text">
@@ -37,16 +30,36 @@
 							</span>
 						</a>
 					</div>
-					<div class="left-part">
-						<input type="checkbox"></input>
-					</div>
-					<div class="expandable" data-type="external">
-						{{ name }}
-						<span class="count">({{ countExternalNumbers }})</span>
-					</div>
+
+					{{#unless ../miscSettings.embeddedPortalView}}
+						<div class="left-part">
+							<input class="number-checkbox" type="checkbox">
+						</div>
+						{{#if ../miscSettings.limitlistAccounts}}
+							<div class="not-expandable" data-type="external">
+						{{else}}
+							<div class="expandable" data-type="external">
+						{{/if}}
+							{{ name }}
+							<span class="count">({{ countExternalNumbers }})</span>
+						</div>
+					{{/unless}}
+
+					{{#if ../miscSettings.embeddedPortalView}}
+						{{#if ../miscSettings.enableLocalNumberSearch}}
+							<div class="left-part search-custom">
+								<div class="search-box">
+									<i class="fa fa-search"></i>
+									<input class="span2 search-query" type="text" placeholder="{{ @root.i18n.numbers.searchNumbers }}"
+										pattern="[0-9+ ]*" inputmode="tel"
+										onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 32 || (event.charCode == 43 && this.value.indexOf('+') === -1)"
+									/>
+								</div>
+							</div>
+						{{/if}}
+					{{/if}}	
 				</div>
 			{{/compare}}
-
 			<div class="numbers-wrapper">
 				{{#each externalNumbers}}
 					<div class="number-box" data-id="{{id}}" data-number="{{number}}">
@@ -75,18 +88,12 @@
 											{{/isSuperDuper}}
 											<li class="divider"></li>
 										{{/unless}}
-											<li>
-												<a class="delete" href="javascript:void(0);">
-													<i class="fa fa-times"></i>
-													{{@root.i18n.delete}}
-												</a>
-											</li>
 										</ul>
 									</li>
 								</ul>
 							</div>
 						</div>
-						<input type="checkbox">
+						<input class="number-checkbox" type="checkbox">
 						<div class="phone-number monster-phone-number">
 							{{#monsterNumberWrapper number}}{{/monsterNumberWrapper}}
 						{{#if verified}}
@@ -99,6 +106,10 @@
 						{{ @root.i18n.numbers.noExternalNumber }}
 					</div>
 				{{/each}}
+				<div class="number-box no-results">
+					{{ ../i18n.numbers.noRecordsAvailable }}
+				</div>
+				<div class="number-box spacer"></div>
 			</div>
 		</div>
 	{{/each}}
